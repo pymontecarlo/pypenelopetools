@@ -1,0 +1,2 @@
+[run]
+omit=pypenelopetools/_version.py

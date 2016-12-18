@@ -13,11 +13,11 @@ matrix:
     env: DEPLOY=yes
     os: linux
 before_install:
+- ./ci/install_gitlfs.sh
+- git lfs pull
 - openssl aes-256-cbc -K $encrypted_8ed1e0a06d33_key -iv $encrypted_8ed1e0a06d33_iv
   -in fortran/penelope2014.zip.enc -out fortran/penelope2014.zip -d
-- unzip fortran/penelope2014.zip
-- cd fortran/penelope/fsource
-- gfortran material.f -o material
+- ./ci/install_penelope2014.sh
 install:
 - pip install --cache-dir $HOME/.pip-cache --upgrade pip codecov
 - pip install --cache-dir $HOME/.pip-cache --upgrade -r requirements.txt

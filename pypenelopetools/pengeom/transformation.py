@@ -10,7 +10,7 @@ from pypenelopetools.pengeom.common import Keyword, PengeomComponent
 
 # Globals and constants variables.
 
-class Rotation(metaclass=PengeomComponent):
+class Rotation(PengeomComponent):
 
     _KEYWORD_OMEGA = Keyword('OMEGA=', ' DEG          (DEFAULT=0.0)')
     _KEYWORD_THETA = Keyword('THETA=', ' DEG          (DEFAULT=0.0)')
@@ -97,7 +97,7 @@ class Rotation(metaclass=PengeomComponent):
             raise ValueError("Angle (%s) must be between [0,pi]." % angle)
         self._phi = angle
 
-class Shift(metaclass=PengeomComponent):
+class Shift(PengeomComponent):
 
     _KEYWORD_X = Keyword('X-SHIFT=', '              (DEFAULT=0.0)')
     _KEYWORD_Y = Keyword('Y-SHIFT=', '              (DEFAULT=0.0)')
@@ -171,7 +171,7 @@ class Shift(metaclass=PengeomComponent):
     def z_m(self, shift):
         self._z = shift
 
-class Scale(metaclass=PengeomComponent):
+class Scale(PengeomComponent):
 
     _KEYWORD_X = Keyword('X-SCALE=', '              (DEFAULT=1.0)')
     _KEYWORD_Y = Keyword('Y-SCALE=', '              (DEFAULT=1.0)')

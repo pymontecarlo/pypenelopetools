@@ -21,8 +21,7 @@ AXIS_X = 'x'
 AXIS_Y = 'y'
 AXIS_Z = 'z'
 
-class _Surface(DescriptionMixin,
-               metaclass=PengeomComponent):
+class _Surface(DescriptionMixin, PengeomComponent):
 
     _KEYWORD_SURFACE = Keyword("SURFACE")
     _KEYWORD_INDICES = Keyword('INDICES=')

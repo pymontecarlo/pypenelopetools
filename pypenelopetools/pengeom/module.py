@@ -17,8 +17,7 @@ from pypenelopetools.pengeom.common import LINE_EXTRA
 SIDEPOINTER_POSITIVE = 1
 SIDEPOINTER_NEGATIVE = -1
 
-class Module(DescriptionMixin, ModuleMixin,
-             metaclass=PengeomComponent):
+class Module(DescriptionMixin, ModuleMixin, PengeomComponent):
 
     _KEYWORD_MODULE = Keyword("MODULE")
     _KEYWORD_MATERIAL = Keyword('MATERIAL')

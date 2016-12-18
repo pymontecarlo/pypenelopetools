@@ -114,7 +114,7 @@ class Keyword(object):
 
         return line
 
-class PengeomComponent(abc.ABCMeta):
+class PengeomComponent(metaclass=abc.ABCMeta):
 
     @abc.abstractmethod
     def to_geo(self, index_lookup): #pragma: no cover

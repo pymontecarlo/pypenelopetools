@@ -1,9 +1,6 @@
-"""
-Common classes to PENGEOM
-"""
+""""""
 
 # Standard library modules.
-import abc
 import math
 
 # Third party modules.
@@ -11,6 +8,7 @@ import math
 # Local modules.
 
 # Globals and constants variables.
+
 LINE_SIZE = 64
 LINE_KEYWORDS_SIZE = 8
 
@@ -113,38 +111,3 @@ class Keyword(object):
         assert len(line) <= LINE_SIZE
 
         return line
-
-class PengeomComponent(metaclass=abc.ABCMeta):
-
-    @abc.abstractmethod
-    def to_geo(self, index_lookup): #pragma: no cover
-        raise NotImplementedError
-
-class DescriptionMixin(object):
-
-    @property
-    def description(self):
-        """
-        Description of the surface.
-        """
-        return self._description
-
-    @description.setter
-    def description(self, desc):
-        self._description = desc
-
-class ModuleMixin(object):
-
-    def add_module(self, module):
-        if module == self:
-            raise ValueError("Cannot add this module to this module.")
-        self._modules.add(module)
-
-    def pop_module(self, module):
-        self._modules.discard(module)
-
-    def clear_modules(self):
-        self._modules.clear()
-
-    def get_modules(self):
-        return list(self._modules)

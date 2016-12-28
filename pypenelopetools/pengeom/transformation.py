@@ -6,11 +6,12 @@ import math
 # Third party modules.
 
 # Local modules.
-from pypenelopetools.pengeom.common import Keyword, PengeomComponent
+from pypenelopetools.pengeom.keyword import Keyword
+from pypenelopetools.pengeom.base import GeoBase
 
 # Globals and constants variables.
 
-class Rotation(PengeomComponent):
+class Rotation(GeoBase):
 
     _KEYWORD_OMEGA = Keyword('OMEGA=', ' DEG          (DEFAULT=0.0)')
     _KEYWORD_THETA = Keyword('THETA=', ' DEG          (DEFAULT=0.0)')
@@ -97,7 +98,7 @@ class Rotation(PengeomComponent):
             raise ValueError("Angle (%s) must be between [0,pi]." % angle)
         self._phi = angle
 
-class Shift(PengeomComponent):
+class Shift(GeoBase):
 
     _KEYWORD_X = Keyword('X-SHIFT=', '              (DEFAULT=0.0)')
     _KEYWORD_Y = Keyword('Y-SHIFT=', '              (DEFAULT=0.0)')
@@ -171,7 +172,7 @@ class Shift(PengeomComponent):
     def z_m(self, shift):
         self._z = shift
 
-class Scale(PengeomComponent):
+class Scale(GeoBase):
 
     _KEYWORD_X = Keyword('X-SCALE=', '              (DEFAULT=1.0)')
     _KEYWORD_Y = Keyword('Y-SCALE=', '              (DEFAULT=1.0)')

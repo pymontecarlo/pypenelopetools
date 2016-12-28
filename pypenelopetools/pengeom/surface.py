@@ -12,16 +12,17 @@ import math
 # Third party modules.
 
 # Local modules.
-from pypenelopetools.pengeom.common import \
-    Keyword, PengeomComponent, DescriptionMixin, LINE_EXTRA
 from pypenelopetools.pengeom.transformation import Rotation, Shift, Scale
+from pypenelopetools.pengeom.keyword import Keyword, LINE_EXTRA
+from pypenelopetools.pengeom.base import GeoBase
+from pypenelopetools.pengeom.mixin import DescriptionMixin
 
 # Globals and constants variables.
 AXIS_X = 'x'
 AXIS_Y = 'y'
 AXIS_Z = 'z'
 
-class _Surface(DescriptionMixin, PengeomComponent):
+class _Surface(DescriptionMixin, GeoBase):
 
     _KEYWORD_SURFACE = Keyword("SURFACE")
     _KEYWORD_INDICES = Keyword('INDICES=')

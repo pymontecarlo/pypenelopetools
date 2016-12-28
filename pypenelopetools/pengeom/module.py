@@ -8,16 +8,15 @@ Definition of module
 
 # Local modules.
 from pypenelopetools.pengeom.transformation import Rotation, Shift
-from pypenelopetools.pengeom.common import \
-    Keyword, PengeomComponent, DescriptionMixin, ModuleMixin
+from pypenelopetools.pengeom.mixin import DescriptionMixin, ModuleMixin
+from pypenelopetools.pengeom.base import GeoBase
+from pypenelopetools.pengeom.keyword import Keyword, LINE_EXTRA
 
 # Globals and constants variables.
-from pypenelopetools.pengeom.common import LINE_EXTRA
-
 SIDEPOINTER_POSITIVE = 1
 SIDEPOINTER_NEGATIVE = -1
 
-class Module(DescriptionMixin, ModuleMixin, PengeomComponent):
+class Module(DescriptionMixin, ModuleMixin, GeoBase):
 
     _KEYWORD_MODULE = Keyword("MODULE")
     _KEYWORD_MATERIAL = Keyword('MATERIAL')

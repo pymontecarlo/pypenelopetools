@@ -10,8 +10,9 @@ from operator import methodcaller, attrgetter
 # Third party modules.
 
 # Local modules.
-from pypenelopetools.pengeom.common import \
-    ModuleMixin, LINE_SIZE, LINE_START, LINE_SEPARATOR, LINE_END
+from pypenelopetools.pengeom.keyword import \
+    LINE_SIZE, LINE_START, LINE_SEPARATOR, LINE_END
+from pypenelopetools.pengeom.mixin import ModuleMixin
 from pypenelopetools.pengeom.module import Module
 from pypenelopetools.material.material import VACUUM
 

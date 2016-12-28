@@ -26,16 +26,16 @@ class TestMaterialProgramProcess(unittest.TestCase):
     def setUp(self):
         unittest.TestCase.setUp(self)
 
-        self.tmpdir = tempfile.mkdtemp()
-
+        self.outdirpath = tempfile.mkdtemp()
         self.program = CONFIG.get_program('material', '2014')
 
     def tearDown(self):
         unittest.TestCase.tearDown(self)
 
-        shutil.rmtree(self.tmpdir, ignore_errors=True)
+        shutil.rmtree(self.outdirpath, ignore_errors=True)
 
-    def _test_outfile(self, outfilepath):
+    def _test_outfile(self, material):
+        outfilepath = os.path.join(self.outdirpath, material.filename)
         self.assertTrue(os.path.exists(outfilepath))
 
         with open(outfilepath, 'r') as fp:
@@ -44,28 +44,24 @@ class TestMaterialProgramProcess(unittest.TestCase):
 
     def testsingle_element(self):
         material = Material('copper', {29: 1.0}, 8.9)
-        outfilepath = os.path.join(self.tmpdir, 'copper.mat')
 
-        process = MaterialProgramProcess(self.program, material, outfilepath)
+        process = MaterialProgramProcess(self.program, material, self.outdirpath)
         process.start()
         process.join()
 
-        self._test_outfile(outfilepath)
+        self._test_outfile(material)
 
     def testmulti_element(self):
         material = Material('brass', {29: 0.63, 30: 0.37}, 8.4)
-        outfilepath = os.path.join(self.tmpdir, 'brass.mat')
 
-        process = MaterialProgramProcess(self.program, material, outfilepath)
+        process = MaterialProgramProcess(self.program, material, self.outdirpath)
         process.start()
         process.join()
 
-        self._test_outfile(outfilepath)
+        self._test_outfile(material)
 
     def testno_element(self):
-        outfilepath = os.path.join(self.tmpdir, 'vacuum.mat')
-
-        process = MaterialProgramProcess(self.program, VACUUM, outfilepath)
+        process = MaterialProgramProcess(self.program, VACUUM, self.outdirpath)
 
         self.assertRaises(ValueError, process.start)
 
@@ -74,13 +70,12 @@ class TestMaterialProgramProcess(unittest.TestCase):
                             mean_excitation_energy_eV=300.0,
                             oscillator_strength_fcb=1.0,
                             oscillator_energy_wcb_eV=10.0)
-        outfilepath = os.path.join(self.tmpdir, 'copper.mat')
 
-        process = MaterialProgramProcess(self.program, material, outfilepath)
+        process = MaterialProgramProcess(self.program, material, self.outdirpath)
         process.start()
         process.join()
 
-        self._test_outfile(outfilepath)
+        self._test_outfile(material)
 
 
 if __name__ == '__main__': #pragma: no cover

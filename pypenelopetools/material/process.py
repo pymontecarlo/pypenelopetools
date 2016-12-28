@@ -14,7 +14,7 @@ from pypenelopetools.process import ProgramProcessSubprocess
 
 # Globals and constants variables.
 
-def _create_input_lines(material, filename):
+def _create_input_lines(material):
     """
     Creates the lines of the input file of the material program.
 
@@ -67,16 +67,16 @@ def _create_input_lines(material, filename):
         lines.append("2")
 
     # set the name and path of the output file.
-    lines.append(filename)
+    lines.append(material.filename)
 
     return lines
 
 class MaterialProgramProcess(ProgramProcessSubprocess):
 
-    def __init__(self, program, material, outfilepath):
+    def __init__(self, program, material, outdirpath):
         super().__init__(program)
         self.material = material
-        self.outfilepath = outfilepath
+        self.outdirpath = outdirpath
         self._input_file = None
 
     def _create_process_args(self):
@@ -101,7 +101,7 @@ class MaterialProgramProcess(ProgramProcessSubprocess):
         """
         input_file = tempfile.TemporaryFile()
 
-        lines = _create_input_lines(self.material, os.path.basename(self.outfilepath))
+        lines = _create_input_lines(self.material)
         input_file.write('\n'.join(lines).encode('ascii'))
 
         input_file.seek(0)
@@ -114,8 +114,9 @@ class MaterialProgramProcess(ProgramProcessSubprocess):
         self._input_file.close()
 
         # Move file from pendbase directory to use outfilepath
-        src = os.path.join(self.program.pendbase_path, os.path.basename(self.outfilepath))
-        dst = self.outfilepath
+        filename = self.material.filename
+        src = os.path.join(self.program.pendbase_path, filename)
+        dst = os.path.join(self.outdirpath, filename)
         shutil.move(src, dst)
 
         return returncode

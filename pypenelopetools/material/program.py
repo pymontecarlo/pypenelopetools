@@ -34,8 +34,8 @@ class _MaterialProgram(ExecutableProgram):
         super().to_config(parser, section)
         parser.set(section, self.CONFIG_OPTION_PENDBASE_PATH, self.pendbase_path)
 
-    def execute(self, material, outfilepath, *args, **kwargs):
-        process = MaterialProgramProcess(self, material, outfilepath)
+    def execute(self, material, outdirpath, *args, **kwargs):
+        process = MaterialProgramProcess(self, material, outdirpath)
         process.start()
         return process
 

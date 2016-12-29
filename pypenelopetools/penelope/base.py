@@ -59,16 +59,29 @@ class _InLineBase(metaclass=abc.ABCMeta):
         :arg text: value of the keyword
         :arg comment: comment associated with the line
         """
+        # Keyword
         name = name.ljust(LINE_KEYWORDS_SIZE)
         assert len(name) == LINE_KEYWORDS_SIZE
+        line = '{0} '.format(name.upper())
 
-        text = ' '.join(map(str, values))
-        line = "{0} {1}".format(name.upper(), text)
-        if len(comment) > 0:
+        # Values
+        strvalues = []
+        for value in values:
+            if isinstance(value, float):
+                strvalues.append('{0:g}'.format(value))
+            else:
+                strvalues.append(str(value))
+
+        line += ' '.join(strvalues)
+
+        # Comment
+        if len(comment) > 0 and len(line) + len(comment) + 2 <= LINE_SIZE:
             line = line.ljust(LINE_SIZE - (len(comment) + 2))
             line += '[%s]' % comment
 
-        assert len(line) <= LINE_SIZE
+        if len(line) > LINE_SIZE:
+            raise ValueError('Line of keyword {0} is too long, {1} > {2} characters'
+                             .format(name, len(line), LINE_SIZE))
 
         return line
 

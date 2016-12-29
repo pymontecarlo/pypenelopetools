@@ -17,12 +17,15 @@ class Material:
                  oscillator_strength_fcb=None,
                  oscillator_energy_wcb_eV=None):
         self.name = name
-        self.filename = name[:20]
+        self.filename = name[:16] + '.mat'
         self.composition = composition.copy()
         self.density_g_per_cm3 = float(density_g_per_cm3)
         self.mean_excitation_energy_eV = mean_excitation_energy_eV
         self.oscillator_strength_fcb = oscillator_strength_fcb
         self.oscillator_energy_wcb_eV = oscillator_energy_wcb_eV
+
+    def __repr__(self):
+        return '<{0}({1})>'.format(self.__class__.__name__, self.name)
 
     @property
     def filename(self):

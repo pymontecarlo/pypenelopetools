@@ -738,13 +738,17 @@ class ImpactDetectorGroup(KeywordGroup):
         self.IDAGEL.set(agel, ageu, nage)
         self.IDAGEF.set(age_filename)
 
-        if not hasattr(kb, '__iter__'):
+        if kb is None:
+            kb = []
+        if not isinstance(kb, (list, tuple)):
             kb = [kb]
         self.IDBODY.clear()
         for item in kb:
             self.IDBODY.add(item)
 
-        if not hasattr(kpar, '__iter__'):
+        if kpar is None:
+            kpar = []
+        if not isinstance(kpar, (list, tuple)):
             kpar = [kpar]
         self.IDKPAR.clear()
         for item in kpar:

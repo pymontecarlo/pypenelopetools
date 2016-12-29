@@ -121,6 +121,8 @@ class KeywordSequence(_KeywordBase):
         self.add(*args)
 
     def get(self):
+        if not self._keywords:
+            return ((),)
         return tuple(keyword.get() for keyword in self._keywords)
 
     def copy(self):

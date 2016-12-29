@@ -1,0 +1,42 @@
+TITLE  Dose in a water phantom with a spherical impact detector
+       .
+       >>>>>>>> Source definition.
+SKPAR  2        [Primary particles: 1=electron, 2=photon, 3=positron]
+SENERG 3.e7             [Initial energy (monoenergetic sources only)]
+SPOSIT 0 0 -25                            [Coordinates of the source]
+SCONE  0 0 5                            [Conical beam; angles in deg]
+       .
+       >>>>>>>> Material data and simulation parameters.
+MFNAME H2O.mat                        [Material file, up to 20 chars]
+MSIMPA 1e5 1e4 1e5 0.05 0.05 5e3 5e3        [EABS(1:3),C1,C2,WCC,WCR]
+       .
+       >>>>>>>> Geometry definition file.
+GEOMFN plane.geo                      [Geometry file, up to 20 chars]
+       .
+       >>>>>>>> Emerging particles. Energy and angular distributions.
+NBE    1e5 3.e7 100                   [Energy window and no. of bins]
+NBANGL 45 18               [No. of bins for the angles THETA and PHI]
+       .
+       >>>>>>>> Impact detector.
+       IPSF=0; no psf is created.
+       IPSF=1; the psf is created.
+       IDCUT=0; tracking is discontinued at the detector entrance.
+       IDCUT=1; the detector does not affect the tracking.
+       IDCUT=2; the detector does not affect tracking, the energy
+                distribution of particle fluence (integrated over the
+                volume of the detector) is calculated.
+IMPDET 1e5 0   100 0 2           [E-window, no. of bins, IPSF, IDCUT]
+IDBODY 1                        [Active body; one line for each body]
+       .
+       >>>>>>>> Dose distribution.
+GRIDZ  0 30.  60          [Z coords of the box vertices, no. of bins]
+GRIDR  30. 60                [Radius of the dose volume, no. of bins]
+       .
+       >>>>>>>> Job properties
+RESUME dump.dat                [Resume from this dump file, 20 chars]
+DUMPTO dump.dat                   [Generate this dump file, 20 chars]
+DUMPP  60                                    [Dumping period, in sec]
+       .
+NSIMSH 1e7                      [Desired number of simulated showers]
+TIME   2e9                         [Allotted simulation time, in sec]
+END                                  [Ends the reading of input data]

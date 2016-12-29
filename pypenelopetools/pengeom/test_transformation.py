@@ -4,7 +4,6 @@
 # Standard library modules.
 import unittest
 import logging
-from math import radians
 
 # Third party modules.
 
@@ -22,15 +21,15 @@ class TestRotation(unittest.TestCase):
     def setUp(self):
         unittest.TestCase.setUp(self)
 
-        self.rotation = Rotation(radians(1.0), radians(2.0), radians(3.0))
+        self.rotation = Rotation(1.0, 2.0, 3.0)
 
     def tearDown(self):
         unittest.TestCase.tearDown(self)
 
     def testskeleton(self):
-        self.assertAlmostEqual(radians(1.0), self.rotation.omega_rad, 4)
-        self.assertAlmostEqual(radians(2.0), self.rotation.theta_rad, 4)
-        self.assertAlmostEqual(radians(3.0), self.rotation.phi_rad, 4)
+        self.assertAlmostEqual(1.0, self.rotation.omega_deg, 4)
+        self.assertAlmostEqual(2.0, self.rotation.theta_deg, 4)
+        self.assertAlmostEqual(3.0, self.rotation.phi_deg, 4)
 
     def testto_geo(self):
         lines = self.rotation.to_geo({})
@@ -45,15 +44,15 @@ class TestShift(unittest.TestCase):
     def setUp(self):
         unittest.TestCase.setUp(self)
 
-        self.shift = Shift(0.01, 0.02, 0.03)
+        self.shift = Shift(1.0, 2.0, 3.0)
 
     def tearDown(self):
         unittest.TestCase.tearDown(self)
 
     def testskeleton(self):
-        self.assertAlmostEqual(0.01, self.shift.x_m, 4)
-        self.assertAlmostEqual(0.02, self.shift.y_m, 4)
-        self.assertAlmostEqual(0.03, self.shift.z_m, 4)
+        self.assertAlmostEqual(1.0, self.shift.x_cm, 4)
+        self.assertAlmostEqual(2.0, self.shift.y_cm, 4)
+        self.assertAlmostEqual(3.0, self.shift.z_cm, 4)
 
     def testto_geo(self):
         lines = self.shift.to_geo({})

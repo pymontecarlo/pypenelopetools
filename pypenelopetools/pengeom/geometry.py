@@ -29,16 +29,16 @@ def _topological_sort(d, k):
 
 class Geometry(ModuleMixin):
 
-    def __init__(self, title="Untitled", tilt_rad=0.0, rotation_rad=0.0):
+    def __init__(self, title="Untitled", tilt_deg=0.0, rotation_deg=0.0):
         """
         Creates a new PENELOPE geometry.
         
-        :arg tilt_rad: Specimen tilt in radians along the x-axis
-        :arg rotation_rad: Specimen rotation in radians along the z-axis
+        :arg tilt_deg: Specimen tilt in degrees along the x-axis
+        :arg rotation_deg: Specimen rotation in degrees along the z-axis
         """
         self.title = title
-        self.tilt_rad = tilt_rad
-        self.rotation_rad = rotation_rad
+        self.tilt_deg = tilt_deg
+        self.rotation_deg = rotation_deg
         self._modules = set()
 
     def get_materials(self):
@@ -47,17 +47,17 @@ class Geometry(ModuleMixin):
     def get_surfaces(self):
         return set(chain(*map(methodcaller('get_surfaces'), self.get_modules())))
 
-    def _indexify(self):
-        index_lookup = {}
+    def indexify(self):
+        index_table = {}
 
         # Materials
-        index_lookup[VACUUM] = 0
+        index_table[VACUUM] = 0
         for i, material in enumerate(self.get_materials(), 1):
-            index_lookup[material] = i
+            index_table[material] = i
 
         # Surfaces
         for i, surface in enumerate(self.get_surfaces()):
-            index_lookup[surface] = i
+            index_table[surface] = i
 
         # Modules
         modules_dep = {} # module dependencies
@@ -73,9 +73,9 @@ class Geometry(ModuleMixin):
                     modules_order.append(dep_module)
 
         for i, module in enumerate(modules_order):
-            index_lookup[module] = i
+            index_table[module] = i
 
-        return index_lookup
+        return index_table
 
     def _create_extra_module(self):
         extra = Module(VACUUM, description='Extra module for rotation and tilt')
@@ -88,15 +88,13 @@ class Geometry(ModuleMixin):
             extra.add_module(module)
 
         ## Change of Euler angles convention from ZXZ to ZYZ
-        extra.rotation.omega_rad = (self.rotation_rad - math.pi / 2.0) % (2 * math.pi)
-        extra.rotation.theta_rad = self.tilt_rad
-        extra.rotation.phi_rad = math.pi / 2.0
+        extra.rotation.omega_deg = (self.rotation_deg - 90.0) % 360.0
+        extra.rotation.theta_deg = self.tilt_deg
+        extra.rotation.phi_deg = 90.0
 
         return extra
 
-    def to_geo(self):
-        index_lookup = self._indexify()
-
+    def to_geo(self, index_table):
         lines = []
 
         lines.append(LINE_START)
@@ -104,27 +102,28 @@ class Geometry(ModuleMixin):
         lines.append(LINE_SEPARATOR)
 
         # Surfaces
-        surfaces = sorted((index_lookup[surface], surface)
+        surfaces = sorted((index_table[surface], surface)
                           for surface in self.get_surfaces())
 
         for _index, surface in surfaces:
-            lines.extend(surface.to_geo(index_lookup))
+            lines.extend(surface.to_geo(index_table))
             lines.append(LINE_SEPARATOR)
 
         # Modules
-        modules = sorted((index_lookup[module], module)
+        modules = sorted((index_table[module], module)
                           for module in self.get_modules())
 
         for _index, module in modules:
-            lines.extend(module.to_geo(index_lookup))
+            lines.extend(module.to_geo(index_table))
             lines.append(LINE_SEPARATOR)
 
         # Extra module for tilt and rotation
-        extra = self._create_extra_module()
+        if self.tilt_deg != 0.0 or self.rotation_deg != 0.0:
+            extra = self._create_extra_module()
 
-        index_lookup[extra] = len(self.get_modules())
-        lines.extend(extra.to_geo(index_lookup))
-        lines.append(LINE_SEPARATOR)
+            index_table[extra] = len(self.get_modules())
+            lines.extend(extra.to_geo(index_table))
+            lines.append(LINE_SEPARATOR)
 
         # End of line
         lines.append(LINE_END)
@@ -147,25 +146,25 @@ class Geometry(ModuleMixin):
         self._title = title
 
     @property
-    def tilt_rad(self):
+    def tilt_deg(self):
         """
-        Specimen tilt in radians along the x-axis
+        Specimen tilt in degrees along the x-axis
         """
-        return self._tilt_rad
+        return self._tilt_deg
 
-    @tilt_rad.setter
-    def tilt_rad(self, angle_rad):
-        while angle_rad < 0:
-            angle_rad += 2.0 * math.pi
-        self._tilt_rad = angle_rad
+    @tilt_deg.setter
+    def tilt_deg(self, angle_deg):
+        while angle_deg < 0:
+            angle_deg += 360.0
+        self._tilt_deg = angle_deg
 
     @property
-    def rotation_rad(self):
+    def rotation_deg(self):
         """
-        Specimen rotation in radians along the z-axis
+        Specimen rotation in degrees along the z-axis
         """
-        return self._rotation_rad
+        return self._rotation_deg
 
-    @rotation_rad.setter
-    def rotation_rad(self, angle_rad):
-        self._rotation_rad = angle_rad
+    @rotation_deg.setter
+    def rotation_deg(self, angle_deg):
+        self._rotation_deg = angle_deg

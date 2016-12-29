@@ -4,7 +4,6 @@
 # Standard library modules.
 import unittest
 import logging
-from math import radians
 
 # Third party modules.
 
@@ -115,9 +114,9 @@ class TestGeometry(unittest.TestCase):
 
         self.geo = Geometry('Test Geometry')
 
-        surface1 = zplane(1e-10)
-        surface2 = zplane(-1e-3)
-        surface3 = cylinder(1e-2)
+        surface1 = zplane(1e-8)
+        surface2 = zplane(-1e-1)
+        surface3 = cylinder(1.0)
         surface4 = xplane(0.0)
 
         mat1 = Material('copper', {29: 1.0}, 8.9)
@@ -136,21 +135,22 @@ class TestGeometry(unittest.TestCase):
         self.module2.add_module(self.module1)
         self.geo.add_module(self.module2)
 
-        self.geo.tilt_rad = radians(45)
+        self.geo.tilt_deg = 45
 
     def tearDown(self):
         unittest.TestCase.tearDown(self)
 
     def testskeleton(self):
         self.assertEqual('Test Geometry', self.geo.title)
-        self.assertAlmostEqual(radians(45), self.geo.tilt_rad, 4)
-        self.assertAlmostEqual(0.0, self.geo.rotation_rad, 4)
+        self.assertAlmostEqual(45, self.geo.tilt_deg, 4)
+        self.assertAlmostEqual(0.0, self.geo.rotation_deg, 4)
         self.assertEqual(2, len(self.geo.get_modules()))
         self.assertEqual(4, len(self.geo.get_surfaces()))
         self.assertEqual(2, len(self.geo.get_materials()))
 
     def testto_geo(self):
-        lines = self.geo.to_geo()
+        index_table = self.geo.indexify()
+        lines = self.geo.to_geo(index_table)
         self.assertEqual(self.GEOFILE[:3], lines[:3])
         self.assertEqual(self.GEOFILE[14], lines[14])
         self.assertEqual(self.GEOFILE[26], lines[26])

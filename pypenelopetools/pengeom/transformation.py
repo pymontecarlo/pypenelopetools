@@ -17,25 +17,25 @@ class Rotation(GeoBase):
     _KEYWORD_THETA = Keyword('THETA=', ' DEG          (DEFAULT=0.0)')
     _KEYWORD_PHI = Keyword('PHI=', ' DEG          (DEFAULT=0.0)')
 
-    def __init__(self, omega_rad=0.0, theta_rad=0.0, phi_rad=0.0):
+    def __init__(self, omega_deg=0.0, theta_deg=0.0, phi_deg=0.0):
         """
         Represents a rotation using 3 Euler angles (YZY).
 
-        :arg omega_rad: rotation around the z-axis (rad)
-        :arg theta_rad: rotation around the y-axis (rad)
-        :arg phi_rad: rotation around the new z-axis (rad)
+        :arg omega_deg: rotation around the z-axis (deg)
+        :arg theta_deg: rotation around the y-axis (deg)
+        :arg phi_deg: rotation around the new z-axis (deg)
         """
-        self.omega_rad = omega_rad
-        self.theta_rad = theta_rad
-        self.phi_rad = phi_rad
+        self.omega_deg = omega_deg
+        self.theta_deg = theta_deg
+        self.phi_deg = phi_deg
 
     def __repr__(self):
         return "<Rotation(omega=%s, theta=%s, phi=%s)>" % \
-                    (self.omega_rad, self.theta_rad, self.phi_rad)
+                    (self.omega_deg, self.theta_deg, self.phi_deg)
 
     def __str__(self):
         return '(omega=%s, theta=%s, phi=%s)' % \
-                    (self.omega_rad, self.theta_rad, self.phi_rad)
+                    (self.omega_deg, self.theta_deg, self.phi_deg)
 
     def to_geo(self, index_lookup):
         """
@@ -43,59 +43,59 @@ class Rotation(GeoBase):
         """
         lines = []
 
-        line = self._KEYWORD_OMEGA.create_expline(math.degrees(self.omega_rad))
+        line = self._KEYWORD_OMEGA.create_expline(self.omega_deg)
         lines.append(line)
 
-        line = self._KEYWORD_THETA.create_expline(math.degrees(self.theta_rad))
+        line = self._KEYWORD_THETA.create_expline(self.theta_deg)
         lines.append(line)
 
-        line = self._KEYWORD_PHI.create_expline(math.degrees(self.phi_rad))
+        line = self._KEYWORD_PHI.create_expline(self.phi_deg)
         lines.append(line)
 
         return lines
 
     @property
-    def omega_rad(self):
+    def omega_deg(self):
         """
-        Rotation around the z-axis (rad).
-        The value must be between 0 and 2pi.
+        Rotation around the z-axis (deg).
+        The value must be between 0 and 360.
         """
         return self._omega
 
-    @omega_rad.setter
-    def omega_rad(self, angle):
-        if angle < 0 or angle > 2 * math.pi:
-            raise ValueError("Angle (%s) must be between [0,pi]." % angle)
+    @omega_deg.setter
+    def omega_deg(self, angle):
+        if angle < 0 or angle > 360.0:
+            raise ValueError("Angle (%s) must be between [0,360]." % angle)
         self._omega = angle
 
     @property
-    def theta_rad(self):
+    def theta_deg(self):
         """
-        Rotation around the y-axis (rad).
-        The value must be between 0 and 2pi.
+        Rotation around the y-axis (deg).
+        The value must be between 0 and 360.
         """
         return self._theta
 
-    @theta_rad.setter
-    def theta_rad(self, angle):
-        if angle < 0 or angle > 2 * math.pi:
-            raise ValueError("Angle (%s) must be between [0,pi]." % angle)
+    @theta_deg.setter
+    def theta_deg(self, angle):
+        if angle < 0 or angle > 360:
+            raise ValueError("Angle (%s) must be between [0,360]." % angle)
         self._theta = angle
 
     @property
-    def phi_rad(self):
+    def phi_deg(self):
         """
-        Rotation around the new z-axis (rad).
+        Rotation around the new z-axis (deg).
         The new z-axis refer to the axis after the omega and theta rotation were
         applied on the original coordinate system.
-        The value must be between 0 and 2pi.
+        The value must be between 0 and 360.
         """
         return self._phi
 
-    @phi_rad.setter
-    def phi_rad(self, angle):
-        if angle < 0 or angle > 2 * math.pi:
-            raise ValueError("Angle (%s) must be between [0,pi]." % angle)
+    @phi_deg.setter
+    def phi_deg(self, angle):
+        if angle < 0 or angle > 360:
+            raise ValueError("Angle (%s) must be between [0,360]." % angle)
         self._phi = angle
 
 class Shift(GeoBase):
@@ -104,23 +104,23 @@ class Shift(GeoBase):
     _KEYWORD_Y = Keyword('Y-SHIFT=', '              (DEFAULT=0.0)')
     _KEYWORD_Z = Keyword('Z-SHIFT=', '              (DEFAULT=0.0)')
 
-    def __init__(self, x_m=0.0, y_m=0.0, z_m=0.0):
+    def __init__(self, x_cm=0.0, y_cm=0.0, z_cm=0.0):
         """
         Represents a translation in space.
 
-        :arg x_m: translation along the x direction (m)
-        :arg y_m: translation along the y direction (m)
-        :arg z_m: translation along the z direction (m)
+        :arg x_cm: translation along the x direction (cm)
+        :arg y_cm: translation along the y direction (cm)
+        :arg z_cm: translation along the z direction (cm)
         """
-        self.x_m = x_m
-        self.y_m = y_m
-        self.z_m = z_m
+        self.x_cm = x_cm
+        self.y_cm = y_cm
+        self.z_cm = z_cm
 
     def __repr__(self):
-        return "<Shift(x=%s, y=%s, z=%s)>" % (self.x_m, self.y_m, self.z_m)
+        return "<Shift(x=%s, y=%s, z=%s)>" % (self.x_cm, self.y_cm, self.z_cm)
 
     def __str__(self):
-        return "(x=%s, y=%s, z=%s)" % (self.x_m, self.y_m, self.z_m)
+        return "(x=%s, y=%s, z=%s)" % (self.x_cm, self.y_cm, self.z_cm)
 
     def to_geo(self, index_lookup):
         """
@@ -128,48 +128,48 @@ class Shift(GeoBase):
         """
         lines = []
 
-        line = self._KEYWORD_X.create_expline(self.x_m * 100.0)
+        line = self._KEYWORD_X.create_expline(self.x_cm)
         lines.append(line)
 
-        line = self._KEYWORD_Y.create_expline(self.y_m * 100.0)
+        line = self._KEYWORD_Y.create_expline(self.y_cm)
         lines.append(line)
 
-        line = self._KEYWORD_Z.create_expline(self.z_m * 100.0)
+        line = self._KEYWORD_Z.create_expline(self.z_cm)
         lines.append(line)
 
         return lines
 
     @property
-    def x_m(self):
+    def x_cm(self):
         """
-        Translation along the x direction (m).
+        Translation along the x direction (cm).
         """
         return self._x
 
-    @x_m.setter
-    def x_m(self, shift):
+    @x_cm.setter
+    def x_cm(self, shift):
         self._x = shift
 
     @property
-    def y_m(self):
+    def y_cm(self):
         """
-        Translation along the y direction (m).
+        Translation along the y direction (cm).
         """
         return self._y
 
-    @y_m.setter
-    def y_m(self, shift):
+    @y_cm.setter
+    def y_cm(self, shift):
         self._y = shift
 
     @property
-    def z_m(self):
+    def z_cm(self):
         """
-        Translation along the z direction (m).
+        Translation along the z direction (cm).
         """
         return self._z
 
-    @z_m.setter
-    def z_m(self, shift):
+    @z_cm.setter
+    def z_cm(self, shift):
         self._z = shift
 
 class Scale(GeoBase):

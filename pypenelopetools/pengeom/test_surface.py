@@ -4,7 +4,6 @@
 # Standard library modules.
 import unittest
 import logging
-from math import radians
 
 # Third party modules.
 
@@ -40,16 +39,16 @@ class TestSurfaceImplicit(unittest.TestCase):
 
         coefficients = (1e3, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1e9, 0.0, 0.0)
         self.surface = SurfaceImplicit(coefficients, description='surface')
-        self.surface.rotation.phi_rad = radians(180)
-        self.surface.shift.z_m = -1e3
+        self.surface.rotation.phi_deg = 180
+        self.surface.shift.z_cm = -1e5
 
     def tearDown(self):
         unittest.TestCase.tearDown(self)
 
     def testskeleton(self):
         self.assertEqual('surface', self.surface.description)
-        self.assertAlmostEqual(radians(180), self.surface.rotation.phi_rad, 4)
-        self.assertAlmostEqual(-1e3, self.surface.shift.z_m, 4)
+        self.assertAlmostEqual(180, self.surface.rotation.phi_deg, 4)
+        self.assertAlmostEqual(-1e5, self.surface.shift.z_cm, 4)
         self.assertAlmostEqual(1e3, self.surface.coefficients['xx'], 4)
         self.assertAlmostEqual(0.0, self.surface.coefficients['xy'], 4)
         self.assertAlmostEqual(0.0, self.surface.coefficients['xz'], 4)
@@ -98,6 +97,7 @@ class TestSurfaceReduced(unittest.TestCase):
         lines = self.surface.to_geo({self.surface: 0})
         self.assertEqual(11, len(lines))
         self.assertEqual(self.GEOFILE, lines)
+
 if __name__ == '__main__': #pragma: no cover
     logging.getLogger().setLevel(logging.DEBUG)
     unittest.main()

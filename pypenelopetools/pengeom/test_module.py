@@ -4,7 +4,6 @@
 # Standard library modules.
 import unittest
 import logging
-from math import radians
 
 # Third party modules.
 
@@ -54,8 +53,8 @@ class TestModule(unittest.TestCase):
         self.module1.add_surface(surface1, -1)
         self.module1.add_surface(surface2, 1)
         self.module1.add_module(self.module2)
-        self.module1.rotation.phi_rad = radians(180)
-        self.module1.shift.z_m = -1e3
+        self.module1.rotation.phi_deg = 180
+        self.module1.shift.z_cm = -1e5
 
         self.index_lookup = {VACUUM: 0, mat1: 1,
                              surface1: 0, surface2: 1,
@@ -68,8 +67,8 @@ class TestModule(unittest.TestCase):
         # Module 1
         self.assertEqual('copper', self.module1.material.name)
         self.assertEqual('Test', self.module1.description)
-        self.assertAlmostEqual(radians(180), self.module1.rotation.phi_rad, 4)
-        self.assertAlmostEqual(-1e3, self.module1.shift.z_m, 4)
+        self.assertAlmostEqual(180, self.module1.rotation.phi_deg, 4)
+        self.assertAlmostEqual(-1e5, self.module1.shift.z_cm, 4)
         self.assertEqual(2, len(self.module1.get_surfaces()))
         self.assertEqual(1, len(self.module1.get_modules()))
 

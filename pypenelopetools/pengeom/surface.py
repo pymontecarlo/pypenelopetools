@@ -206,84 +206,84 @@ class SurfaceReduced(_Surface):
         """
         return self._scale
 
-def xplane(x_m):
+def xplane(x_cm):
     """
     Returns a surface for a plane X=x
 
-    :arg z_m: intercept on the x-axis (in m)
+    :arg x_cm: intercept on the x-axis (in cm)
 
     :rtype: :class:`.Surface`
     """
-    s = SurfaceReduced((0, 0, 0, 1, 0), 'Plane X=%4.2f m' % x_m)
-    s.shift.x_m = x_m
-    s.rotation.theta_rad = math.pi / 2.0
+    s = SurfaceReduced((0, 0, 0, 1, 0), 'Plane X=%4.2f cm' % x_cm)
+    s.shift.x_cm = x_cm
+    s.rotation.theta_deg = 90.0
     return s
 
-def yplane(y_m):
+def yplane(y_cm):
     """
     Returns a surface for a plane Y=y
 
-    :arg y_m: intercept on the y-axis (in m)
+    :arg y_cm: intercept on the y-axis (in cm)
 
     :rtype: :class:`.Surface`
     """
-    s = SurfaceReduced((0, 0, 0, 1, 0), 'Plane Y=%4.2f m' % y_m)
-    s.shift.y_m = y_m
-    s.rotation.theta_rad = math.pi / 2.0
-    s.rotation.phi_rad = math.pi / 2.0
+    s = SurfaceReduced((0, 0, 0, 1, 0), 'Plane Y=%4.2f cm' % y_cm)
+    s.shift.y_cm = y_cm
+    s.rotation.theta_deg = 90.0
+    s.rotation.phi_deg = 90.0
     return s
 
-def zplane(z_m):
+def zplane(z_cm):
     """
     Returns a surface for a plane Z=z
 
-    :arg z_m: intercept on the z-axis (in m)
+    :arg z_cm: intercept on the z-axis (in cm)
 
     :rtype: :class:`.Surface`
     """
-    s = SurfaceReduced((0, 0, 0, 1, 0), 'Plane Z=%4.2f m' % z_m)
-    s.shift.z_m = z_m
+    s = SurfaceReduced((0, 0, 0, 1, 0), 'Plane Z=%4.2f cm' % z_cm)
+    s.shift.z_cm = z_cm
     return s
 
-def cylinder(radius_m, axis=AXIS_Z):
+def cylinder(radius_cm, axis=AXIS_Z):
     """
     Returns a surface for a cylinder along *axis* with *radius*
 
-    :arg radius_m: radius of the cylinder (in m)
+    :arg radius_cm: radius of the cylinder (in cm)
     :arg axis: axis of the cylinder (:const:`AXIS_X`, :const:`AXIS_Y` or :const:`AXIS_Z`)
 
     :rtype: :class:`.Surface`
     """
     axis = axis.lower()
-    description = 'Cylinder of radius %4.2f m along %s-axis' % (radius_m, axis)
+    description = 'Cylinder of radius %4.2f cm along %s-axis' % (radius_cm, axis)
     s = SurfaceReduced((1, 1, 0, 0, -1), description)
 
-    s.scale.x = radius_m * 100
-    s.scale.y = radius_m * 100
+    s.scale.x = radius_cm
+    s.scale.y = radius_cm
 
     if axis == 'z':
         pass
     elif axis == 'x':
-        s.rotation.theta_rad = math.pi / 2.0
+        s.rotation.theta_deg = 90.0
     elif axis == 'y':
-        s.rotation.theta_rad = math.pi / 2.0
-        s.rotation.phi_rad = math.pi / 2.0
+        s.rotation.theta_deg = 90.0
+        s.rotation.phi_deg = 90.0
 
     return s
 
-def sphere(radius_m):
+def sphere(radius_cm):
     """
     Returns a surface for a sphere or *radius*
 
-    :arg radius_m: radius of the cylinder (in m)
+    :arg radius_cm: radius of the cylinder (in cm)
 
     :rtype: :class:`.Surface`
     """
-    description = 'Sphere of radius %4.2f m' % radius_m
+    description = 'Sphere of radius %4.2f cm' % radius_cm
     s = SurfaceReduced((1, 1, 1, 0, -1), description)
 
-    s.scale.x = radius_m * 100
-    s.scale.y = radius_m * 100
-    s.scale.z = radius_m * 100
+    s.scale.x = radius_cm
+    s.scale.y = radius_cm
+    s.scale.z = radius_cm
 
     return s

@@ -7,10 +7,11 @@ Definition of material
 # Third party modules.
 
 # Local modules.
+from pypenelopetools.penelope.mixin import FilenameMixin
 
 # Globals and constants variables.
 
-class Material:
+class Material(FilenameMixin):
 
     def __init__(self, name, composition, density_g_per_cm3,
                  mean_excitation_energy_eV=None,
@@ -26,15 +27,5 @@ class Material:
 
     def __repr__(self):
         return '<{0}({1})>'.format(self.__class__.__name__, self.name)
-
-    @property
-    def filename(self):
-        return self._filename
-
-    @filename.setter
-    def filename(self, filename):
-        if len(filename) > 20:
-            raise ValueError("Filename is too long. Maximum 20 characters")
-        self._filename = filename
 
 VACUUM = Material("Vacuum", {}, 0.0)

@@ -9,10 +9,14 @@ logger = logging.getLogger(__name__)
 
 # Local modules.
 from pypenelopetools.penelope.iterator import LineIterator
+from pypenelopetools.penelope.mixin import FilenameMixin
 
 # Globals and constants variables.
 
-class PenelopeInput(metaclass=abc.ABCMeta):
+class PenelopeInput(FilenameMixin, metaclass=abc.ABCMeta):
+
+    def __init__(self, filename):
+        self.filename = filename
 
     def read(self, fileobj):
         line_iterator = LineIterator(fileobj)

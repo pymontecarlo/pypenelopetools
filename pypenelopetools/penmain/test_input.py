@@ -12,14 +12,27 @@ import os
 # Local modules.
 from pypenelopetools.penmain.input import PenmainInput
 from pypenelopetools.material.material import Material
-from pypenelopetools.pengeom.surface import sphere, zplane
+from pypenelopetools.pengeom.surface import sphere, zplane, cylinder
 from pypenelopetools.pengeom.module import Module, SIDEPOINTER_NEGATIVE, SIDEPOINTER_POSITIVE
 from pypenelopetools.pengeom.geometry import Geometry
 
 # Globals and constants variables.
 
 def create_example1_disc():
-    input = PenmainInput()
+    # Create materials
+    material_cu = Material('Cu', {29: 1.0}, 8.9)
+
+    # Create geometry
+    module = Module(material_cu, 'Solid cylinder')
+    module.add_surface(zplane(0.0), SIDEPOINTER_POSITIVE)
+    module.add_surface(zplane(0.005), SIDEPOINTER_NEGATIVE)
+    module.add_surface(cylinder(1.0), SIDEPOINTER_NEGATIVE)
+
+    geometry = Geometry('A solid cylinder.')
+    geometry.add_module(module)
+
+    # Create input
+    input = PenmainInput('disc.in')
 
     input.TITLE.set('Point source and a homogeneous cylinder.')
     input.SKPAR.set(1)
@@ -56,7 +69,7 @@ def create_example1_disc():
     input.NSIMSH.set(2e9)
     input.TIME.set(600)
 
-    return input, {}
+    return input, geometry
 
 def create_example2_plane():
     # Create materials
@@ -74,11 +87,8 @@ def create_example2_plane():
     geometry.add_module(module_detector)
     geometry.add_module(module_phantom)
 
-    index_table = geometry.indexify()
-    geometry.to_geo(index_table) # Optional
-
     # Create input
-    input = PenmainInput()
+    input = PenmainInput('plane.in')
 
     input.TITLE.set('Dose in a water phantom with a spherical impact detector')
     input.SKPAR.set(2)
@@ -105,7 +115,7 @@ def create_example2_plane():
     input.NSIMSH.set(1e7)
     input.TIME.set(2e9)
 
-    return input, index_table
+    return input, geometry
 
 class TestPenmainInput(unittest.TestCase):
 
@@ -123,7 +133,7 @@ class TestPenmainInput(unittest.TestCase):
         input.write(outfileobj, index_table)
 
         infileobj = io.StringIO(outfileobj.getvalue())
-        outinput = PenmainInput()
+        outinput = PenmainInput(input.filename)
         outinput.read(infileobj)
 
         outfileobj.close()
@@ -279,13 +289,14 @@ class TestPenmainInput(unittest.TestCase):
         self.assertAlmostEqual(600.0, timea, 5)
 
     def test_example1_disc_write(self):
-        input, index_table = create_example1_disc()
+        input, geometry = create_example1_disc()
+        index_table = geometry.indexify()
         input = self._write_read_input(input, index_table)
         self._test_example1_disc(input)
 
     def test_example1_disc_read(self):
         filepath = os.path.join(self.testdatadir, '1-disc', 'disc.in')
-        input = PenmainInput()
+        input = PenmainInput('disc.in')
         with open(filepath, 'r') as fp:
             input.read(fp)
         self._test_example1_disc(input)
@@ -377,13 +388,14 @@ class TestPenmainInput(unittest.TestCase):
         self.assertAlmostEqual(2e9, timea, 5)
 
     def test_example2_plane_write(self):
-        input, index_table = create_example2_plane()
+        input, geometry = create_example2_plane()
+        index_table = geometry.indexify()
         input = self._write_read_input(input, index_table)
         self._test_example2_plane(input)
 
     def test_example2_plane_read(self):
         filepath = os.path.join(self.testdatadir, '2-plane', 'plane.in')
-        input = PenmainInput()
+        input = PenmainInput('plane.in')
         with open(filepath, 'r') as fp:
             input.read(fp)
         self._test_example2_plane(input)

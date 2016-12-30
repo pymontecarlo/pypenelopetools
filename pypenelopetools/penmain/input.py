@@ -13,7 +13,9 @@ import pypenelopetools.penmain.separators as penelope_separators
 
 class PenmainInput(PenelopeInput):
 
-    def __init__(self):
+    def __init__(self, filename):
+        super().__init__(filename)
+
         self.TITLE = penelope_keywords.TITLE()
 
         # Source definition

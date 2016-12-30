@@ -42,7 +42,8 @@ class TestPenmain2014Program(unittest.TestCase):
 
         # Write geometry
         index_table = geometry.indexify()
-        geofilepath, = input.GEOMFN.get()
+        geofilename, = input.GEOMFN.get()
+        geofilepath = os.path.join(self.outdirpath, geofilename)
 
         with open(geofilepath, 'w') as fileobj:
             fileobj.write(os.linesep.join(geometry.to_geo(index_table)))

@@ -11,7 +11,6 @@ import shutil
 # Third party modules.
 
 # Local modules.
-from pypenelopetools.material.process import MaterialProgramProcess
 from pypenelopetools.material.material import Material, VACUUM
 from pypenelopetools.config import get_configuration
 
@@ -19,7 +18,7 @@ from pypenelopetools.config import get_configuration
 CONFIG = get_configuration(develop=True)
 
 @unittest.skipUnless(CONFIG.has_program('material', '2014'), "no material program")
-class TestMaterialProgramProcess(unittest.TestCase):
+class TestMaterial2014Program(unittest.TestCase):
 
     FIRSTLINE = " PENELOPE (v. 2014)  Material data file ..............."
 
@@ -45,8 +44,7 @@ class TestMaterialProgramProcess(unittest.TestCase):
     def testsingle_element(self):
         material = Material('copper', {29: 1.0}, 8.9)
 
-        process = MaterialProgramProcess(self.program, material, self.outdirpath)
-        process.start()
+        process = self.program.execute(material, self.outdirpath)
         process.join()
 
         self._test_outfile(material)
@@ -54,16 +52,13 @@ class TestMaterialProgramProcess(unittest.TestCase):
     def testmulti_element(self):
         material = Material('brass', {29: 0.63, 30: 0.37}, 8.4)
 
-        process = MaterialProgramProcess(self.program, material, self.outdirpath)
-        process.start()
+        process = self.program.execute(material, self.outdirpath)
         process.join()
 
         self._test_outfile(material)
 
     def testno_element(self):
-        process = MaterialProgramProcess(self.program, VACUUM, self.outdirpath)
-
-        self.assertRaises(ValueError, process.start)
+        self.assertRaises(ValueError, self.program.execute, VACUUM, self.outdirpath)
 
     def testexcitation_oscillator(self):
         material = Material('copper', {29: 1.0}, 8.9,
@@ -71,8 +66,7 @@ class TestMaterialProgramProcess(unittest.TestCase):
                             oscillator_strength_fcb=1.0,
                             oscillator_energy_wcb_eV=10.0)
 
-        process = MaterialProgramProcess(self.program, material, self.outdirpath)
-        process.start()
+        process = self.program.execute(material, self.outdirpath)
         process.join()
 
         self._test_outfile(material)

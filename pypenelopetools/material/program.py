@@ -7,7 +7,7 @@ import os
 
 # Local modules.
 from pypenelopetools.program import ExecutableProgram
-from pypenelopetools.material.process import MaterialProgramProcess
+from pypenelopetools.material.process import MaterialProcess
 
 # Globals and constants variables.
 
@@ -35,7 +35,7 @@ class _MaterialProgram(ExecutableProgram):
         parser.set(section, self.CONFIG_OPTION_PENDBASE_PATH, self.pendbase_path)
 
     def execute(self, material, outdirpath, *args, **kwargs):
-        process = MaterialProgramProcess(self, material, outdirpath)
+        process = MaterialProcess(self, material, outdirpath)
         process.start()
         return process
 

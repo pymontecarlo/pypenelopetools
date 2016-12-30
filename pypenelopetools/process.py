@@ -3,10 +3,12 @@ Definition of a program process
 """
 
 # Standard library modules.
+import os
 import abc
 import sys
 import subprocess
 import threading
+import tempfile
 import logging
 logger = logging.getLogger(__name__)
 
@@ -63,9 +65,8 @@ class ProgramProcessSubprocess(ProgramProcess):
         self._progress = 0.0
         self._status = ""
 
-    @abc.abstractmethod
     def _create_process_args(self):
-        raise NotImplementedError
+        return (self.program.executable_path,)
 
     def _create_process_kwargs(self):
         kwargs = {}
@@ -134,3 +135,36 @@ class ProgramProcessSubprocess(ProgramProcess):
     @property
     def status(self):
         return self._status
+
+class ProgramProcessSubprocessWithInput(ProgramProcessSubprocess):
+
+    def __init__(self, program):
+        super().__init__(program)
+        self._input_file = None
+
+    def _create_process_kwargs(self):
+        kwargs = super()._create_process_kwargs()
+
+        self._input_file = self._create_input_file()
+        kwargs['stdin'] = self._input_file
+
+        return kwargs
+
+    def _create_input_file(self):
+        input_file = tempfile.TemporaryFile()
+
+        lines = self._create_input_lines()
+        input_file.write(os.linesep.join(lines).encode('ascii'))
+
+        input_file.seek(0)
+
+        return input_file
+
+    @abc.abstractmethod
+    def _create_input_lines(self):
+        raise NotImplementedError
+
+    def _join_process(self):
+        returncode = super()._join_process()
+        self._input_file.close()
+        return returncode

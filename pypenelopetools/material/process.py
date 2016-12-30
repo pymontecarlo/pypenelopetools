@@ -4,13 +4,12 @@ Process to run material program
 
 # Standard library modules.
 import os
-import tempfile
 import shutil
 
 # Third party modules.
 
 # Local modules.
-from pypenelopetools.process import ProgramProcessSubprocess
+from pypenelopetools.process import ProgramProcessSubprocessWithInput
 
 # Globals and constants variables.
 
@@ -71,47 +70,23 @@ def _create_input_lines(material):
 
     return lines
 
-class MaterialProgramProcess(ProgramProcessSubprocess):
+class MaterialProcess(ProgramProcessSubprocessWithInput):
 
     def __init__(self, program, material, outdirpath):
         super().__init__(program)
         self.material = material
         self.outdirpath = outdirpath
-        self._input_file = None
-
-    def _create_process_args(self):
-        return (self.program.executable_path,)
 
     def _create_process_kwargs(self):
         kwargs = super()._create_process_kwargs()
-
         kwargs['cwd'] = self.program.pendbase_path
-
-        self._input_file = self._create_input_file()
-        kwargs['stdin'] = self._input_file
-
         return kwargs
 
-    def _create_input_file(self):
-        """
-        Creates the input file for the material program.
-
-        :arg material: definition of the material
-        :type material: :class:`.Material`
-        """
-        input_file = tempfile.TemporaryFile()
-
-        lines = _create_input_lines(self.material)
-        input_file.write('\n'.join(lines).encode('ascii'))
-
-        input_file.seek(0)
-
-        return input_file
+    def _create_input_lines(self):
+        return _create_input_lines(self.material)
 
     def _join_process(self):
         returncode = super()._join_process()
-
-        self._input_file.close()
 
         # Move file from pendbase directory to use outfilepath
         filename = self.material.filename

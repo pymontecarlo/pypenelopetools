@@ -1,17 +1,5 @@
 #!/bin/bash
 
-cd fortran
-
-unzip penelope2014.zip
-
-## Compile
-cd penelope/fsource
-
-gfortran material.f -o material
-
-cp ../mains/penmain/*.f .
-gfortran penmain.f -o penmain
-
 # Build configuration
 cd $HOME/build/pymontecarlo/pypenelopetools
 

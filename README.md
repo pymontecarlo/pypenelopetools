@@ -1,8 +1,8 @@
 #pyPENELOPEtools
 
-[![PyPI](https://img.shields.io/pypi/v/pypenelopetools.svg)]()
-[![TravisCI](https://travis-ci.org/pymontecarlo/pypenelopetools.svg?branch=master)]()
-[![Codecov](https://codecov.io/github/pymontecarlo/pypenelopetools/coverage.svg?branch=master)]()
+[![PyPI](https://img.shields.io/pypi/v/pypenelopetools.svg)](https://pypi.python.org/pypi/pypenelopetools/)
+[![TravisCI](https://travis-ci.org/pymontecarlo/pypenelopetools.svg?branch=master)](https://travis-ci.org/pymontecarlo/pypenelopetools)
+[![Codecov](https://codecov.io/github/pymontecarlo/pypenelopetools/coverage.svg?branch=master)](https://codecov.io/gh/pymontecarlo/pypenelopetools)
 
 **pyPENELOPEtools** is an open-source software to facilitate the use of the 
 Monte Carlo code PENELOPE and its main programs such as PENEPMA. 

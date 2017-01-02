@@ -39,8 +39,8 @@ class Configuration:
                 program = self._resolve_program(parser, section)
             except:
                 logger.exception('Could not import {0}'.format(section))
-
-            self.add_program(program)
+            else:
+                self.add_program(program)
 
     def write(self, fileobj):
         parser = configparser.ConfigParser()

@@ -364,8 +364,6 @@ class TestPenmainInput(unittest.TestCase):
         self.assertIsNone(nage)
         self.assertIsNone(age_filename)
         self.assertEqual(1, len(kbs))
-        kb, = kbs[0]
-        self.assertEqual(1, kb)
         self.assertEqual(0, len(kpars))
 
         zl, zu, ndbz = input.GRIDZ.get()

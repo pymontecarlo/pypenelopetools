@@ -11,6 +11,5 @@ from pypenelopetools.penelope.separator import Separator
 
 INPUT_PHASE_SPACE_FILE = Separator('>>>>>>>> Input phase-space file (psf).')
 GEOMETRY = Separator('>>>>>>>> Geometry and local simulation parameters.')
-EMERGING_PARTICLES = Separator('>>>>>>>> Emerging particles. Energy and angular distributions.')
 IMPACT_DETECTORS = Separator('>>>>>>>> Impact detectors (up to 25 different detectors).')
 ABSORBED_DOSE_DISTRIBUTION = Separator('>>>>>>>> Absorbed dose distribution.')

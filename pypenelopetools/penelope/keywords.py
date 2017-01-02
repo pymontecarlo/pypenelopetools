@@ -228,6 +228,37 @@ class Materials(KeywordSequence):
     def add(self, material_or_filename, eabs1, eabs2, eabs3, c1, c2, wcc, wcr):
         return super().add(material_or_filename, eabs1, eabs2, eabs3, c1, c2, wcc, wcr)
 
+class GEOMFN(TypeKeyword):
+    """
+    PENGEOM geometry definition file name (a string of up to
+    20 characters).
+      DEFAULT: none.
+    
+    --> The geometry definition file can be debugged/visualised
+    with the viewers GVIEW2D and GVIEW3D (operable only under
+    Windows).
+    
+    The bodies in the material structure are normally identified
+    by the sequential labels assigned by PENGEOM. For complex
+    geometries, however, it may be more practical to employ user
+    labels, i.e., the four-character strings that identify the
+    body in the geometry definition file. In PENMAIN (and only
+    in the parts of the code that follow the definition of the
+    geometry), a body can be specified by giving either its
+    PENGEOM numerical label or its user label enclosed in a
+    pair of apostrophes (e.g., 'BOD1'). However, bodies that
+    result from the cloning of modules (as well as those defined
+    in an INCLUDEd geometry file) do not have a user label and
+    only the PENGEOM numerical label is acceptable.
+    """
+
+    def __init__(self):
+        super().__init__("GEOMFN", (filename_type,),
+                         comment='Geometry file, up to 20 chars')
+
+    def set(self, filename):
+        super().set(filename)
+
 class DSMAX(KeywordSequence):
     """
     Maximum step length DSMAX(KB) of electrons and positrons in
@@ -434,6 +465,78 @@ class EDSPC(TypeKeyword):
 
     def set(self, filename):
         super().set(filename)
+
+class GRIDX(TypeKeyword):
+    """
+    Generally, the program can calculate the dose distribution inside a
+    parallelepiped (dose box) whose edges are parallel to the axes of the
+    laboratory frame. The dose box is defined by giving the coordinates
+    of its vertices. The dose is tallied using a uniform orthogonal grid
+    with NDBX, NDBY and NDBZ bins (= voxels) along the directions of
+    the respective coordinate axes. These numbers should be odd, to make
+    sure that each 'central' axis (i.e., the line that join the centres
+    of two opposite faces of the box) goes through the centres of a row
+    of voxels.
+    
+    X-coordinates of the vertices of the dose box and number of
+    bins in the X direction.
+      DEFAULT: None
+    """
+
+    def __init__(self):
+        super().__init__('GRIDX', (float, float, int),
+                         comment='X coords of the box vertices, no. of bins')
+
+    def set(self, xl, xu, ndbx):
+        super().set(xl, xu, ndbx)
+
+class GRIDY(TypeKeyword):
+    """
+    Generally, the program can calculate the dose distribution inside a
+    parallelepiped (dose box) whose edges are parallel to the axes of the
+    laboratory frame. The dose box is defined by giving the coordinates
+    of its vertices. The dose is tallied using a uniform orthogonal grid
+    with NDBX, NDBY and NDBZ bins (= voxels) along the directions of
+    the respective coordinate axes. These numbers should be odd, to make
+    sure that each 'central' axis (i.e., the line that join the centres
+    of two opposite faces of the box) goes through the centres of a row
+    of voxels.
+    
+    Y-coordinates of the vertices of the dose box and number of
+    bins in the Y direction.
+      DEFAULT: None
+    """
+
+    def __init__(self):
+        super().__init__('GRIDY', (float, float, int),
+                         comment='Y coords of the box vertices, no. of bins')
+
+    def set(self, yl, yu, ndby):
+        super().set(yl, yu, ndby)
+
+class GRIDZ(TypeKeyword):
+    """
+    Generally, the program can calculate the dose distribution inside a
+    parallelepiped (dose box) whose edges are parallel to the axes of the
+    laboratory frame. The dose box is defined by giving the coordinates
+    of its vertices. The dose is tallied using a uniform orthogonal grid
+    with NDBX, NDBY and NDBZ bins (= voxels) along the directions of
+    the respective coordinate axes. These numbers should be odd, to make
+    sure that each 'central' axis (i.e., the line that join the centres
+    of two opposite faces of the box) goes through the centres of a row
+    of voxels.
+    
+    Z-coordinates of the vertices of the dose box and number of
+    bins in the Z direction.
+      DEFAULT: None
+    """
+
+    def __init__(self):
+        super().__init__('GRIDZ', (float, float, int),
+                         comment='Z coords of the box vertices, no. of bins')
+
+    def set(self, zl, zu, ndbz):
+        super().set(zl, zu, ndbz)
 
 class RESUME(TypeKeyword):
     """

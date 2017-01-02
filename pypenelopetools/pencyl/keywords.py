@@ -6,12 +6,12 @@
 
 # Local modules.
 from pypenelopetools.penelope.keyword import \
-    TypeKeyword, KeywordGroup, KeywordSequence, material_type
+    TypeKeyword, KeywordGroup, KeywordSequence
 import pypenelopetools.penelope.keywords as penelope_keywords
 
 # Globals and constants variables.
 
-class GeometryGroup(KeywordGroup):
+class GeometryDefinitionGroup(KeywordGroup):
     """
     This block of lines defines the geometrical structure. The
     only allowed keywords in the geometry definition list are
@@ -41,29 +41,29 @@ class GeometryGroup(KeywordGroup):
         self.CENTER = TypeKeyword('CENTER', (float, float),
                                   comment='X_centre and Y_centre')
 
-        keyword = TypeKeyword('CYLIND', (material_type, float, float),
+        keyword = TypeKeyword('CYLIND', (int, float, float),
                               comment='Material, R_inner and R_outer')
         self.CYLIND = KeywordSequence(keyword)
 
     def get_keywords(self):
         return (self.LAYER, self.CENTER, self.CYLIND)
 
-    def set(self, zlow, zhigh, material, rin, rout, xcen=None, ycen=None):
+    def set(self, zlow, zhigh, xcen=None, ycen=None, cylinders=None):
         self.LAYER.set(zlow, zhigh)
         self.CENTER.set(xcen, ycen)
-        self.CYLIND.set(material, rin, rout)
+        self._set_keyword_sequence(self.CYLIND, cylinders)
 
-class Geometry(KeywordSequence):
+class GeometryDefinitions(KeywordSequence):
 
     def __init__(self):
-        keyword = GeometryGroup()
+        keyword = GeometryDefinitionGroup()
         super().__init__(keyword)
 
-    def set(self, zlow, zhigh, material, rin, rout, xcen=None, ycen=None):
-        return super().set(zlow, zhigh, material, rin, rout, xcen, ycen)
+    def set(self, zlow, zhigh, xcen=None, ycen=None, cylinders=None):
+        return super().set(zlow, zhigh, xcen, ycen, cylinders)
 
-    def add(self, zlow, zhigh, material, rin, rout, xcen=None, ycen=None):
-        return super().add(zlow, zhigh, material, rin, rout, xcen, ycen)
+    def add(self, zlow, zhigh, xcen=None, ycen=None, cylinders=None):
+        return super().add(zlow, zhigh, xcen, ycen, cylinders)
 
 class SEXTND(KeywordSequence):
     """
@@ -108,6 +108,133 @@ class SRADII(TypeKeyword):
     def __init__(self):
         super().__init__('SRADII', (float, float),
                          comment='Source inner and outer radii')
+
+class DSMAX(KeywordSequence):
+    """
+    Maximum step length DSMAX(KL,KC) of electrons and positrons
+    in cylinder KL,KC. This parameter is important only for thin
+    bodies; it should be given a value of the order of one tenth
+    of the cylinder thickness or less.
+      DEFAULT: DSMAX=0.1 times the cylinder thickness
+    """
+
+    def __init__(self):
+        keyword = TypeKeyword("DSMAX", (int, int, float),
+                              comment="Maximum step length in body KL,KC")
+        super().__init__(keyword)
+
+    def set(self, kl, kc, dsmax):
+        return super().set(kl, kc, dsmax)
+
+    def add(self, kl, kc, dsmax):
+        return super().add(kl, kc, dsmax)
+
+class EABSB(KeywordSequence):
+    """
+    Local absorption energies EABSB(KPAR,KL,KC) of particles of
+    type KPAR in body KL,KC. These values must be larger than
+    EABS(KPAR,M), where M is the material of body KL,KC. When
+    the particle is moving within body KL,KC, the absorption
+    energy EABS(KPAR,M) is temporarily set equal to EABSB(KPAR,
+    KL,KC). Thus, the simulation of the particle history is
+    discontinued when the energy becomes less than EABSB(KPAR,
+    KL,KC). This feature can be used, e.g., to reduce the
+    simulation work in regions of lesser interest.
+      DEFAULTS: EABSB(KPAR,KL,KC)=EABS(KPAR,M)  (no action)
+    """
+
+    def __init__(self):
+        keyword = TypeKeyword("EABSB", (int, int, float, float, float),
+                              comment="Local EABSB(1:3) in body KL,KC")
+        super().__init__(keyword)
+
+    def set(self, kl, kc, eabs1, eabs2, eabs3):
+        return super().set(kl, kc, eabs1, eabs2, eabs3)
+
+    def add(self, kl, kc, eabs1, eabs2, eabs3):
+        return super().add(kl, kc, eabs1, eabs2, eabs3)
+
+class IFORCE(KeywordSequence):
+    """
+    Activates forcing of interactions of type ICOL of particles
+    KPAR in cylinder KC of layer KL. FORCER is the forcing
+    factor, which must be larger than unity. WLOW and WHIG are
+    the lower and upper limits of the weight window where
+    interaction forcing is applied. When several interaction
+    mechanisms are forced in the same body, the effective weight
+    window is set equal to the intersection of the windows for
+    these mechanisms.
+      DEFAULT: no interaction forcing
+    
+    If the mean free path for real interactions of type ICOL is
+    MFP, the program will simulate interactions of this type
+    (real or forced) with an effective mean free path equal to
+    MFP/FORCER.
+    
+    TRICK: a negative input value of FORCER, -FN, is assumed to
+    mean that a particle with energy E=EPMAX should interact,
+    on average, +FN times in the course of its slowing down to
+    rest, for electrons and positrons, or along a mean free
+    path, for photons. This is very useful, e.g., to generate
+    x-ray spectra from bulk samples.
+    """
+
+    def __init__(self):
+        keyword = TypeKeyword("IFORCE", (int, int, int, int, float, float, float),
+                              comment="KL,KC,KPAR,ICOL,FORCER,WLOW,WHIG")
+        super().__init__(keyword)
+
+    def set(self, kl, kc, kpar, icol, forcer, wlow, whig):
+        return super().set(kl, kc, kpar, icol, forcer, wlow, whig)
+
+    def add(self, kl, kc, kpar, icol, forcer, wlow, whig):
+        return super().add(kl, kc, kpar, icol, forcer, wlow, whig)
+
+class IBRSPL(KeywordSequence):
+    """
+    Activates bremsstrahlung splitting in cylinder KC of layer
+    KL for electrons and positrons with weights in the window
+    (WLOW,WHIG) where interaction forcing is applied. The
+    integer IBRSPL is the splitting factor.
+      DEFAULT: no bremsstrahlung splitting
+    
+    Note that bremsstrahlung splitting is applied in combination
+    with interaction forcing and, consequently, it is activated
+    only in those bodies where interaction forcing is active.
+    """
+
+    def __init__(self):
+        keyword = TypeKeyword("IBRSPL", (int, int, float),
+                              comment="KL,KC,splitting factor")
+        super().__init__(keyword)
+
+    def set(self, kl, kc, ibrspl):
+        return super().set(kl, kc, ibrspl)
+
+    def add(self, kl, kc, ibrspl):
+        return super().add(kl, kc, ibrspl)
+
+class IXRSPL(KeywordSequence):
+    """
+    Splitting of characteristic x rays emitted in cylinder KC
+    of layer KL, from any element. Each unsplit x ray with
+    ILB(2)=2 (i.e., of the second generation) when extracted
+    from the secondary stack is split into IXRSPL quanta. The
+    new, lighter, quanta are assigned random directions
+    distributed isotropically.
+      DEFAULT: no x-ray splitting
+    """
+
+    def __init__(self):
+        keyword = TypeKeyword("IXRSPL", (int, int, float),
+                              comment="KL,KC,splitting factor")
+        super().__init__(keyword)
+
+    def set(self, kl, kc, ixrspl):
+        return super().set(kl, kc, ixrspl)
+
+    def add(self, kl, kc, ixrspl):
+        return super().add(kl, kc, ixrspl)
 
 class IWOODC(TypeKeyword):
     """
@@ -226,12 +353,7 @@ class EnergyDepositionDetectorGroup(KeywordGroup):
     def set(self, el, eu, nbe, spectrum_filename=None, cylinders=None):
         self.ENDETC.set(el, eu, nbe)
         self.EDSPC.set(spectrum_filename)
-
-        if not hasattr(cylinders, '__iter__'):
-            cylinders = [cylinders]
-        self.EDBODY.clear()
-        for kl, kc in cylinders:
-            self.EDBODY.add(kl, kc)
+        self._set_keyword_sequence(self.EDBODY, cylinders)
 
 class EnergyDepositionDetectors(KeywordSequence):
 

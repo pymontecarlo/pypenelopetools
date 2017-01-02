@@ -21,7 +21,7 @@ class PencylInput(PenelopeInput):
         self.TITLE = penelope_keywords.TITLE()
 
         # Geometry definition list
-        self.geometry = pencyl_keywords.Geometry()
+        self.geometry_definitions = pencyl_keywords.GeometryDefinitions()
 
         # Source definition
         self.SKPAR = penelope_keywords.SKPAR()
@@ -39,17 +39,17 @@ class PencylInput(PenelopeInput):
         self.materials = penelope_keywords.Materials()
 
         # Geometry and local simulation parameters
-        self.DSMAX = penelope_keywords.DSMAX()
-        self.EABSB = penelope_keywords.EABSB()
+        self.DSMAX = pencyl_keywords.DSMAX()
+        self.EABSB = pencyl_keywords.EABSB()
 
         # Interaction forcing
-        self.IFORCE = penelope_keywords.IFORCE()
+        self.IFORCE = pencyl_keywords.IFORCE()
 
         # Bremsstrahlung splitting
-        self.IBRSPL = penelope_keywords.IBRSPL()
+        self.IBRSPL = pencyl_keywords.IBRSPL()
 
         # X-ray splitting
-        self.IXRSPL = penelope_keywords.IXRSPL()
+        self.IXRSPL = pencyl_keywords.IXRSPL()
 
         # Woodcock's delta-scattering method for photons.
         self.IWOODC = pencyl_keywords.IWOODC()
@@ -83,7 +83,7 @@ class PencylInput(PenelopeInput):
 
                 penelope_separators.DOT,
                 pencyl_separators.GEOMETRY_LIST_START,
-                self.geometry,
+                self.geometry_definitions,
                 pencyl_separators.GEOMETRY_LIST_END,
 
                 penelope_separators.DOT,

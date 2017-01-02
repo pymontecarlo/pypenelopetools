@@ -255,8 +255,6 @@ class TestPenmainInput(unittest.TestCase):
         self.assertIsNone(nage)
         self.assertIsNone(age_filename)
         self.assertEqual(1, len(kbs))
-        kb, = kbs[0]
-        self.assertEqual(1, kb)
         self.assertEqual(0, len(kpars))
 
         energy_deposition_detectors, = input.energy_deposition_detectors.get()
@@ -268,8 +266,6 @@ class TestPenmainInput(unittest.TestCase):
         self.assertEqual(100, nbe)
         self.assertIsNone(spectrum_filename)
         self.assertEqual(1, len(kbs))
-        kb, = kbs[0]
-        self.assertEqual(1, kb)
 
         zl, zu, ndbz = input.GRIDZ.get()
         self.assertAlmostEqual(0.0, zl, 5)

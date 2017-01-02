@@ -7,7 +7,6 @@ __all__ = ['SurfaceImplicit', 'SurfaceReduced',
            'AXIS_X', 'AXIS_Y', 'AXIS_Z']
 
 # Standard library modules.
-import math
 
 # Third party modules.
 
@@ -37,7 +36,7 @@ class _Surface(DescriptionMixin, GeoBase):
         lines = []
 
         index = index_lookup[self]
-        text = "%4i" % (index + 1,)
+        text = "%4i" % (index,)
         comment = " %s" % self.description
         line = self._KEYWORD_SURFACE.create_line(text, comment)
         lines.append(line)

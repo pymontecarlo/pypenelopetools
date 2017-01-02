@@ -68,7 +68,7 @@ class Module(DescriptionMixin, ModuleMixin, GeoBase):
         lines = []
 
         index = index_lookup[self]
-        text = "%4i" % (index + 1,)
+        text = "%4i" % (index,)
         comment = " %s" % self.description
         line = self._KEYWORD_MODULE.create_line(text, comment)
         lines.append(line)
@@ -84,7 +84,7 @@ class Module(DescriptionMixin, ModuleMixin, GeoBase):
                           for surface, pointer in self._surfaces.items())
 
         for index, surface, pointer in surfaces:
-            text = "%4i" % (index + 1,)
+            text = "%4i" % (index,)
             comment = "%s(%2i)" % (self._KEYWORD_SIDEPOINTER, pointer)
             line = self._KEYWORD_SURFACE.create_line(text, comment)
             lines.append(line)
@@ -94,7 +94,7 @@ class Module(DescriptionMixin, ModuleMixin, GeoBase):
                           for module in self.get_modules())
 
         for index, module in modules:
-            text = "%4i" % (index + 1,)
+            text = "%4i" % (index,)
             line = self._KEYWORD_MODULE.create_line(text)
             lines.append(line)
 

@@ -3,7 +3,6 @@ Geometry definition for PENGEOM
 """
 
 # Standard library modules.
-import math
 from itertools import chain
 from operator import methodcaller, attrgetter
 
@@ -56,7 +55,7 @@ class Geometry(ModuleMixin):
             index_table[material] = i
 
         # Surfaces
-        for i, surface in enumerate(self.get_surfaces()):
+        for i, surface in enumerate(self.get_surfaces(), 1):
             index_table[surface] = i
 
         # Modules
@@ -72,7 +71,7 @@ class Geometry(ModuleMixin):
                 if dep_module not in modules_order:
                     modules_order.append(dep_module)
 
-        for i, module in enumerate(modules_order):
+        for i, module in enumerate(modules_order, 1):
             index_table[module] = i
 
         return index_table
@@ -121,7 +120,7 @@ class Geometry(ModuleMixin):
         if self.tilt_deg != 0.0 or self.rotation_deg != 0.0:
             extra = self._create_extra_module()
 
-            index_table[extra] = len(self.get_modules())
+            index_table[extra] = len(self.get_modules()) + 1
             lines.extend(extra.to_geo(index_table))
             lines.append(LINE_SEPARATOR)
 

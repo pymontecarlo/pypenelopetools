@@ -61,7 +61,7 @@ class TestSurfaceImplicit(unittest.TestCase):
         self.assertAlmostEqual(0.0, self.surface.coefficients['0'], 4)
 
     def testto_geo(self):
-        lines = self.surface.to_geo({self.surface: 0})
+        lines = self.surface.to_geo({self.surface: 1})
         self.assertEqual(19, len(lines))
         self.assertEqual(self.GEOFILE, lines)
 
@@ -94,7 +94,7 @@ class TestSurfaceReduced(unittest.TestCase):
         self.assertAlmostEqual(3.0, self.surface.scale.x, 4)
 
     def testto_geo(self):
-        lines = self.surface.to_geo({self.surface: 0})
+        lines = self.surface.to_geo({self.surface: 1})
         self.assertEqual(11, len(lines))
         self.assertEqual(self.GEOFILE, lines)
 

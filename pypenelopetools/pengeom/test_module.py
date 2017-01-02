@@ -57,8 +57,8 @@ class TestModule(unittest.TestCase):
         self.module1.shift.z_cm = -1e5
 
         self.index_lookup = {VACUUM: 0, mat1: 1,
-                             surface1: 0, surface2: 1,
-                             self.module1: 0, self.module2: 1}
+                             surface1: 1, surface2: 2,
+                             self.module1: 1, self.module2: 2}
 
     def tearDown(self):
         unittest.TestCase.tearDown(self)

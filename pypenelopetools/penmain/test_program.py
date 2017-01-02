@@ -66,10 +66,12 @@ class TestPenmain2014Program(unittest.TestCase):
     def test_example1_disc(self):
         input, geometry = create_example1_disc()
         self._run(input, geometry)
+        self._test(input, geometry)
 
     def test_example2_plane(self):
         input, geometry = create_example2_plane()
         self._run(input, geometry)
+        self._test(input, geometry)
 
 if __name__ == '__main__': #pragma: no cover
     logging.getLogger().setLevel(logging.DEBUG)

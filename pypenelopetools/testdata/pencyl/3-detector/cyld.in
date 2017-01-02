@@ -1,0 +1,47 @@
+TITLE  NaI detector with Al cover and Al2O3 reflecting foil
+       .
+GSTART >>>>>>>> Beginning of the geometry definition list.
+LAYER       -0.24 -0.16  1
+CENTER       0.00  0.00
+CYLIND   3   0.00  4.05
+LAYER       -0.16  0.00  2
+CYLIND   2   0.00  3.97
+CYLIND   3   3.97  4.05
+LAYER        0.00  7.72  3
+CYLIND   1   0.00  3.81
+CYLIND   2   3.81  3.97
+CYLIND   3   3.97  4.05
+LAYER        7.72  9.72  4
+CYLIND   3   0.00  4.05
+GEND   <<<<<<<< End of the geometry definition list.
+       .
+       >>>>>>>> Source definition.
+SKPAR  2        [Primary particles: 1=electron, 2=photon, 3=positron]
+SENERG 9.5e6            [Initial energy (monoenergetic sources only)]
+SPOSIT 0 0 -10.0                   [Coordinates of the source center]
+SCONE  0 0 0                            [Conical beam; angles in deg]
+       .
+       >>>>>>>> Material data and simulation parameters.
+MFNAME NaI.mat                        [Material file, up to 20 chars]
+MSIMPA 5.0e4 5.0e3 5.0e4 0.1 0.1 2e3 2e3    [EABS(1:3),C1,C2,WCC,WCR]
+MFNAME Al2O3.mat                      [Material file, up to 20 chars]
+MSIMPA 5.0e4 5.0e3 5.0e4 0.1 0.1 2e3 2e3    [EABS(1:3),C1,C2,WCC,WCR]
+MFNAME Al.mat                         [Material file, up to 20 chars]
+MSIMPA 5.0e4 5.0e3 5.0e4 0.1 0.1 2e3 2e3    [EABS(1:3),C1,C2,WCC,WCR]
+       .
+       >>>>>>>> Energy-deposition detectors (up to 25).
+ENDETC 0 1.0e7 1000                   [Energy window and no. of bins]
+EDBODY 3 1                                   KL,KC  [Active cylinder]
+       .
+       >>>>>>>> Dose and charge distributions.
+DOSE2D 3 1 50 50      [Tally 2D dose and charge dists. in body KL,KC]
+       .
+       >>>>>>>> Job properties
+RESUME dump.dat                [Resume from this dump file, 20 chars]
+DUMPTO dump.dat                   [Generate this dump file, 20 chars]
+DUMPP  60                                    [Dumping period, in sec]
+       .
+NSIMSH 1.0e8                    [Desired number of simulated showers]
+TIME   2.0e9                       [Allotted simulation time, in sec]
+       .
+END                                  [Ends the reading of input data]

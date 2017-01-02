@@ -85,7 +85,7 @@ class ProgramProcessSubprocess(ProgramProcess):
         args = self._create_process_args()
         kwargs = self._create_process_kwargs()
 
-        logger.debug('args: %s' % subprocess.list2cmdline(args))
+        logger.debug('args: ' + subprocess.list2cmdline(args))
         process = subprocess.Popen(*args, **kwargs)
 
         return process
@@ -114,7 +114,7 @@ class ProgramProcessSubprocess(ProgramProcess):
         returncode = self._join_process()
         self._process = None
         self._progress = 1.0
-        logger.debug('returncode: %s' % returncode)
+        logger.debug('returncode: {:d}'.format(returncode))
         return returncode
 
     def stop(self):

@@ -97,7 +97,7 @@ class Geometry(ModuleMixin):
         lines = []
 
         lines.append(LINE_START)
-        lines.append('       %s' % self.title)
+        lines.append('       ' + self.title)
         lines.append(LINE_SEPARATOR)
 
         # Surfaces
@@ -140,8 +140,8 @@ class Geometry(ModuleMixin):
     @title.setter
     def title(self, title):
         if len(title) > LINE_SIZE - 3:
-            raise ValueError("The length of the title (%i) must be less than %i." %
-                             (len(title), LINE_SIZE - 3))
+            raise ValueError("The length of the title ({0:d}) must be less than {1:d}."
+                             .format(len(title), LINE_SIZE - 3))
         self._title = title
 
     @property

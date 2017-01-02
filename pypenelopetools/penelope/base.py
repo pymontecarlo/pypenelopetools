@@ -78,7 +78,7 @@ class _InLineBase(metaclass=abc.ABCMeta):
         # Comment
         if len(comment) > 0 and len(line) + len(comment) + 2 <= LINE_SIZE:
             line = line.ljust(LINE_SIZE - (len(comment) + 2))
-            line += '[%s]' % comment
+            line += '[{0}]'.format(comment)
 
         if len(line) > LINE_SIZE:
             raise ValueError('Line of keyword {0} is too long, {1} > {2} characters'

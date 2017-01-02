@@ -30,12 +30,12 @@ class Rotation(GeoBase):
         self.phi_deg = phi_deg
 
     def __repr__(self):
-        return "<Rotation(omega=%s, theta=%s, phi=%s)>" % \
-                    (self.omega_deg, self.theta_deg, self.phi_deg)
+        return "<Rotation(omega={0:g} deg, theta={1:g} deg, phi={2:g} deg)>" \
+                .format(self.omega_deg, self.theta_deg, self.phi_deg)
 
     def __str__(self):
-        return '(omega=%s, theta=%s, phi=%s)' % \
-                    (self.omega_deg, self.theta_deg, self.phi_deg)
+        return '(omega={0:g} deg, theta={1:g} deg, phi={2:g} deg)' \
+                .format(self.omega_deg, self.theta_deg, self.phi_deg)
 
     def to_geo(self, index_lookup):
         """
@@ -65,7 +65,7 @@ class Rotation(GeoBase):
     @omega_deg.setter
     def omega_deg(self, angle):
         if angle < 0 or angle > 360.0:
-            raise ValueError("Angle (%s) must be between [0,360]." % angle)
+            raise ValueError("Angle ({0}) must be between [0,360].".format(angle))
         self._omega = angle
 
     @property
@@ -79,7 +79,7 @@ class Rotation(GeoBase):
     @theta_deg.setter
     def theta_deg(self, angle):
         if angle < 0 or angle > 360:
-            raise ValueError("Angle (%s) must be between [0,360]." % angle)
+            raise ValueError("Angle ({0}) must be between [0,360].".format(angle))
         self._theta = angle
 
     @property
@@ -95,7 +95,7 @@ class Rotation(GeoBase):
     @phi_deg.setter
     def phi_deg(self, angle):
         if angle < 0 or angle > 360:
-            raise ValueError("Angle (%s) must be between [0,360]." % angle)
+            raise ValueError("Angle ({0}) must be between [0,360].".format(angle))
         self._phi = angle
 
 class Shift(GeoBase):
@@ -117,10 +117,12 @@ class Shift(GeoBase):
         self.z_cm = z_cm
 
     def __repr__(self):
-        return "<Shift(x=%s, y=%s, z=%s)>" % (self.x_cm, self.y_cm, self.z_cm)
+        return "<Shift(x={0:g} cm, y={1:g} cm, z={2:g} cm)>" \
+            .format(self.x_cm, self.y_cm, self.z_cm)
 
     def __str__(self):
-        return "(x=%s, y=%s, z=%s)" % (self.x_cm, self.y_cm, self.z_cm)
+        return "(x={0:g} cm, y={1:g} cm, z={2:g} cm)" \
+            .format(self.x_cm, self.y_cm, self.z_cm)
 
     def to_geo(self, index_lookup):
         """
@@ -191,10 +193,11 @@ class Scale(GeoBase):
         self.z = z
 
     def __repr__(self):
-        return "<Shift(x=%s, y=%s, z=%s)>" % (self.x, self.y, self.z)
+        return "<Shift(x={0:g}, y={1:g}, z={2:g})>" \
+            .format(self.x, self.y, self.z)
 
     def __str__(self):
-        return "(x=%s, y=%s, z=%s)" % (self.x, self.y, self.z)
+        return "(x={0:g}, y={1:g}, z={2:g})".format(self.x, self.y, self.z)
 
     def to_geo(self, index_lookup):
         """

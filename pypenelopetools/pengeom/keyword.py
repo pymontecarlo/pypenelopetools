@@ -41,28 +41,28 @@ class Keyword(object):
         :rtype: :class:`str`
         """
         if number == 0.0:
-            exponent = 0.0
+            exponent = 0
         else:
-            exponent = math.log10(abs(number))
+            exponent = int(math.log10(abs(number)))
 
         if exponent >= 0 :
-            exponentStr = '+%2i' % abs(exponent)
+            exponent_str = '+{:2d}'.format(abs(exponent))
         else:
-            exponentStr = '-%2i' % abs(exponent)
+            exponent_str = '-{:2d}'.format(abs(exponent))
 
-        exponentStr = exponentStr.replace(' ', '0') #Replace white space in the exponent
+        exponent_str = exponent_str.replace(' ', '0') #Replace white space in the exponent
 
-        coefficient = float(abs(number)) / 10 ** int(exponent)
+        coefficient = float(abs(number)) / 10 ** exponent
 
         if number >= 0:
-            numberStr = '+%17.15fE%s' % (coefficient, exponentStr)
+            number_str = '+{0:17.15f}E{1}'.format(coefficient, exponent_str)
         else:
-            numberStr = '-%17.15fE%s' % (coefficient, exponentStr)
+            number_str = '-{0:17.15f}E{1}'.format(coefficient, exponent_str)
 
         # The number should not be longer than 22 characters
-        assert len(numberStr) == 22
+        assert len(number_str) == 22
 
-        return numberStr
+        return number_str
 
     def create_expline(self, value):
         """
@@ -81,7 +81,8 @@ class Keyword(object):
 
         assert len(keyword) == LINE_KEYWORDS_SIZE
 
-        line = '%s(%s,%4i)%s' % (keyword, self._toexponent(value), 0, self.termination)
+        line = '{0}({1},{2:4d}){3}'.format(keyword, self._toexponent(value),
+                                           0, self.termination)
 
         assert len(line) <= LINE_SIZE
 
@@ -104,9 +105,9 @@ class Keyword(object):
         assert len(keyword) == LINE_KEYWORDS_SIZE
 
         if override_comment is None:
-            line = '%s(%s)%s' % (keyword, text, self.termination)
-        else:
-            line = '%s(%s)%s' % (keyword, text, override_comment)
+            override_comment = self.termination
+
+        line = '{0}({1}){2}'.format(keyword, text, override_comment)
 
         assert len(line) <= LINE_SIZE
 

@@ -35,13 +35,13 @@ class Module(DescriptionMixin, ModuleMixin, GeoBase):
         self._shift = Shift()
 
     def __repr__(self):
-        return '<Module(description=%s, material=%s, surfaces_count=%i, modules_count=%i, rotation=%s, shift=%s)>' % \
-            (self.description, self.material, len(self._surfaces),
-             len(self._modules), str(self.rotation), str(self.shift))
+        return '<Module(description={0}, material={1}, surfaces_count={2:d}, modules_count={3:d}, rotation={4}, shift={5})>' \
+            .format(self.description, self.material, len(self._surfaces),
+                    len(self._modules), str(self.rotation), str(self.shift))
 
     def add_surface(self, surface, pointer):
         if pointer not in [SIDEPOINTER_NEGATIVE, SIDEPOINTER_POSITIVE]:
-            raise ValueError("Pointer (%s) must be either -1 or 1." % pointer)
+            raise ValueError("Pointer ({0}) must be either -1 or 1.".format(pointer))
         if surface in self._surfaces:
             raise ValueError("Module already contains this surface.")
         self._surfaces[surface] = pointer
@@ -68,14 +68,14 @@ class Module(DescriptionMixin, ModuleMixin, GeoBase):
         lines = []
 
         index = index_lookup[self]
-        text = "%4i" % (index,)
-        comment = " %s" % self.description
+        text = "{:4d}".format(index)
+        comment = " " + self.description
         line = self._KEYWORD_MODULE.create_line(text, comment)
         lines.append(line)
 
         # Material index
         index = index_lookup[self.material]
-        text = "%4i" % index
+        text = "{:4d}".format(index)
         line = self._KEYWORD_MATERIAL.create_line(text)
         lines.append(line)
 
@@ -84,8 +84,8 @@ class Module(DescriptionMixin, ModuleMixin, GeoBase):
                           for surface, pointer in self._surfaces.items())
 
         for index, surface, pointer in surfaces:
-            text = "%4i" % (index,)
-            comment = "%s(%2i)" % (self._KEYWORD_SIDEPOINTER, pointer)
+            text = "{:4d}".format(index)
+            comment = "{0}({1:2d})".format(self._KEYWORD_SIDEPOINTER, pointer)
             line = self._KEYWORD_SURFACE.create_line(text, comment)
             lines.append(line)
 
@@ -94,7 +94,7 @@ class Module(DescriptionMixin, ModuleMixin, GeoBase):
                           for module in self.get_modules())
 
         for index, module in modules:
-            text = "%4i" % (index,)
+            text = "{:4d}".format(index)
             line = self._KEYWORD_MODULE.create_line(text)
             lines.append(line)
 

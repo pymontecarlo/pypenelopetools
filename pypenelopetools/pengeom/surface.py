@@ -36,8 +36,8 @@ class _Surface(DescriptionMixin, GeoBase):
         lines = []
 
         index = index_lookup[self]
-        text = "%4i" % (index,)
-        comment = " %s" % self.description
+        text = "{:4d}".format(index)
+        comment = " " + self.description
         line = self._KEYWORD_SURFACE.create_line(text, comment)
         lines.append(line)
 
@@ -81,9 +81,10 @@ class SurfaceImplicit(_Surface):
         self.coefficients = coefficients
 
     def __repr__(self):
-        coeffs = ['%s=%s' % (key, value) for key, value in self.coefficients.iteritems()]
-        return '<Surface(description=%s, %s, rotation=%s, shift=%s)>' % \
-            (self.description, ', '.join(coeffs), str(self.rotation), str(self.shift))
+        coeffs = ['{0}={1}'.format(key, value)
+                  for key, value in self.coefficients.iteritems()]
+        return '<Surface(description={0}, {1}, rotation={2}, shift={3})>' \
+            .format(self.description, ', '.join(coeffs), str(self.rotation), str(self.shift))
 
     def to_geo(self, index_lookup):
         def create_coefficient_line(key):
@@ -94,7 +95,7 @@ class SurfaceImplicit(_Surface):
         lines = super().to_geo(index_lookup)
 
         # Indices
-        text = "%2i,%2i,%2i,%2i,%2i" % (0, 0, 0, 0, 0)
+        text = "{0:2d},{1:2d},{2:2d},{3:2d},{4:2d}".format(0, 0, 0, 0, 0)
         line = self._KEYWORD_INDICES.create_line(text)
         lines.insert(1, line)
 
@@ -160,15 +161,15 @@ class SurfaceReduced(_Surface):
         self._scale = Scale()
 
     def __repr__(self):
-        return '<Surface(description=%s, indices=%s, scale=%s, rotation=%s, shift=%s)>' % \
-            (self.description, str(self.indices), str(self.scale),
-             str(self.rotation), str(self.shift))
+        return '<Surface(description={0}, indices={1}, scale={2}, rotation={3}, shift={4})>' \
+            .format(self.description, str(self.indices), str(self.scale),
+                    str(self.rotation), str(self.shift))
 
     def to_geo(self, index_lookup):
         lines = super().to_geo(index_lookup)
 
         # Indices
-        text = "%2i,%2i,%2i,%2i,%2i" % self.indices
+        text = "{0:2d},{1:2d},{2:2d},{3:2d},{4:2d}".format(*self.indices)
         line = self._KEYWORD_INDICES.create_line(text)
         lines.insert(1, line)
 
@@ -193,7 +194,7 @@ class SurfaceReduced(_Surface):
 
         for indice in indices:
             if not indice in [-1, 0, 1]:
-                raise ValueError("Index (%s) must be either -1, 0 or 1." % indice)
+                raise ValueError("Index ({:d}) must be either -1, 0 or 1.".format(indice))
 
         self._indices = tuple(indices)
 
@@ -213,7 +214,7 @@ def xplane(x_cm):
 
     :rtype: :class:`.Surface`
     """
-    s = SurfaceReduced((0, 0, 0, 1, 0), 'Plane X=%4.2f cm' % x_cm)
+    s = SurfaceReduced((0, 0, 0, 1, 0), 'Plane X={:4.2f} cm'.format(x_cm))
     s.shift.x_cm = x_cm
     s.rotation.theta_deg = 90.0
     return s
@@ -226,7 +227,7 @@ def yplane(y_cm):
 
     :rtype: :class:`.Surface`
     """
-    s = SurfaceReduced((0, 0, 0, 1, 0), 'Plane Y=%4.2f cm' % y_cm)
+    s = SurfaceReduced((0, 0, 0, 1, 0), 'Plane Y={:4.2f} cm'.format(y_cm))
     s.shift.y_cm = y_cm
     s.rotation.theta_deg = 90.0
     s.rotation.phi_deg = 90.0
@@ -240,7 +241,7 @@ def zplane(z_cm):
 
     :rtype: :class:`.Surface`
     """
-    s = SurfaceReduced((0, 0, 0, 1, 0), 'Plane Z=%4.2f cm' % z_cm)
+    s = SurfaceReduced((0, 0, 0, 1, 0), 'Plane Z={:4.2f} cm'.format(z_cm))
     s.shift.z_cm = z_cm
     return s
 
@@ -254,7 +255,7 @@ def cylinder(radius_cm, axis=AXIS_Z):
     :rtype: :class:`.Surface`
     """
     axis = axis.lower()
-    description = 'Cylinder of radius %4.2f cm along %s-axis' % (radius_cm, axis)
+    description = 'Cylinder of radius {0:4.2f} cm along {1}-axis'.format(radius_cm, axis)
     s = SurfaceReduced((1, 1, 0, 0, -1), description)
 
     s.scale.x = radius_cm
@@ -278,7 +279,7 @@ def sphere(radius_cm):
 
     :rtype: :class:`.Surface`
     """
-    description = 'Sphere of radius %4.2f cm' % radius_cm
+    description = 'Sphere of radius {:4.2f} cm'.format(radius_cm)
     s = SurfaceReduced((1, 1, 1, 0, -1), description)
 
     s.scale.x = radius_cm

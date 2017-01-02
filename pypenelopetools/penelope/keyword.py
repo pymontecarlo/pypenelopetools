@@ -117,10 +117,16 @@ class KeywordSequence(_KeywordBase):
         self._base_keyword = keyword
         self._keywords = []
 
-    def add(self, *args):
-        keyword = self._base_keyword.copy()
-        keyword.set(*args)
+    def _create_keyword(self):
+        return self._base_keyword.copy()
+
+    def _add_keyword(self, keyword):
         self._keywords.append(keyword)
+
+    def add(self, *args):
+        keyword = self._create_keyword()
+        keyword.set(*args)
+        self._add_keyword(keyword)
         return keyword
 
     def pop(self, index):
@@ -146,8 +152,9 @@ class KeywordSequence(_KeywordBase):
         line = line_iterator.peek()
         name, _values, _comment = self._extract_name_values_comment(line)
         while name == self._base_keyword.name:
-            self._base_keyword.read(line_iterator)
-            self.add(*self._base_keyword.get())
+            keyword = self._create_keyword()
+            keyword.read(line_iterator)
+            self._add_keyword(keyword)
 
             line = line_iterator.peek()
             name, _values, _comment = self._extract_name_values_comment(line)

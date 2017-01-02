@@ -349,22 +349,8 @@ class ImpactDetectorGroup(KeywordGroup):
         self.IDFLNC.set(fln_filename)
         self.IDAGEL.set(agel, ageu, nage)
         self.IDAGEF.set(age_filename)
-
-        if kb is None:
-            kb = []
-        if not isinstance(kb, (list, tuple)):
-            kb = [kb]
-        self.IDBODY.clear()
-        for item in kb:
-            self.IDBODY.add(item)
-
-        if kpar is None:
-            kpar = []
-        if not isinstance(kpar, (list, tuple)):
-            kpar = [kpar]
-        self.IDKPAR.clear()
-        for item in kpar:
-            self.IDKPAR.add(item)
+        self._set_keyword_sequence(self.IDBODY, kb)
+        self._set_keyword_sequence(self.IDKPAR, kpar)
 
 class ImpactDetectors(KeywordSequence):
 
@@ -415,12 +401,7 @@ class EnergyDepositionDetectorGroup(KeywordGroup):
     def set(self, el, eu, nbe, spectrum_filename=None, kb=None):
         self.ENDETC.set(el, eu, nbe)
         self.EDSPC.set(spectrum_filename)
-
-        if not hasattr(kb, '__iter__'):
-            kb = [kb]
-        self.EDBODY.clear()
-        for item in kb:
-            self.EDBODY.add(item)
+        self._set_keyword_sequence(self.EDBODY, kb)
 
 class EnergyDepositionDetectors(KeywordSequence):
 

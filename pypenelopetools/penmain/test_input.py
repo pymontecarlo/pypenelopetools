@@ -161,7 +161,7 @@ class TestPenmainInput(unittest.TestCase):
         self.assertAlmostEqual(0.0, phi, 5)
         self.assertAlmostEqual(5.0, alpha, 5)
 
-        materials = input.materials.get()
+        materials, = input.materials.get()
         self.assertEqual(1, len(materials))
 
         filename, eabs1, eabs2, eabs3, c1, c2, wcc, wcr = materials[0]
@@ -176,7 +176,7 @@ class TestPenmainInput(unittest.TestCase):
 
         self.assertEqual('disc.geo', input.GEOMFN.get()[0])
 
-        parinps = input.PARINP.get()
+        parinps, = input.PARINP.get()
         self.assertEqual(2, len(parinps))
 
         ip, parinp = parinps[0]
@@ -187,14 +187,14 @@ class TestPenmainInput(unittest.TestCase):
         self.assertEqual(2, ip)
         self.assertAlmostEqual(0.01, parinp, 5)
 
-        dsmaxs = input.DSMAX.get()
+        dsmaxs, = input.DSMAX.get()
         self.assertEqual(1, len(dsmaxs))
 
         kb, dsmax = dsmaxs[0]
         self.assertEqual(1, kb)
         self.assertAlmostEqual(1e-4, dsmax, 5)
 
-        iforces = input.IFORCE.get()
+        iforces, = input.IFORCE.get()
         self.assertEqual(2, len(iforces))
 
         kb, kpar, icol, forcer, wlow, whig = iforces[0]
@@ -213,17 +213,17 @@ class TestPenmainInput(unittest.TestCase):
         self.assertAlmostEqual(0.1, wlow, 5)
         self.assertAlmostEqual(2.0, whig, 5)
 
-        ibrspls = input.IBRSPL.get()
+        ibrspls, = input.IBRSPL.get()
         self.assertEqual(1, len(ibrspls))
 
         kb, factor = ibrspls[0]
         self.assertEqual(1, kb)
         self.assertAlmostEqual(2.0, factor, 5)
 
-        ixrspls = input.IXRSPL.get()
+        ixrspls, = input.IXRSPL.get()
         self.assertEqual(1, len(ixrspls))
 
-        kb, factor = ibrspls[0]
+        kb, factor = ixrspls[0]
         self.assertEqual(1, kb)
         self.assertAlmostEqual(2.0, factor, 5)
 
@@ -236,12 +236,12 @@ class TestPenmainInput(unittest.TestCase):
         self.assertEqual(45, nbth)
         self.assertEqual(18, nbph)
 
-        impact_detectors = input.impact_detectors.get()
+        impact_detectors, = input.impact_detectors.get()
         self.assertEqual(1, len(impact_detectors))
 
         (el, eu, nbe, ipsf, idcut,
          spectrum_filename, psf_filename, fln_filename,
-         agel, ageu, nage, age_filename, kb, kpar) = impact_detectors[0]
+         agel, ageu, nage, age_filename, kbs, kpars) = impact_detectors[0]
         self.assertAlmostEqual(0.0, el, 5)
         self.assertAlmostEqual(0.0, eu, 5)
         self.assertEqual(100, nbe)
@@ -254,18 +254,22 @@ class TestPenmainInput(unittest.TestCase):
         self.assertIsNone(ageu)
         self.assertIsNone(nage)
         self.assertIsNone(age_filename)
-        self.assertEqual(1, kb[0])
-        self.assertEqual(0, len(kpar))
+        self.assertEqual(1, len(kbs))
+        kb, = kbs[0]
+        self.assertEqual(1, kb)
+        self.assertEqual(0, len(kpars))
 
-        energy_deposition_detectors = input.energy_deposition_detectors.get()
+        energy_deposition_detectors, = input.energy_deposition_detectors.get()
         self.assertEqual(1, len(energy_deposition_detectors))
 
-        el, eu, nbe, spectrum_filename, kb = energy_deposition_detectors[0]
+        el, eu, nbe, spectrum_filename, kbs = energy_deposition_detectors[0]
         self.assertAlmostEqual(0.0, el, 5)
         self.assertAlmostEqual(0.0, eu, 5)
         self.assertEqual(100, nbe)
         self.assertIsNone(spectrum_filename)
-        self.assertEqual(1, kb[0])
+        self.assertEqual(1, len(kbs))
+        kb, = kbs[0]
+        self.assertEqual(1, kb)
 
         zl, zu, ndbz = input.GRIDZ.get()
         self.assertAlmostEqual(0.0, zl, 5)
@@ -321,7 +325,7 @@ class TestPenmainInput(unittest.TestCase):
         self.assertAlmostEqual(0.0, phi, 5)
         self.assertAlmostEqual(5.0, alpha, 5)
 
-        materials = input.materials.get()
+        materials, = input.materials.get()
         self.assertEqual(1, len(materials))
 
         filename, eabs1, eabs2, eabs3, c1, c2, wcc, wcr = materials[0]
@@ -345,12 +349,12 @@ class TestPenmainInput(unittest.TestCase):
         self.assertEqual(45, nbth)
         self.assertEqual(18, nbph)
 
-        impact_detectors = input.impact_detectors.get()
+        impact_detectors, = input.impact_detectors.get()
         self.assertEqual(1, len(impact_detectors))
 
         (el, eu, nbe, ipsf, idcut,
          spectrum_filename, psf_filename, fln_filename,
-         agel, ageu, nage, age_filename, kb, kpar) = impact_detectors[0]
+         agel, ageu, nage, age_filename, kbs, kpars) = impact_detectors[0]
         self.assertAlmostEqual(1e5, el, 5)
         self.assertAlmostEqual(0.0, eu, 5)
         self.assertEqual(100, nbe)
@@ -363,8 +367,10 @@ class TestPenmainInput(unittest.TestCase):
         self.assertIsNone(ageu)
         self.assertIsNone(nage)
         self.assertIsNone(age_filename)
-        self.assertEqual(1, len(kb))
-        self.assertEqual(0, len(kpar))
+        self.assertEqual(1, len(kbs))
+        kb, = kbs[0]
+        self.assertEqual(1, kb)
+        self.assertEqual(0, len(kpars))
 
         zl, zu, ndbz = input.GRIDZ.get()
         self.assertAlmostEqual(0.0, zl, 5)

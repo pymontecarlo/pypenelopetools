@@ -96,6 +96,17 @@ class KeywordGroup(_KeywordBase):
             lines += keyword.write(index_table)
         return lines
 
+    def _set_keyword_sequence(self, keyword, values):
+        keyword.clear()
+        if values is None:
+            return
+
+        if not isinstance(values, (list, tuple)):
+            values = [values]
+
+        for args in values:
+            keyword.add(*args)
+
     @property
     def name(self):
         return self.get_keywords()[0].name
@@ -123,9 +134,10 @@ class KeywordSequence(_KeywordBase):
         return self.add(*args)
 
     def get(self):
-        if not self._keywords:
-            return ((),)
-        return tuple(keyword.get() for keyword in self._keywords)
+        values = []
+        for keyword in self._keywords:
+            values.append(keyword.get())
+        return (tuple(values),)
 
     def copy(self):
         return self.__class__(self._base_keyword.copy())
@@ -139,8 +151,6 @@ class KeywordSequence(_KeywordBase):
 
             line = line_iterator.peek()
             name, _values, _comment = self._extract_name_values_comment(line)
-
-        return True
 
     def write(self, index_table):
         lines = []

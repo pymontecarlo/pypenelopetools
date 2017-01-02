@@ -222,7 +222,7 @@ class TypeKeyword(Keyword):
         self._values = tuple([None] * len(types))
 
     def set(self, *args):
-        if len(args) != len(self._types):
+        if len(args) < len(self._types): # Less than to account for additional, not parsed values
             raise ValueError("Keyword {0} requires {1} values, {2} given"
                              .format(self.name, len(self._types), len(args)))
 

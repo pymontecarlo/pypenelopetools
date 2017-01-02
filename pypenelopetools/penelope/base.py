@@ -2,6 +2,7 @@
 
 # Standard library modules.
 import abc
+import string
 
 # Third party modules.
 from pyparsing import (Word, OneOrMore, Optional, Suppress, alphanums,
@@ -28,7 +29,7 @@ class _InLineBase(metaclass=abc.ABCMeta):
         if line.startswith(' ' * 6):
             return None, None, line.strip()
 
-        keywordletters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+        keywordletters = string.ascii_uppercase + string.digits
         keyword = Word(keywordletters, max=6)('keyword')
 
         value = Word(alphanums + ".-+")

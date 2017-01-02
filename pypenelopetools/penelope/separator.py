@@ -16,15 +16,15 @@ class Separator(_InLineBase):
         self.name = name
 
     def read(self, line_iterator):
-        pass
+        if not self.name:
+            return
+        next(line_iterator)
 
     def write(self, index_table):
         return [self._create_line(self.name, (self.text,))]
 
-class EndSeparator(_InLineBase):
+class EndSeparator(Separator):
 
-    def read(self, line_iterator):
-        pass
+    def __init__(self):
+        super().__init__('Ends the reading of input data', 'END')
 
-    def write(self, index_table):
-        return [self._create_line('END', (), 'Ends the reading of input data')]

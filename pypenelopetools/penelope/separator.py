@@ -5,24 +5,21 @@
 # Third party modules.
 
 # Local modules.
-from pypenelopetools.penelope.base import _InLineBase, LINE_KEYWORDS_SIZE
+from pypenelopetools.penelope.base import _InLineBase
 
 # Globals and constants variables.
 
 class Separator(_InLineBase):
 
-    def __init__(self, text):
+    def __init__(self, text, name=''):
         self.text = text
+        self.name = name
 
     def read(self, line_iterator):
         pass
 
     def write(self, index_table):
-        return [self._create_line(' ' * LINE_KEYWORDS_SIZE, (self.text,))]
-
-    @property
-    def name(self):
-        return 'separator'
+        return [self._create_line(self.name, (self.text,))]
 
 class EndSeparator(_InLineBase):
 

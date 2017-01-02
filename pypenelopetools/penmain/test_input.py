@@ -55,9 +55,11 @@ def create_example1_disc():
     input.NBE.set(0, 0, 100)
     input.NBANGL.set(45, 18)
 
-    input.impact_detectors.add(0.0, 0.0, 100, 0, 2, kb=1)
+    detector = input.impact_detectors.add(0.0, 0.0, 100, 0, 2)
+    detector.IDBODY.add(1)
 
-    input.energy_deposition_detectors.add(0, 0, 100, kb=1)
+    detector = input.energy_deposition_detectors.add(0, 0, 100)
+    detector.EDBODY.add(1)
 
     input.GRIDZ.set(0, 0.005, 100)
     input.GRIDR.set(0.01, 50)
@@ -103,7 +105,8 @@ def create_example2_plane():
     input.NBE.set(1e5, 3e7, 100)
     input.NBANGL.set(45, 18)
 
-    input.impact_detectors.add(1e5, 0.0, 100, 0, 2, kb=module_detector)
+    detector = input.impact_detectors.add(1e5, 0.0, 100, 0, 2)
+    detector.IDBODY.add(module_detector)
 
     input.GRIDZ.set(0, 30.0, 60)
     input.GRIDR.set(30.0, 60.0)

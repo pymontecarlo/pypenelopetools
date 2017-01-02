@@ -10,6 +10,7 @@ import abc
 # Local modules.
 from pypenelopetools.penelope.base import _InLineBase
 from pypenelopetools.pengeom.module import Module
+from pypenelopetools.material.material import Material
 
 # Globals and constants variables.
 
@@ -109,6 +110,7 @@ class KeywordSequence(_KeywordBase):
         keyword = self._base_keyword.copy()
         keyword.set(*args)
         self._keywords.append(keyword)
+        return keyword
 
     def pop(self, index):
         self._keywords.pop(index)
@@ -118,7 +120,7 @@ class KeywordSequence(_KeywordBase):
 
     def set(self, *args):
         self.clear()
-        self.add(*args)
+        return self.add(*args)
 
     def get(self):
         if not self._keywords:
@@ -160,23 +162,28 @@ class SpecialType(metaclass=abc.ABCMeta):
     def convert(self, value, index_table):
         return value
 
-class _ModuleType(SpecialType):
+class _IndexType(SpecialType):
+
+    def __init__(self, clasz):
+        self.clasz = clasz
 
     def __call__(self, value):
-        if isinstance(value, Module):
+        if isinstance(value, self.clasz):
             return value
 
         try:
             return int(value)
         except TypeError:
-            raise TypeError("Value should be an integer or a Module")
+            raise TypeError("Value should be an integer or a {0}"
+                            .format(self.clasz.__name__))
 
     def convert(self, value, index_table):
-        if isinstance(value, Module):
+        if isinstance(value, self.clasz):
             value = index_table[value]
         return value
 
-module_type = _ModuleType()
+module_type = _IndexType(Module)
+material_type = _IndexType(Material)
 
 class _FilenameType(SpecialType):
 

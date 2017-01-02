@@ -7,42 +7,38 @@
 # Local modules.
 from pypenelopetools.penelope.input import PenelopeInput
 import pypenelopetools.penelope.keywords as penelope_keywords
-import pypenelopetools.penmain.keywords as penmain_keywords
 import pypenelopetools.penelope.separators as penelope_separators
-import pypenelopetools.penmain.separators as penmain_separators
+import pypenelopetools.pencyl.keywords as pencyl_keywords
+import pypenelopetools.pencyl.separators as pencyl_separators
 
 # Globals and constants variables.
 
-class PenmainInput(PenelopeInput):
+class PencylInput(PenelopeInput):
 
     def __init__(self, filename):
         super().__init__(filename)
 
         self.TITLE = penelope_keywords.TITLE()
 
+        # Geometry definition list
+        self.geometry = pencyl_keywords.Geometry()
+
         # Source definition
         self.SKPAR = penelope_keywords.SKPAR()
         self.SENERG = penelope_keywords.SENERG()
         self.SPECTR = penelope_keywords.SPECTR()
         self.SGPOL = penelope_keywords.SGPOL()
+        self.SEXTND = pencyl_keywords.SEXTND()
+        self.STHICK = pencyl_keywords.STHICK()
+        self.SRADII = pencyl_keywords.SRADII()
         self.SPOSIT = penelope_keywords.SPOSIT()
-        self.SBOX = penmain_keywords.SBOX()
-        self.SBODY = penmain_keywords.SBODY()
         self.SCONE = penelope_keywords.SCONE()
         self.SRECTA = penelope_keywords.SRECTA()
-
-        # Input phase-space file
-        self.IPSFN = penmain_keywords.IPSFN()
-        self.IPSPLI = penmain_keywords.IPSPLI()
-        self.WGTWIN = penmain_keywords.WGTWIN()
-        self.EPMAX = penmain_keywords.EPMAX()
 
         # Material data and simulation parameters
         self.materials = penelope_keywords.Materials()
 
         # Geometry and local simulation parameters
-        self.GEOMFN = penmain_keywords.GEOMFN()
-        self.PARINP = penmain_keywords.PARINP()
         self.DSMAX = penelope_keywords.DSMAX()
         self.EABSB = penelope_keywords.EABSB()
 
@@ -55,21 +51,24 @@ class PenmainInput(PenelopeInput):
         # X-ray splitting
         self.IXRSPL = penelope_keywords.IXRSPL()
 
+        # Woodcock's delta-scattering method for photons.
+        self.IWOODC = pencyl_keywords.IWOODC()
+
         # Emerging particles
         self.NBE = penelope_keywords.NBE()
         self.NBANGL = penelope_keywords.NBANGL()
+        self.NBZ = pencyl_keywords.NBZ()
+        self.NBR = pencyl_keywords.NBR()
+        self.NBTL = pencyl_keywords.NBTL()
 
-        # Impact detectors
-        self.impact_detectors = penmain_keywords.ImpactDetectors()
+        # Particle positions at the lower and upper planes
+        self.EMERGP = pencyl_keywords.EMERGP()
 
         # Energy-deposition detectors
-        self.energy_deposition_detectors = penmain_keywords.EnergyDepositionDetectors()
+        self.energy_deposition_detectors = pencyl_keywords.EnergyDepositionDetectors()
 
-        # Absorbed dose distribution
-        self.GRIDX = penmain_keywords.GRIDX()
-        self.GRIDY = penmain_keywords.GRIDY()
-        self.GRIDZ = penmain_keywords.GRIDZ()
-        self.GRIDR = penmain_keywords.GRIDR()
+        # Dose and charge distributions
+        self.DOSE2D = pencyl_keywords.DOSE2D()
 
         # Job properties
         self.RESUME = penelope_keywords.RESUME()
@@ -83,21 +82,23 @@ class PenmainInput(PenelopeInput):
         return [self.TITLE,
 
                 penelope_separators.DOT,
-                penelope_separators.SOURCE_DEFINITION,
-                self.SKPAR, self.SENERG, self.SPECTR, self.SGPOL,
-                self.SPOSIT, self.SBOX, self.SBODY, self.SCONE, self.SRECTA,
+                pencyl_separators.GEOMETRY_LIST_START,
+                self.geometry,
+                pencyl_separators.GEOMETRY_LIST_END,
 
                 penelope_separators.DOT,
-                penmain_separators.INPUT_PHASE_SPACE_FILE,
-                self.IPSFN, self.IPSPLI, self.WGTWIN, self.EPMAX,
+                penelope_separators.SOURCE_DEFINITION,
+                self.SKPAR, self.SENERG, self.SPECTR, self.SGPOL,
+                self.SEXTND, self.STHICK, self.SRADII,
+                self.SPOSIT, self.SCONE, self.SRECTA,
 
                 penelope_separators.DOT,
                 penelope_separators.MATERIAL,
                 self.materials,
 
                 penelope_separators.DOT,
-                penmain_separators.GEOMETRY,
-                self.GEOMFN, self.PARINP, self.DSMAX, self.EABSB,
+                pencyl_separators.DSMAX_EABSB,
+                self.DSMAX, self.EABSB,
 
                 penelope_separators.DOT,
                 penelope_separators.INTERACTION_FORCING,
@@ -112,20 +113,24 @@ class PenmainInput(PenelopeInput):
                 self.IXRSPL,
 
                 penelope_separators.DOT,
-                penmain_separators.EMERGING_PARTICLES,
-                self.NBE, self.NBANGL,
+                pencyl_separators.WOODCOCK,
+                self.IWOODC,
 
                 penelope_separators.DOT,
-                penmain_separators.IMPACT_DETECTORS,
-                self.impact_detectors,
+                pencyl_separators.COUNTER_ARRAY,
+                self.NBE, self.NBANGL, self.NBZ, self.NBR, self.NBTL,
+
+                penelope_separators.DOT,
+                pencyl_separators.PARTICLE_POSITIONS,
+                self.EMERGP,
 
                 penelope_separators.DOT,
                 penelope_separators.ENERGY_DEPOSITON_DETECTORS,
                 self.energy_deposition_detectors,
 
                 penelope_separators.DOT,
-                penmain_separators.ABSORBED_DOSE_DISTRIBUTION,
-                self.GRIDX, self.GRIDY, self.GRIDZ, self.GRIDR,
+                pencyl_separators.DOSE_CHARGE_DISTRIBUTION,
+                self.DOSE2D,
 
                 penelope_separators.DOT,
                 penelope_separators.JOB_PROPERTIES,

@@ -200,7 +200,6 @@ class _IndexType(SpecialType):
         return value
 
 module_type = _IndexType(Module)
-material_type = _IndexType(Material)
 
 class _FilenameType(SpecialType):
 
@@ -213,6 +212,27 @@ class _FilenameType(SpecialType):
         return value
 
 filename_type = _FilenameType()
+
+class _MaterialType(SpecialType):
+
+    def __call__(self, value):
+        if isinstance(value, Material):
+            filename = value.filename
+        else:
+            filename = value
+
+        # Check error
+        filename_type(filename)
+
+        return value
+
+    def convert(self, value, index_table):
+        if isinstance(value, Material):
+            return value.filename
+        else:
+            return str(value)
+
+material_type = _MaterialType()
 
 class TypeKeyword(Keyword):
 

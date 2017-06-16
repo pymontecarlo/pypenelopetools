@@ -1,13 +1,14 @@
 """"""
 
 # Standard library modules.
+from operator import itemgetter
 
 # Third party modules.
 
 # Local modules.
 from pypenelopetools.penelope.keyword import \
-    TypeKeyword, KeywordSequence, KeywordGroup, filename_type, module_type
-from pypenelopetools.material.material import Material
+    (TypeKeyword, KeywordSequence, KeywordGroup,
+     filename_type, module_type, material_type)
 
 # Globals and constants variables.
 
@@ -179,6 +180,24 @@ class SRECTA(TypeKeyword):
     def set(self, thetal, thetau, phil, phiu):
         super().set(thetal, thetau, phil, phiu)
 
+class MFNAME(TypeKeyword):
+
+    def __init__(self):
+        super().__init__("MFNAME", (material_type,),
+                         comment="Material file, up to 20 chars")
+
+    def set(self, material_or_filename):
+        super().set(material_or_filename)
+
+class MSIMPA(TypeKeyword):
+
+    def __init__(self):
+        super().__init__("MSIMPA", (float, float, float, float, float, float, float),
+                         comment="EABS(1:3),C1,C2,WCC,WCR")
+
+    def set(self, eabs1, eabs2, eabs3, c1, c2, wcc, wcr):
+        super().set(eabs1, eabs2, eabs3, c1, c2, wcc, wcr)
+
 class MaterialGroup(KeywordGroup):
     """
     Name of a PENELOPE input material data file (up to 20
@@ -199,18 +218,11 @@ class MaterialGroup(KeywordGroup):
 
     def __init__(self):
         super().__init__()
-        self.MFNAME = TypeKeyword("MFNAME", (filename_type,),
-                                  comment="Material file, up to 20 chars")
-        self.MSIMPA = \
-            TypeKeyword("MSIMPA", (float, float, float, float, float, float, float),
-                        comment="EABS(1:3),C1,C2,WCC,WCR")
+        self.MFNAME = MFNAME()
+        self.MSIMPA = MSIMPA()
 
     def set(self, material_or_filename, eabs1, eabs2, eabs3, c1, c2, wcc, wcr):
-        if isinstance(material_or_filename, Material):
-            filename = material_or_filename.filename
-        else:
-            filename = str(material_or_filename)
-        self.MFNAME.set(filename)
+        self.MFNAME.set(material_or_filename)
         self.MSIMPA.set(eabs1, eabs2, eabs3, c1, c2, wcc, wcr)
 
     def get_keywords(self):
@@ -227,6 +239,21 @@ class Materials(KeywordSequence):
 
     def add(self, material_or_filename, eabs1, eabs2, eabs3, c1, c2, wcc, wcr):
         return super().add(material_or_filename, eabs1, eabs2, eabs3, c1, c2, wcc, wcr)
+
+    def write(self, index_table):
+        keywords = []
+        for keyword in self._keywords:
+            material_or_filename = keyword.MFNAME.get()[0]
+            index = index_table.get(material_or_filename, len(self._keywords))
+            keywords.append((index, keyword))
+
+        keywords.sort(key=itemgetter(0))
+
+        lines = []
+        for _index, keyword in keywords:
+            lines += keyword.write(index_table)
+
+        return lines
 
 class GEOMFN(TypeKeyword):
     """

@@ -18,12 +18,12 @@ from pypenelopetools.pengeom.geometry import Geometry
 
 # Globals and constants variables.
 
-def create_epma1():
-    # Create materials
-    material_cu = Material('Cu', {29: 1.0}, 8.9)
+MATERIAL_CU = Material('Cu', {29: 1.0}, 8.9)
+MATERIAL_FE = Material('Fe', {26: 1.0}, 7.874)
 
+def create_epma1():
     # Create geometry
-    module = Module(material_cu, 'Sample')
+    module = Module(MATERIAL_CU, 'Sample')
     module.add_surface(zplane(0.0), SIDEPOINTER_NEGATIVE)
     module.add_surface(zplane(-0.1), SIDEPOINTER_POSITIVE)
     module.add_surface(cylinder(1.0), SIDEPOINTER_NEGATIVE)
@@ -40,7 +40,7 @@ def create_epma1():
     input.SDIREC.set(180, 0.0)
     input.SAPERT.set(0.0)
 
-    input.materials.add("Cu.mat", 1e3, 1e3, 1e3, 0.2, 0.2, 1e3, 1e3)
+    input.materials.add(MATERIAL_CU, 1e3, 1e3, 1e3, 0.2, 0.2, 1e3, 1e3)
 
     input.GEOMFN.set('epma1.geo')
     input.DSMAX.add(1, 1e-4)
@@ -82,23 +82,19 @@ def create_epma1():
     return input, geometry
 
 def create_epma2():
-    # Create materials
-    material_cu = Material('Cu', {29: 1.0}, 8.9)
-    material_fe = Material('Fe', {26: 1.0}, 7.874)
-
     # Create geometry
     surface_top = zplane(0.0)
     surface_bottom = zplane(-0.1)
     surface_cylinder = cylinder(1.0)
     surface_divider = xplane(0.0)
 
-    module_right = Module(material_cu, 'Right half of the sample')
+    module_right = Module(MATERIAL_CU, 'Right half of the sample')
     module_right.add_surface(surface_top, SIDEPOINTER_NEGATIVE)
     module_right.add_surface(surface_bottom, SIDEPOINTER_POSITIVE)
     module_right.add_surface(surface_cylinder, SIDEPOINTER_NEGATIVE)
     module_right.add_surface(surface_divider, SIDEPOINTER_POSITIVE)
 
-    module_left = Module(material_fe, 'Left half of the sample')
+    module_left = Module(MATERIAL_FE, 'Left half of the sample')
     module_left.add_surface(surface_top, SIDEPOINTER_NEGATIVE)
     module_left.add_surface(surface_bottom, SIDEPOINTER_POSITIVE)
     module_left.add_surface(surface_cylinder, SIDEPOINTER_NEGATIVE)
@@ -117,8 +113,8 @@ def create_epma2():
     input.SDIREC.set(180, 0.0)
     input.SAPERT.set(0.0)
 
-    input.materials.add("Cu.mat", 1e3, 1e3, 1e3, 0.2, 0.2, 1e3, 1e3)
-    input.materials.add("Fe.mat", 1e3, 1e3, 1e3, 0.2, 0.2, 1e3, 1e3)
+    input.materials.add(MATERIAL_FE, 1e3, 1e3, 1e3, 0.2, 0.2, 1e3, 1e3) # Note inversion
+    input.materials.add(MATERIAL_CU, 1e3, 1e3, 1e3, 0.2, 0.2, 1e3, 1e3)
 
     input.GEOMFN.set('epma2.geo')
     input.DSMAX.add(1, 1e-4)
@@ -458,7 +454,7 @@ class TestPenmainInput(unittest.TestCase):
             input.read(fp)
         self._test_epma1(input)
 
-    def _test_epma2(self, input):
+    def _test_epma2(self, input, index_table):
         se0, = input.SENERG.get()
         self.assertAlmostEqual(15e3, se0, 5)
 
@@ -477,7 +473,8 @@ class TestPenmainInput(unittest.TestCase):
         materials, = input.materials.get()
         self.assertEqual(2, len(materials))
 
-        filename, eabs1, eabs2, eabs3, c1, c2, wcc, wcr = materials[0]
+        index = index_table[MATERIAL_CU]
+        filename, eabs1, eabs2, eabs3, c1, c2, wcc, wcr = materials[index - 1]
         self.assertEqual('Cu.mat', filename)
         self.assertAlmostEqual(1e3, eabs1, 5)
         self.assertAlmostEqual(1e3, eabs2, 5)
@@ -487,7 +484,8 @@ class TestPenmainInput(unittest.TestCase):
         self.assertAlmostEqual(1e3, wcc, 5)
         self.assertAlmostEqual(1e3, wcr, 5)
 
-        filename, eabs1, eabs2, eabs3, c1, c2, wcc, wcr = materials[1]
+        index = index_table[MATERIAL_FE]
+        filename, eabs1, eabs2, eabs3, c1, c2, wcc, wcr = materials[index - 1]
         self.assertEqual('Fe.mat', filename)
         self.assertAlmostEqual(1e3, eabs1, 5)
         self.assertAlmostEqual(1e3, eabs2, 5)
@@ -771,14 +769,15 @@ class TestPenmainInput(unittest.TestCase):
         input, geometry = create_epma2()
         index_table = geometry.indexify()
         input = self._write_read_input(input, index_table)
-        self._test_epma2(input)
+        self._test_epma2(input, index_table)
 
     def test_epma2_read(self):
         filepath = os.path.join(self.testdatadir, 'epma2.in')
         input = PenepmaInput('epma2.in')
         with open(filepath, 'r') as fp:
             input.read(fp)
-        self._test_epma2(input)
+        index_table = {MATERIAL_CU: 1, MATERIAL_FE: 2}
+        self._test_epma2(input, index_table)
 
 if __name__ == '__main__': #pragma: no cover
     logging.basicConfig()

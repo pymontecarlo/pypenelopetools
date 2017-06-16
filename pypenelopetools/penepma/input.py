@@ -21,8 +21,10 @@ class PenepmaInput(PenelopeInput):
         self.TITLE = penelope_keywords.TITLE()
 
         # Source definition
+        self.SKPAR = penelope_keywords.SKPAR()
         self.SENERG = penelope_keywords.SENERG()
         self.SPOSIT = penelope_keywords.SPOSIT()
+        self.SRADI = penepma_keywords.SRADI()
         self.SDIREC = penepma_keywords.SDIREC()
         self.SAPERT = penepma_keywords.SAPERT()
 
@@ -70,7 +72,7 @@ class PenepmaInput(PenelopeInput):
 
                 penelope_separators.DOT,
                 penelope_separators.SOURCE_DEFINITION,
-                self.SENERG, self.SPOSIT, self.SDIREC, self.SAPERT,
+                self.SKPAR, self.SENERG, self.SPOSIT, self.SRADI, self.SDIREC, self.SAPERT,
 
                 penelope_separators.DOT,
                 penelope_separators.MATERIAL,

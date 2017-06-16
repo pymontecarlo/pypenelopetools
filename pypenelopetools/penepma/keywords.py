@@ -10,6 +10,21 @@ from pypenelopetools.penelope.keyword import \
 
 # Globals and constants variables.
 
+class SRADI(TypeKeyword):
+    """
+    The initial position of the particle is sampled randomly
+    within a circle of radius SRAD, centered at (SX0,SY0,SZ0)
+    and perpendicular to the beam axis direction.
+        DEFAULT: SRAD=0.0
+    """
+
+    def __init__(self):
+        super().__init__('SRADI', (float,),
+                         comment='Radius of the beam, in cm')
+
+    def set(self, sradius):
+        super().set(sradius)
+
 class SDIREC(TypeKeyword):
     """
     Polar and azimuthal angles of the electron beam axis direction, in deg.

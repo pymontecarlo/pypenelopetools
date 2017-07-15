@@ -1,6 +1,7 @@
 """"""
 
 # Standard library modules.
+import os
 import abc
 import logging
 logger = logging.getLogger(__name__)
@@ -29,7 +30,7 @@ class PenelopeInput(FilenameMixin, metaclass=abc.ABCMeta):
         for keyword in self.get_keywords():
             lines += keyword.write(index_table)
 
-        fileobj.write('\n'.join(lines))
+        fileobj.write(os.linesep.join(lines))
 
     @abc.abstractmethod
     def get_keywords(self):

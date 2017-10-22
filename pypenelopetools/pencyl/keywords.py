@@ -1,6 +1,7 @@
 """"""
 
 # Standard library modules.
+import os
 
 # Third party modules.
 
@@ -257,12 +258,13 @@ class IWOODC(TypeKeyword):
     def set(self, on):
         super().set(on)
 
-    def write(self, index_table):
+    def write(self, fileobj):
         value = self.get()[0]
         if not value:
-            return []
+            return
 
-        return [self._create_line(self.name, [], self.comment)]
+        line = self._create_line(self.name, [], self.comment)
+        fileobj.write(line + os.linesep)
 
 class NBZ(TypeKeyword):
     """

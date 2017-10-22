@@ -6,7 +6,7 @@
 
 # Local modules.
 from pypenelopetools.penelope.keyword import \
-    TypeKeyword, KeywordGroup, KeywordSequence, filename_type
+    TypeKeyword, KeywordGroup, KeywordSequence
 
 # Globals and constants variables.
 
@@ -104,7 +104,7 @@ class PhotonDetectorGroup(KeywordGroup):
                                   comment='Angular window, in deg, IPSF')
         self.PDENER = TypeKeyword('PDENER', (float, float, int),
                                   comment='Energy window, no. of channels')
-        self.XRORIG = TypeKeyword('XRORIG', (filename_type,),
+        self.XRORIG = TypeKeyword('XRORIG', (str,),
                                   comment='Map of emission sites of detected x rays')
 
     def set(self, theta1, theta2, phi1, phi2, ipsf, edel, edeu, nche, emission_filename=None):

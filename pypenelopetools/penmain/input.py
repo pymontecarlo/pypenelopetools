@@ -5,7 +5,7 @@
 # Third party modules.
 
 # Local modules.
-from pypenelopetools.penelope.input import PenelopeInput
+from pypenelopetools.penelope.input import _PenelopeInputBase
 import pypenelopetools.penelope.keywords as penelope_keywords
 import pypenelopetools.penmain.keywords as penmain_keywords
 import pypenelopetools.penelope.separators as penelope_separators
@@ -13,11 +13,9 @@ import pypenelopetools.penmain.separators as penmain_separators
 
 # Globals and constants variables.
 
-class PenmainInput(PenelopeInput):
+class PenmainInput(_PenelopeInputBase):
 
-    def __init__(self, filename):
-        super().__init__(filename)
-
+    def __init__(self):
         self.TITLE = penelope_keywords.TITLE()
 
         # Source definition

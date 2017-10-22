@@ -1,30 +1,40 @@
 """"""
 
 # Standard library modules.
+import os
 
 # Third party modules.
 
 # Local modules.
-from pypenelopetools.penelope.base import _InLineBase
+from pypenelopetools.penelope.base import _InputLineBase
 
 # Globals and constants variables.
 
-class Separator(_InLineBase):
+class Separator(_InputLineBase):
 
     def __init__(self, text, name=''):
         self.text = text
         self.name = name
 
-    def read(self, line_iterator):
+    def __str__(self):
+        if self.name:
+            return '{0} {1}'.format(self.name, self.text)
+        else:
+            return self.text
+
+    def read(self, fileobj):
         if not self.name:
             return
-        next(line_iterator)
 
-    def write(self, index_table):
-        return [self._create_line(self.name, (self.text,))]
+        line = self._peek_next_line(fileobj)
+        name = line[:6].strip()
 
-class EndSeparator(Separator):
+        if name != self.name:
+            return
 
-    def __init__(self):
-        super().__init__('Ends the reading of input data', 'END')
+        self._read_next_line(fileobj)
+
+    def write(self, fileobj):
+        line = self._create_line(self.name, (self.text,))
+        fileobj.write(line + os.linesep)
 

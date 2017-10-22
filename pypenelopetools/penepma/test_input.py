@@ -11,7 +11,7 @@ import os
 
 # Local modules.
 from pypenelopetools.penepma.input import PenepmaInput
-from pypenelopetools.material.material import Material
+from pypenelopetools.material import Material
 from pypenelopetools.pengeom.surface import xplane, zplane, cylinder
 from pypenelopetools.pengeom.module import Module, SIDEPOINTER_NEGATIVE, SIDEPOINTER_POSITIVE
 from pypenelopetools.pengeom.geometry import Geometry
@@ -31,8 +31,10 @@ def create_epma1():
     geometry = Geometry('Cylindrical homogeneous foil')
     geometry.add_module(module)
 
+    index_lookup = geometry.indexify()
+
     # Create input
-    input = PenepmaInput('epma1.in')
+    input = PenepmaInput()
 
     input.TITLE.set('A Cu slab')
     input.SENERG.set(15e3)
@@ -40,17 +42,17 @@ def create_epma1():
     input.SDIREC.set(180, 0.0)
     input.SAPERT.set(0.0)
 
-    input.materials.add(MATERIAL_CU, 1e3, 1e3, 1e3, 0.2, 0.2, 1e3, 1e3)
+    input.materials.add(index_lookup[MATERIAL_CU], MATERIAL_CU.filename, 1e3, 1e3, 1e3, 0.2, 0.2, 1e3, 1e3)
 
     input.GEOMFN.set('epma1.geo')
-    input.DSMAX.add(1, 1e-4)
+    input.DSMAX.add(index_lookup[module], 1e-4)
 
-    input.IFORCE.add(1, 1, 4, -5, 0.9, 1.0)
-    input.IFORCE.add(1, 1, 5, -250, 0.9, 1.0)
-    input.IFORCE.add(1, 2, 2, 10, 1e-3, 1.0)
-    input.IFORCE.add(1, 2, 3, 10, 1e-3, 1.0)
-    input.IBRSPL.add(1, 2)
-    input.IXRSPL.add(1, 2)
+    input.IFORCE.add(index_lookup[module], 1, 4, -5, 0.9, 1.0)
+    input.IFORCE.add(index_lookup[module], 1, 5, -250, 0.9, 1.0)
+    input.IFORCE.add(index_lookup[module], 2, 2, 10, 1e-3, 1.0)
+    input.IFORCE.add(index_lookup[module], 2, 3, 10, 1e-3, 1.0)
+    input.IBRSPL.add(index_lookup[module], 2)
+    input.IXRSPL.add(index_lookup[module], 2)
 
     input.NBE.set(0, 0, 300)
     input.NBANGL.set(45, 30)
@@ -79,7 +81,7 @@ def create_epma1():
     input.NSIMSH.set(2e9)
     input.TIME.set(2e9)
 
-    return input, geometry
+    return input
 
 def create_epma2():
     # Create geometry
@@ -104,8 +106,12 @@ def create_epma2():
     geometry.add_module(module_right)
     geometry.add_module(module_left)
 
+    index_lookup = geometry.indexify()
+    index_lookup[MATERIAL_CU] = 1
+    index_lookup[MATERIAL_FE] = 2
+
     # Create input
-    input = PenepmaInput('epma2.in')
+    input = PenepmaInput()
 
     input.TITLE.set('A CU-Fe couple')
     input.SENERG.set(15e3)
@@ -113,27 +119,27 @@ def create_epma2():
     input.SDIREC.set(180, 0.0)
     input.SAPERT.set(0.0)
 
-    input.materials.add(MATERIAL_FE, 1e3, 1e3, 1e3, 0.2, 0.2, 1e3, 1e3) # Note inversion
-    input.materials.add(MATERIAL_CU, 1e3, 1e3, 1e3, 0.2, 0.2, 1e3, 1e3)
+    input.materials.add(index_lookup[MATERIAL_FE], MATERIAL_FE.filename, 1e3, 1e3, 1e3, 0.2, 0.2, 1e3, 1e3) # Note inversion
+    input.materials.add(index_lookup[MATERIAL_CU], MATERIAL_CU.filename, 1e3, 1e3, 1e3, 0.2, 0.2, 1e3, 1e3)
 
     input.GEOMFN.set('epma2.geo')
-    input.DSMAX.add(1, 1e-4)
-    input.DSMAX.add(2, 1e-4)
+    input.DSMAX.add(index_lookup[module_right], 1e-4)
+    input.DSMAX.add(index_lookup[module_left], 1e-4)
 
-    input.IFORCE.add(1, 1, 4, -5, 0.9, 1.0)
-    input.IFORCE.add(1, 1, 5, -250, 0.9, 1.0)
-    input.IFORCE.add(1, 2, 2, 10, 1e-3, 1.0)
-    input.IFORCE.add(1, 2, 3, 10, 1e-3, 1.0)
-    input.IFORCE.add(2, 1, 4, -5, 0.9, 1.0)
-    input.IFORCE.add(2, 1, 5, -7, 0.9, 1.0)
-    input.IFORCE.add(2, 2, 2, 10, 1e-3, 1.0)
-    input.IFORCE.add(2, 2, 3, 10, 1e-3, 1.0)
+    input.IFORCE.add(index_lookup[module_right], 1, 4, -5, 0.9, 1.0)
+    input.IFORCE.add(index_lookup[module_right], 1, 5, -250, 0.9, 1.0)
+    input.IFORCE.add(index_lookup[module_right], 2, 2, 10, 1e-3, 1.0)
+    input.IFORCE.add(index_lookup[module_right], 2, 3, 10, 1e-3, 1.0)
+    input.IFORCE.add(index_lookup[module_left], 1, 4, -5, 0.9, 1.0)
+    input.IFORCE.add(index_lookup[module_left], 1, 5, -7, 0.9, 1.0)
+    input.IFORCE.add(index_lookup[module_left], 2, 2, 10, 1e-3, 1.0)
+    input.IFORCE.add(index_lookup[module_left], 2, 3, 10, 1e-3, 1.0)
 
-    input.IBRSPL.add(1, 2)
-    input.IBRSPL.add(2, 2)
+    input.IBRSPL.add(index_lookup[module_right], 2)
+    input.IBRSPL.add(index_lookup[module_left], 2)
 
-    input.IXRSPL.add(1, 2)
-    input.IXRSPL.add(2, 2)
+    input.IXRSPL.add(index_lookup[module_right], 2)
+    input.IXRSPL.add(index_lookup[module_left], 2)
 
     input.NBE.set(0, 0, 300)
     input.NBANGL.set(45, 30)
@@ -163,29 +169,27 @@ def create_epma2():
     input.NSIMSH.set(2e9)
     input.TIME.set(2e9)
 
-    return input, geometry
+    return input
 
 class TestPenmainInput(unittest.TestCase):
 
     def setUp(self):
-        unittest.TestCase.setUp(self)
+        super().setUp()
 
         self.testdatadir = os.path.join(os.path.dirname(__file__),
                                         '..', 'testdata', 'penepma')
 
-    def tearDown(self):
-        unittest.TestCase.tearDown(self)
+    def _write_read_input(self, input):
+        fileobj = io.StringIO()
 
-    def _write_read_input(self, input, index_table):
-        outfileobj = io.StringIO()
-        input.write(outfileobj, index_table)
+        try:
+            input.write(fileobj)
 
-        infileobj = io.StringIO(outfileobj.getvalue())
-        outinput = PenepmaInput(input.filename)
-        outinput.read(infileobj)
-
-        outfileobj.close()
-        infileobj.close()
+            fileobj.seek(0)
+            outinput = PenepmaInput()
+            outinput.read(fileobj)
+        finally:
+            fileobj.close()
 
         return outinput
 
@@ -441,20 +445,23 @@ class TestPenmainInput(unittest.TestCase):
         timea, = input.TIME.get()
         self.assertAlmostEqual(2e9, timea, 5)
 
+    def test_epma1_skeleton(self):
+        input = create_epma1()
+        self._test_epma1(input)
+
     def test_epma1_write(self):
-        input, geometry = create_epma1()
-        index_table = geometry.indexify()
-        input = self._write_read_input(input, index_table)
+        input = create_epma1()
+        input = self._write_read_input(input)
         self._test_epma1(input)
 
     def test_epma1_read(self):
         filepath = os.path.join(self.testdatadir, 'epma1.in')
-        input = PenepmaInput('epma1.in')
+        input = PenepmaInput()
         with open(filepath, 'r') as fp:
             input.read(fp)
         self._test_epma1(input)
 
-    def _test_epma2(self, input, index_table):
+    def _test_epma2(self, input):
         se0, = input.SENERG.get()
         self.assertAlmostEqual(15e3, se0, 5)
 
@@ -473,8 +480,7 @@ class TestPenmainInput(unittest.TestCase):
         materials, = input.materials.get()
         self.assertEqual(2, len(materials))
 
-        index = index_table[MATERIAL_CU]
-        filename, eabs1, eabs2, eabs3, c1, c2, wcc, wcr = materials[index - 1]
+        filename, eabs1, eabs2, eabs3, c1, c2, wcc, wcr = materials[0]
         self.assertEqual('Cu.mat', filename)
         self.assertAlmostEqual(1e3, eabs1, 5)
         self.assertAlmostEqual(1e3, eabs2, 5)
@@ -484,8 +490,7 @@ class TestPenmainInput(unittest.TestCase):
         self.assertAlmostEqual(1e3, wcc, 5)
         self.assertAlmostEqual(1e3, wcr, 5)
 
-        index = index_table[MATERIAL_FE]
-        filename, eabs1, eabs2, eabs3, c1, c2, wcc, wcr = materials[index - 1]
+        filename, eabs1, eabs2, eabs3, c1, c2, wcc, wcr = materials[1]
         self.assertEqual('Fe.mat', filename)
         self.assertAlmostEqual(1e3, eabs1, 5)
         self.assertAlmostEqual(1e3, eabs2, 5)
@@ -765,19 +770,21 @@ class TestPenmainInput(unittest.TestCase):
         timea, = input.TIME.get()
         self.assertAlmostEqual(2e9, timea, 5)
 
+    def test_epma2_skeleton(self):
+        input = create_epma2()
+        self._test_epma2(input)
+
     def test_epma2_write(self):
-        input, geometry = create_epma2()
-        index_table = geometry.indexify()
-        input = self._write_read_input(input, index_table)
-        self._test_epma2(input, index_table)
+        input = create_epma2()
+        input = self._write_read_input(input)
+        self._test_epma2(input)
 
     def test_epma2_read(self):
         filepath = os.path.join(self.testdatadir, 'epma2.in')
-        input = PenepmaInput('epma2.in')
+        input = PenepmaInput()
         with open(filepath, 'r') as fp:
             input.read(fp)
-        index_table = {MATERIAL_CU: 1, MATERIAL_FE: 2}
-        self._test_epma2(input, index_table)
+        self._test_epma2(input)
 
 if __name__ == '__main__': #pragma: no cover
     logging.basicConfig()

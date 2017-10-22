@@ -1,14 +1,13 @@
 """"""
 
 # Standard library modules.
-from operator import itemgetter
+from operator import attrgetter
 
 # Third party modules.
 
 # Local modules.
 from pypenelopetools.penelope.keyword import \
-    (TypeKeyword, KeywordSequence, KeywordGroup,
-     filename_type, module_type, material_type)
+    TypeKeyword, KeywordSequence, KeywordGroup
 
 # Globals and constants variables.
 
@@ -27,8 +26,8 @@ class TITLE(TypeKeyword):
     def __init__(self):
         super().__init__('TITLE', (str,))
 
-    def _extract_name_values_comment(self, line):
-        name, values, comment = super()._extract_name_values_comment(line)
+    def _parse_line(self, line):
+        name, values, comment = super()._parse_line(line)
         return name, (' '.join(values),), comment
 
     def set(self, title):
@@ -183,11 +182,11 @@ class SRECTA(TypeKeyword):
 class MFNAME(TypeKeyword):
 
     def __init__(self):
-        super().__init__("MFNAME", (material_type,),
+        super().__init__("MFNAME", (str,),
                          comment="Material file, up to 20 chars")
 
-    def set(self, material_or_filename):
-        super().set(material_or_filename)
+    def set(self, filename):
+        super().set(filename)
 
 class MSIMPA(TypeKeyword):
 
@@ -220,10 +219,12 @@ class MaterialGroup(KeywordGroup):
         super().__init__()
         self.MFNAME = MFNAME()
         self.MSIMPA = MSIMPA()
+        self.index = None
 
-    def set(self, material_or_filename, eabs1, eabs2, eabs3, c1, c2, wcc, wcr):
-        self.MFNAME.set(material_or_filename)
+    def set(self, filename, eabs1, eabs2, eabs3, c1, c2, wcc, wcr, index=None):
+        self.MFNAME.set(filename)
         self.MSIMPA.set(eabs1, eabs2, eabs3, c1, c2, wcc, wcr)
+        self.index = index
 
     def get_keywords(self):
         return (self.MFNAME, self.MSIMPA)
@@ -234,26 +235,26 @@ class Materials(KeywordSequence):
         keyword = MaterialGroup()
         super().__init__(keyword)
 
-    def set(self, material_or_filename, eabs1, eabs2, eabs3, c1, c2, wcc, wcr):
-        return super().set(material_or_filename, eabs1, eabs2, eabs3, c1, c2, wcc, wcr)
+    def set(self, index, filename, eabs1, eabs2, eabs3, c1, c2, wcc, wcr):
+        return super().set(filename, eabs1, eabs2, eabs3, c1, c2, wcc, wcr, index)
 
-    def add(self, material_or_filename, eabs1, eabs2, eabs3, c1, c2, wcc, wcr):
-        return super().add(material_or_filename, eabs1, eabs2, eabs3, c1, c2, wcc, wcr)
+    def add(self, index, filename, eabs1, eabs2, eabs3, c1, c2, wcc, wcr):
+        return super().add(filename, eabs1, eabs2, eabs3, c1, c2, wcc, wcr, index)
 
-    def write(self, index_table):
-        keywords = []
-        for keyword in self._keywords:
-            material_or_filename = keyword.MFNAME.get()[0]
-            index = index_table.get(material_or_filename, len(self._keywords))
-            keywords.append((index, keyword))
+    def _add_keyword(self, keyword):
+        super()._add_keyword(keyword)
+        if keyword.index is None:
+            keyword.index = len(self._keywords)
 
-        keywords.sort(key=itemgetter(0))
+    def get(self):
+        values = []
+        for keyword in sorted(self._keywords, key=attrgetter('index')):
+            values.append(keyword.get())
+        return (tuple(values),)
 
-        lines = []
-        for _index, keyword in keywords:
-            lines += keyword.write(index_table)
-
-        return lines
+    def write(self, fileobj):
+        for keyword in sorted(self._keywords, key=attrgetter('index')):
+            keyword.write(fileobj)
 
 class GEOMFN(TypeKeyword):
     """
@@ -280,7 +281,7 @@ class GEOMFN(TypeKeyword):
     """
 
     def __init__(self):
-        super().__init__("GEOMFN", (filename_type,),
+        super().__init__("GEOMFN", (str,),
                          comment='Geometry file, up to 20 chars')
 
     def set(self, filename):
@@ -296,7 +297,7 @@ class DSMAX(KeywordSequence):
     """
 
     def __init__(self):
-        keyword = TypeKeyword("DSMAX", (module_type, float),
+        keyword = TypeKeyword("DSMAX", (int, float),
                               comment="KB, maximum step length in body KB")
         super().__init__(keyword)
 
@@ -321,7 +322,7 @@ class EABSB(KeywordSequence):
     """
 
     def __init__(self):
-        keyword = TypeKeyword("EABSB", (module_type, float, float, float),
+        keyword = TypeKeyword("EABSB", (int, float, float, float),
                               comment="KB, local absorption energies, EABSB(1:3)")
         super().__init__(keyword)
 
@@ -356,7 +357,7 @@ class IFORCE(KeywordSequence):
     """
 
     def __init__(self):
-        keyword = TypeKeyword("IFORCE", (module_type, int, int, float, float, float),
+        keyword = TypeKeyword("IFORCE", (int, int, int, float, float, float),
                               comment="KB,KPAR,ICOL,FORCER,WLOW,WHIG")
         super().__init__(keyword)
 
@@ -380,7 +381,7 @@ class IBRSPL(KeywordSequence):
     """
 
     def __init__(self):
-        keyword = TypeKeyword("IBRSPL", (module_type, float),
+        keyword = TypeKeyword("IBRSPL", (int, float),
                               comment="KB,splitting factor")
         super().__init__(keyword)
 
@@ -401,7 +402,7 @@ class IXRSPL(KeywordSequence):
     """
 
     def __init__(self):
-        keyword = TypeKeyword("IXRSPL", (module_type, float),
+        keyword = TypeKeyword("IXRSPL", (int, float),
                               comment="KB,splitting factor")
         super().__init__(keyword)
 
@@ -487,7 +488,7 @@ class EDSPC(TypeKeyword):
     """
 
     def __init__(self):
-        super().__init__('EDSPC', (filename_type,),
+        super().__init__('EDSPC', (str,),
                          comment='Output spectrum file name, 20 chars')
 
     def set(self, filename):
@@ -576,7 +577,7 @@ class RESUME(TypeKeyword):
     """
 
     def __init__(self):
-        super().__init__('RESUME', (filename_type,),
+        super().__init__('RESUME', (str,),
                          comment='Resume from this dump file, 20 chars')
 
     def set(self, filename):
@@ -594,7 +595,7 @@ class DUMPTO(TypeKeyword):
     """
 
     def __init__(self):
-        super().__init__('DUMPTO', (filename_type,),
+        super().__init__('DUMPTO', (str,),
                          comment='Generate this dump file, 20 chars')
 
     def set(self, filename):

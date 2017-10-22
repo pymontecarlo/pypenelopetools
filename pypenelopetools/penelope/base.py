@@ -2,11 +2,9 @@
 
 # Standard library modules.
 import abc
-import string
+import re
 
 # Third party modules.
-from pyparsing import (Word, OneOrMore, Optional, Suppress, alphanums,
-                       ParseException)
 
 # Local modules.
 
@@ -15,9 +13,11 @@ LINE_KEYWORDS_SIZE = 6
 LINE_SIZE = 80
 SKIP_LINE = "       ."
 
-class _InLineBase(metaclass=abc.ABCMeta):
+PATTERN_LINE = re.compile(r'([A-Z0-9 ]{6})([\w\.\-\+ ]*)(\[.*\])?')
 
-    def _extract_name_values_comment(self, line):
+class _InputLineBase(metaclass=abc.ABCMeta):
+
+    def _parse_line(self, line):
         """
         Extracts the keyword, the values and the comment of an input line.
         The values are returned as a list.
@@ -29,24 +29,18 @@ class _InLineBase(metaclass=abc.ABCMeta):
         if line.startswith(' ' * 6):
             return None, None, line.strip()
 
-        keywordletters = string.ascii_uppercase + string.digits
-        keyword = Word(keywordletters, max=6)('keyword')
-
-        value = Word(alphanums + ".-+")
-        values = OneOrMore(value)('vals')
-
-        commentletters = alphanums + ",.()-="
-        comment = OneOrMore(Word(commentletters))('comment')
-        comment.setParseAction(lambda tokens: " ".join(tokens))
-
-        expr = keyword + values + Optional(Suppress("[") + comment + Suppress("]"))
-
-        try:
-            result = expr.parseString(line)
-        except ParseException:
+        match = re.match(PATTERN_LINE, line)
+        if not match:
             return None, None, None
 
-        return result.keyword, result.vals.asList(), result.comment
+        keyword, values, comment = match.groups()
+
+        keyword = keyword.strip()
+        values = values.split()
+        if comment:
+            comment = comment[1:-1]
+
+        return keyword, values, comment
 
     def _create_line(self, name, values, comment=''):
         """
@@ -86,10 +80,41 @@ class _InLineBase(metaclass=abc.ABCMeta):
 
         return line
 
+    def _peek_next_line(self, fileobj):
+        # Remember the current position
+        offset = fileobj.tell()
+
+        # Read line
+        line = self._read_next_line(fileobj)
+
+        # Roll back to previous position
+        fileobj.seek(offset)
+
+        return line
+
+    def _read_next_line(self, fileobj):
+        line = fileobj.readline().rstrip()
+
+        # If line starts with 7 spaces, read next
+        if line.startswith(' ' * 7):
+            return self._read_next_line(fileobj)
+
+        return line
+
     @abc.abstractmethod
-    def read(self, line_iterator):
+    def read(self, fileobj):
+        """
+        Reads line(s) from a file object.
+        
+        :arg fileobj: file object with read access
+        """
         raise NotImplementedError
 
     @abc.abstractmethod
-    def write(self, index_table):
+    def write(self, fileobj):
+        """
+        WRites line(s) to a file object.
+        
+        :arg fileobj: file object with write access
+        """
         raise NotImplementedError

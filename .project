@@ -3,6 +3,7 @@
 	<name>pypenelopetools</name>
 	<comment></comment>
 	<projects>
+		<project>pyxray</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

@@ -8,6 +8,8 @@
 
 # Globals and constants variables.
 
+FILENAME_MAXLENGTH = 20
+
 class FilenameMixin:
 
     @property
@@ -16,6 +18,7 @@ class FilenameMixin:
 
     @filename.setter
     def filename(self, filename):
-        if len(filename) > 20:
-            raise ValueError("Filename is too long. Maximum 20 characters")
+        if len(filename) > FILENAME_MAXLENGTH:
+            raise ValueError("Filename is too long. Maximum {0} characters"
+                             .format(FILENAME_MAXLENGTH))
         self._filename = filename

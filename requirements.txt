@@ -1,3 +1,2 @@
 setuptools
 nose
-pyparsing

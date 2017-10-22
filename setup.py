@@ -13,7 +13,7 @@ import versioneer
 BASEDIR = os.path.abspath(os.path.dirname(__file__))
 
 PACKAGES = find_packages()
-INSTALL_REQUIRES = []
+INSTALL_REQUIRES = ['pyxray']
 
 CMDCLASS = versioneer.get_cmdclass()
 

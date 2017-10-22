@@ -11,7 +11,7 @@ import os
 
 # Local modules.
 from pypenelopetools.penmain.input import PenmainInput
-from pypenelopetools.material.material import Material
+from pypenelopetools.material import Material
 from pypenelopetools.pengeom.surface import sphere, zplane, cylinder
 from pypenelopetools.pengeom.module import Module, SIDEPOINTER_NEGATIVE, SIDEPOINTER_POSITIVE
 from pypenelopetools.pengeom.geometry import Geometry
@@ -32,7 +32,7 @@ def create_example1_disc():
     geometry.add_module(module)
 
     # Create input
-    input = PenmainInput('disc.in')
+    input = PenmainInput()
 
     input.TITLE.set('Point source and a homogeneous cylinder.')
     input.SKPAR.set(1)
@@ -40,7 +40,7 @@ def create_example1_disc():
     input.SPOSIT.set(0.0, 0.0, -0.0001)
     input.SCONE.set(0.0, 0.0, 5.0)
 
-    input.materials.add("Cu.mat", 1e3, 1e3, 1e3, 0.05, 0.05, 1e3, 1e3)
+    input.materials.add(1, material_cu.filename, 1e3, 1e3, 1e3, 0.05, 0.05, 1e3, 1e3)
 
     input.GEOMFN.set('disc.geo')
     input.PARINP.add(1, 0.005)
@@ -71,7 +71,7 @@ def create_example1_disc():
     input.NSIMSH.set(2e9)
     input.TIME.set(600)
 
-    return input, geometry
+    return input
 
 def create_example2_plane():
     # Create materials
@@ -89,8 +89,10 @@ def create_example2_plane():
     geometry.add_module(module_detector)
     geometry.add_module(module_phantom)
 
+    index_lookup = geometry.indexify()
+
     # Create input
-    input = PenmainInput('plane.in')
+    input = PenmainInput()
 
     input.TITLE.set('Dose in a water phantom with a spherical impact detector')
     input.SKPAR.set(2)
@@ -98,7 +100,7 @@ def create_example2_plane():
     input.SPOSIT.set(0.0, 0.0, -25.0)
     input.SCONE.set(0.0, 0.0, 5.0)
 
-    input.materials.add(material_h2o, 1e5, 1e4, 1e5, 0.05, 0.05, 5e3, 5e3)
+    input.materials.add(1, material_h2o.filename, 1e5, 1e4, 1e5, 0.05, 0.05, 5e3, 5e3)
 
     input.GEOMFN.set('plane.geo')
 
@@ -106,7 +108,7 @@ def create_example2_plane():
     input.NBANGL.set(45, 18)
 
     detector = input.impact_detectors.add(1e5, 0.0, 100, 0, 2)
-    detector.IDBODY.add(module_detector)
+    detector.IDBODY.add(index_lookup[module_detector])
 
     input.GRIDZ.set(0, 30.0, 60)
     input.GRIDR.set(30.0, 60.0)
@@ -118,7 +120,7 @@ def create_example2_plane():
     input.NSIMSH.set(1e7)
     input.TIME.set(2e9)
 
-    return input, geometry
+    return input
 
 class TestPenmainInput(unittest.TestCase):
 
@@ -131,16 +133,17 @@ class TestPenmainInput(unittest.TestCase):
     def tearDown(self):
         unittest.TestCase.tearDown(self)
 
-    def _write_read_input(self, input, index_table):
-        outfileobj = io.StringIO()
-        input.write(outfileobj, index_table)
+    def _write_read_input(self, input):
+        fileobj = io.StringIO()
 
-        infileobj = io.StringIO(outfileobj.getvalue())
-        outinput = PenmainInput(input.filename)
-        outinput.read(infileobj)
+        try:
+            input.write(fileobj)
 
-        outfileobj.close()
-        infileobj.close()
+            fileobj.seek(0)
+            outinput = PenmainInput()
+            outinput.read(fileobj)
+        finally:
+            fileobj.close()
 
         return outinput
 
@@ -292,14 +295,13 @@ class TestPenmainInput(unittest.TestCase):
         self.assertAlmostEqual(600.0, timea, 5)
 
     def test_example1_disc_write(self):
-        input, geometry = create_example1_disc()
-        index_table = geometry.indexify()
-        input = self._write_read_input(input, index_table)
+        input = create_example1_disc()
+        input = self._write_read_input(input)
         self._test_example1_disc(input)
 
     def test_example1_disc_read(self):
         filepath = os.path.join(self.testdatadir, '1-disc', 'disc.in')
-        input = PenmainInput('disc.in')
+        input = PenmainInput()
         with open(filepath, 'r') as fp:
             input.read(fp)
         self._test_example1_disc(input)
@@ -391,14 +393,13 @@ class TestPenmainInput(unittest.TestCase):
         self.assertAlmostEqual(2e9, timea, 5)
 
     def test_example2_plane_write(self):
-        input, geometry = create_example2_plane()
-        index_table = geometry.indexify()
-        input = self._write_read_input(input, index_table)
+        input = create_example2_plane()
+        input = self._write_read_input(input)
         self._test_example2_plane(input)
 
     def test_example2_plane_read(self):
         filepath = os.path.join(self.testdatadir, '2-plane', 'plane.in')
-        input = PenmainInput('plane.in')
+        input = PenmainInput()
         with open(filepath, 'r') as fp:
             input.read(fp)
         self._test_example2_plane(input)

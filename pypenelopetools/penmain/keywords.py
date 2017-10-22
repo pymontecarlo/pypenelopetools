@@ -6,7 +6,7 @@
 
 # Local modules.
 from pypenelopetools.penelope.keyword import \
-    TypeKeyword, KeywordSequence, KeywordGroup, filename_type, module_type
+    TypeKeyword, KeywordSequence, KeywordGroup
 import pypenelopetools.penelope.keywords as penelope_keywords
 
 # Globals and constants variables.
@@ -47,7 +47,7 @@ class SBODY(KeywordSequence):
     """
 
     def __init__(self):
-        keyword = TypeKeyword("SBODY", (module_type,),
+        keyword = TypeKeyword("SBODY", (int,),
                               comment='Active source body; one line for each body')
         super().__init__(keyword)
 
@@ -97,7 +97,7 @@ class IPSFN(KeywordSequence):
     """
 
     def __init__(self):
-        keyword = TypeKeyword("IPSFN", (filename_type,),
+        keyword = TypeKeyword("IPSFN", (str,),
                               comment="Input psf name, up to 20 characters")
         super().__init__(keyword)
 
@@ -290,18 +290,18 @@ class ImpactDetectorGroup(KeywordGroup):
     def __init__(self):
         self.IMPDET = TypeKeyword('IMPDET', (float, float, int, int, int),
                                   comment='E-window, no. of bins, IPSF, IDCUT')
-        self.IDSPC = TypeKeyword('IDSPC', (filename_type,),
+        self.IDSPC = TypeKeyword('IDSPC', (str,),
                                  comment='Spectrum file name, 20 chars')
-        self.IDPSF = TypeKeyword('IDPSF', (filename_type,),
+        self.IDPSF = TypeKeyword('IDPSF', (str,),
                                  comment='Phase-space file name, 20 chars')
-        self.IDFLNC = TypeKeyword('IDFLNC', (filename_type,),
+        self.IDFLNC = TypeKeyword('IDFLNC', (str,),
                                   comment='Fluence spectrum file name, 20 chars')
         self.IDAGEL = TypeKeyword('IDAGEL', (float, float, int),
                                   comment='Age interval and no. of bins')
-        self.IDAGEF = TypeKeyword('IDAGEF', (filename_type,),
+        self.IDAGEF = TypeKeyword('IDAGEF', (str,),
                                   comment='Age-distribution file name, 20 chars')
 
-        keyword = TypeKeyword('IDBODY', (module_type,), comment='Active body')
+        keyword = TypeKeyword('IDBODY', (int,), comment='Active body')
         self.IDBODY = KeywordSequence(keyword)
 
         keyword = TypeKeyword('IDKPAR', (int,), comment='Kind of detected particles')
@@ -364,7 +364,7 @@ class EnergyDepositionDetectorGroup(KeywordGroup):
         self.ENDETC = penelope_keywords.ENDETC()
         self.EDSPC = penelope_keywords.EDSPC()
 
-        keyword = TypeKeyword('EDBODY', (module_type,), comment='Active body')
+        keyword = TypeKeyword('EDBODY', (int,), comment='Active body')
         self.EDBODY = KeywordSequence(keyword)
 
     def get_keywords(self):

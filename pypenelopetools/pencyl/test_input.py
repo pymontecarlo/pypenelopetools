@@ -11,17 +11,16 @@ import io
 
 # Local modules.
 from pypenelopetools.pencyl.input import PencylInput
-from pypenelopetools.material.material import Material
+from pypenelopetools.material import Material
 
 # Globals and constants variables.
 
 def create_example1_disc():
     # Create materials
     material_cu = Material('Cu', {29: 1.0}, 8.9)
-    materials = (material_cu,)
 
     # Create input
-    input = PencylInput('disc.in')
+    input = PencylInput()
 
     input.TITLE.set('Point source and a homogeneous cylinder.')
 
@@ -33,7 +32,7 @@ def create_example1_disc():
     input.SPOSIT.set(0, 0, -0.0001)
     input.SCONE.set(0, 0, 5)
 
-    input.materials.add(material_cu, 1e3, 1e3, 1e3, 0.05, 0.05, 1e3, 1e3)
+    input.materials.add(1, material_cu.filename, 1e3, 1e3, 1e3, 0.05, 0.05, 1e3, 1e3)
 
     input.DSMAX.set(1, 1, 1e-4)
 
@@ -62,7 +61,7 @@ def create_example1_disc():
     input.NSIMSH.set(1e9)
     input.TIME.set(600)
 
-    return input, materials
+    return input
 
 def create_example3_detector():
     # Create materials
@@ -72,7 +71,7 @@ def create_example3_detector():
     materials = (material_nai, material_al2o3, material_al)
 
     # Create input
-    input = PencylInput('cyld.in')
+    input = PencylInput()
 
     input.TITLE.set('NaI detector with Al cover and Al2O3 reflecting foil')
 
@@ -96,9 +95,9 @@ def create_example3_detector():
     input.SPOSIT.set(0, 0, -10.0)
     input.SCONE.set(0, 0, 0)
 
-    input.materials.add(material_nai, 5.0e4, 5.0e3, 5.0e4, 0.1, 0.1, 2e3, 2e3)
-    input.materials.add(material_al2o3, 5.0e4, 5.0e3, 5.0e4, 0.1, 0.1, 2e3, 2e3)
-    input.materials.add(material_al, 5.0e4, 5.0e3, 5.0e4, 0.1, 0.1, 2e3, 2e3)
+    input.materials.add(1, material_nai.filename, 5.0e4, 5.0e3, 5.0e4, 0.1, 0.1, 2e3, 2e3)
+    input.materials.add(2, material_al2o3.filename, 5.0e4, 5.0e3, 5.0e4, 0.1, 0.1, 2e3, 2e3)
+    input.materials.add(3, material_al.filename, 5.0e4, 5.0e3, 5.0e4, 0.1, 0.1, 2e3, 2e3)
 
     detector = input.energy_deposition_detectors.add(0, 1e7, 1000)
     detector.EDBODY.add(3, 1)
@@ -117,24 +116,22 @@ def create_example3_detector():
 class TestPencylInput(unittest.TestCase):
 
     def setUp(self):
-        unittest.TestCase.setUp(self)
+        super().setUp()
 
         self.testdatadir = os.path.join(os.path.dirname(__file__),
                                         '..', 'testdata', 'pencyl')
 
-    def tearDown(self):
-        unittest.TestCase.tearDown(self)
-
     def _write_read_input(self, input):
-        outfileobj = io.StringIO()
-        input.write(outfileobj, index_table={})
+        fileobj = io.StringIO()
 
-        infileobj = io.StringIO(outfileobj.getvalue())
-        outinput = PencylInput(input.filename)
-        outinput.read(infileobj)
+        try:
+            input.write(fileobj)
 
-        outfileobj.close()
-        infileobj.close()
+            fileobj.seek(0)
+            outinput = PencylInput()
+            outinput.read(fileobj)
+        finally:
+            fileobj.close()
 
         return outinput
 
@@ -284,13 +281,13 @@ class TestPencylInput(unittest.TestCase):
         self.assertAlmostEqual(600.0, timea, 5)
 
     def test_example1_disc_write(self):
-        input, _materials = create_example1_disc()
+        input = create_example1_disc()
         input = self._write_read_input(input)
         self._test_example1_disc(input)
 
     def test_example1_disc_read(self):
         filepath = os.path.join(self.testdatadir, '1-disc', 'disc.in')
-        input = PencylInput('disc.in')
+        input = PencylInput()
         with open(filepath, 'r') as fp:
             input.read(fp)
         self._test_example1_disc(input)
@@ -456,7 +453,7 @@ class TestPencylInput(unittest.TestCase):
 
     def test_example3_detector_read(self):
         filepath = os.path.join(self.testdatadir, '3-detector', 'cyld.in')
-        input = PencylInput('cyld.in')
+        input = PencylInput()
         with open(filepath, 'r') as fp:
             input.read(fp)
         self._test_example3_detector(input)

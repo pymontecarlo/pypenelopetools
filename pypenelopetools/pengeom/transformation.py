@@ -1,21 +1,17 @@
 """"""
 
 # Standard library modules.
+import os
 import math
 
 # Third party modules.
 
 # Local modules.
-from pypenelopetools.pengeom.keyword import Keyword
-from pypenelopetools.pengeom.base import GeoBase
+from pypenelopetools.pengeom.base import _GeometryBase, LINE_SEPARATOR
 
 # Globals and constants variables.
 
-class Rotation(GeoBase):
-
-    _KEYWORD_OMEGA = Keyword('OMEGA=', ' DEG          (DEFAULT=0.0)')
-    _KEYWORD_THETA = Keyword('THETA=', ' DEG          (DEFAULT=0.0)')
-    _KEYWORD_PHI = Keyword('PHI=', ' DEG          (DEFAULT=0.0)')
+class Rotation(_GeometryBase):
 
     def __init__(self, omega_deg=0.0, theta_deg=0.0, phi_deg=0.0):
         """
@@ -37,22 +33,32 @@ class Rotation(GeoBase):
         return '(omega={0:g} deg, theta={1:g} deg, phi={2:g} deg)' \
                 .format(self.omega_deg, self.theta_deg, self.phi_deg)
 
-    def to_geo(self, index_lookup):
-        """
-        Returns the lines of this class to create a GEO file.
-        """
-        lines = []
+    def _read(self, fileobj, material_lookup, surface_lookup, module_lookup):
+        line = self._peek_next_line(fileobj)
+        while line != LINE_SEPARATOR:
+            keyword, value, termination = self._parse_expline(line)
 
-        line = self._KEYWORD_OMEGA.create_expline(self.omega_deg)
-        lines.append(line)
+            if termination.startswith('RAD'):
+                value = math.degrees(value)
 
-        line = self._KEYWORD_THETA.create_expline(self.theta_deg)
-        lines.append(line)
+            if keyword == 'OMEGA=':
+                self.omega_deg = value
+            elif keyword == 'THETA=':
+                self.theta_deg = value
+            elif keyword == 'PHI=':
+                self.phi_deg = value
 
-        line = self._KEYWORD_PHI.create_expline(self.phi_deg)
-        lines.append(line)
+            line = self._read_next_line(fileobj)
 
-        return lines
+    def _write(self, fileobj, index_lookup):
+        line = self._create_expline('OMEGA=', self.omega_deg, ' DEG          (DEFAULT=0.0)')
+        fileobj.write(line + os.linesep)
+
+        line = self._create_expline('THETA=', self.theta_deg, ' DEG          (DEFAULT=0.0)')
+        fileobj.write(line + os.linesep)
+
+        line = self._create_expline('PHI=', self.phi_deg, ' DEG          (DEFAULT=0.0)')
+        fileobj.write(line + os.linesep)
 
     @property
     def omega_deg(self):
@@ -98,11 +104,7 @@ class Rotation(GeoBase):
             raise ValueError("Angle ({0}) must be between [0,360].".format(angle))
         self._phi = angle
 
-class Shift(GeoBase):
-
-    _KEYWORD_X = Keyword('X-SHIFT=', '              (DEFAULT=0.0)')
-    _KEYWORD_Y = Keyword('Y-SHIFT=', '              (DEFAULT=0.0)')
-    _KEYWORD_Z = Keyword('Z-SHIFT=', '              (DEFAULT=0.0)')
+class Shift(_GeometryBase):
 
     def __init__(self, x_cm=0.0, y_cm=0.0, z_cm=0.0):
         """
@@ -124,22 +126,29 @@ class Shift(GeoBase):
         return "(x={0:g} cm, y={1:g} cm, z={2:g} cm)" \
             .format(self.x_cm, self.y_cm, self.z_cm)
 
-    def to_geo(self, index_lookup):
-        """
-        Returns the lines of this class to create a GEO file.
-        """
-        lines = []
+    def _read(self, fileobj, material_lookup, surface_lookup, module_lookup):
+        line = self._peek_next_line(fileobj)
+        while line != LINE_SEPARATOR:
+            keyword, value, _ = self._parse_expline(line)
 
-        line = self._KEYWORD_X.create_expline(self.x_cm)
-        lines.append(line)
+            if keyword == 'X-SHIFT=':
+                self.x_cm = value
+            elif keyword == 'Y-SHIFT=':
+                self.y_cm = value
+            elif keyword == 'Z-SHIFT=':
+                self.z_cm = value
 
-        line = self._KEYWORD_Y.create_expline(self.y_cm)
-        lines.append(line)
+            line = self._read_next_line(fileobj)
 
-        line = self._KEYWORD_Z.create_expline(self.z_cm)
-        lines.append(line)
+    def _write(self, fileobj, index_lookup):
+        line = self._create_expline('X-SHIFT=', self.x_cm, '              (DEFAULT=0.0)')
+        fileobj.write(line + os.linesep)
 
-        return lines
+        line = self._create_expline('Y-SHIFT=', self.y_cm, '              (DEFAULT=0.0)')
+        fileobj.write(line + os.linesep)
+
+        line = self._create_expline('Z-SHIFT=', self.z_cm, '              (DEFAULT=0.0)')
+        fileobj.write(line + os.linesep)
 
     @property
     def x_cm(self):
@@ -174,11 +183,7 @@ class Shift(GeoBase):
     def z_cm(self, shift):
         self._z = shift
 
-class Scale(GeoBase):
-
-    _KEYWORD_X = Keyword('X-SCALE=', '              (DEFAULT=1.0)')
-    _KEYWORD_Y = Keyword('Y-SCALE=', '              (DEFAULT=1.0)')
-    _KEYWORD_Z = Keyword('Z-SCALE=', '              (DEFAULT=1.0)')
+class Scale(_GeometryBase):
 
     def __init__(self, x=1.0, y=1.0, z=1.0):
         """
@@ -199,22 +204,29 @@ class Scale(GeoBase):
     def __str__(self):
         return "(x={0:g}, y={1:g}, z={2:g})".format(self.x, self.y, self.z)
 
-    def to_geo(self, index_lookup):
-        """
-        Returns the lines of this class to create a GEO file.
-        """
-        lines = []
+    def _read(self, fileobj, material_lookup, surface_lookup, module_lookup):
+        line = self._peek_next_line(fileobj)
+        while line != LINE_SEPARATOR:
+            keyword, value, _ = self._parse_expline(line)
 
-        line = self._KEYWORD_X.create_expline(self.x)
-        lines.append(line)
+            if keyword == 'X-SCALE=':
+                self.x = value
+            elif keyword == 'Y-SCALE=':
+                self.y = value
+            elif keyword == 'Z-SCALE=':
+                self.z = value
 
-        line = self._KEYWORD_Y.create_expline(self.y)
-        lines.append(line)
+            line = self._read_next_line(fileobj)
 
-        line = self._KEYWORD_Z.create_expline(self.z)
-        lines.append(line)
+    def _write(self, fileobj, index_lookup):
+        line = self._create_expline('X-SCALE=', self.x, '              (DEFAULT=1.0)')
+        fileobj.write(line + os.linesep)
 
-        return lines
+        line = self._create_expline('Y-SCALE=', self.y, '              (DEFAULT=1.0)')
+        fileobj.write(line + os.linesep)
+
+        line = self._create_expline('Z-SCALE=', self.z, '              (DEFAULT=1.0)')
+        fileobj.write(line + os.linesep)
 
     @property
     def x(self):

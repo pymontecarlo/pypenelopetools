@@ -4,19 +4,18 @@ Definition of base keyword classes
 
 # Standard library modules.
 import abc
+import os
 
 # Third party modules.
 
 # Local modules.
-from pypenelopetools.penelope.base import _InLineBase
-from pypenelopetools.pengeom.module import Module
-from pypenelopetools.material.material import Material
+from pypenelopetools.penelope.base import _InputLineBase
 
 # Globals and constants variables.
 
 #--- Abstract classes
 
-class _KeywordBase(_InLineBase):
+class _KeywordBase(_InputLineBase):
 
     def __str__(self):
         return self.name
@@ -39,27 +38,61 @@ class _KeywordBase(_InLineBase):
 
 #--- Core classes
 
-class Keyword(_KeywordBase):
+class TypeKeyword(_KeywordBase):
 
-    def __init__(self, name, comment=""):
+    def __init__(self, name, types, comment=""):
         self._name = name
+        self._types = tuple(types)
+        self._values = tuple([None] * len(types))
         self._comment = comment
 
-    def read(self, line_iterator):
-        line = line_iterator.peek()
-        name, values, _comment = self._extract_name_values_comment(line)
+    def set(self, *args):
+        if len(args) < len(self._types): # Less than to account for additional, not parsed values
+            raise ValueError("Keyword {0} requires {1} values, {2} given"
+                             .format(self.name, len(self._types), len(args)))
+
+        values = []
+        for type_, value in zip(self._types, args):
+            if value is not None:
+                try:
+                    value = type_(value)
+                except ValueError:
+                    raise TypeError("Value {0} must be of type {1}"
+                                    .format(value, type_))
+            values.append(value)
+
+        self._values = tuple(values)
+
+    def get(self):
+        return self._values
+
+    def copy(self):
+        return self.__class__(self.name, self._types, self.comment)
+
+    def read(self, fileobj):
+        line = self._peek_next_line(fileobj)
+        name, values, _comment = self._parse_line(line)
+
+        # If it is not the expected line, do nothing
         if name != self.name:
             return
 
+        # Set values
         self.set(*values)
-        next(line_iterator)
 
-    def write(self, index_table):
-        values = self.get()
+        # Jump to next line
+        self._read_next_line(fileobj)
+
+    def write(self, fileobj):
+        values = list(self.get())
+
+        # Skip if no values are defined
         if None in values:
-            return []
+            return
 
-        return [self._create_line(self.name, values, self.comment)]
+        # Write to file
+        line = self._create_line(self.name, values, self.comment)
+        fileobj.write(line + os.linesep)
 
     @property
     def name(self):
@@ -86,15 +119,13 @@ class KeywordGroup(_KeywordBase):
     def copy(self):
         return self.__class__()
 
-    def read(self, line_iterator):
+    def read(self, fileobj):
         for keyword in self.get_keywords():
-            keyword.read(line_iterator)
+            keyword.read(fileobj)
 
-    def write(self, index_table):
-        lines = []
+    def write(self, fileobj):
         for keyword in self.get_keywords():
-            lines += keyword.write(index_table)
-        return lines
+            keyword.write(fileobj)
 
     def _set_keyword_sequence(self, keyword, values):
         keyword.clear()
@@ -148,128 +179,25 @@ class KeywordSequence(_KeywordBase):
     def copy(self):
         return self.__class__(self._base_keyword.copy())
 
-    def read(self, line_iterator):
-        line = line_iterator.peek()
-        name, _values, _comment = self._extract_name_values_comment(line)
+    def read(self, fileobj):
+        line = self._peek_next_line(fileobj)
+        name, _values, _comment = self._parse_line(line)
+
         while name == self._base_keyword.name:
+            # Read keyword
             keyword = self._create_keyword()
-            keyword.read(line_iterator)
+            keyword.read(fileobj)
             self._add_keyword(keyword)
 
-            line = line_iterator.peek()
-            name, _values, _comment = self._extract_name_values_comment(line)
+            # Try to read line
+            line = self._peek_next_line(fileobj)
+            name, _values, _comment = self._parse_line(line)
 
-    def write(self, index_table):
-        lines = []
+    def write(self, fileobj):
         for keyword in self._keywords:
-            lines += keyword.write(index_table)
-        return lines
+            keyword.write(fileobj)
 
     @property
     def name(self):
         return self._base_keyword.name
-
-#--- Derived keywords
-
-class SpecialType(metaclass=abc.ABCMeta):
-
-    def __call__(self, value):
-        return value
-
-    def convert(self, value, index_table):
-        return value
-
-class _IndexType(SpecialType):
-
-    def __init__(self, clasz):
-        self.clasz = clasz
-
-    def __call__(self, value):
-        if isinstance(value, self.clasz):
-            return value
-
-        try:
-            return int(value)
-        except TypeError:
-            raise TypeError("Value should be an integer or a {0}"
-                            .format(self.clasz.__name__))
-
-    def convert(self, value, index_table):
-        if isinstance(value, self.clasz):
-            value = index_table[value]
-        return value
-
-module_type = _IndexType(Module)
-
-class _FilenameType(SpecialType):
-
-    def __call__(self, value):
-        value = str(value)
-
-        if len(value) > 20:
-            raise ValueError('Filename is too long. Maximum 20 characters')
-
-        return value
-
-filename_type = _FilenameType()
-
-class _MaterialType(SpecialType):
-
-    def __call__(self, value):
-        if isinstance(value, Material):
-            filename = value.filename
-        else:
-            filename = value
-
-        # Check error
-        filename_type(filename)
-
-        return value
-
-    def convert(self, value, index_table):
-        if isinstance(value, Material):
-            return value.filename
-        else:
-            return str(value)
-
-material_type = _MaterialType()
-
-class TypeKeyword(Keyword):
-
-    def __init__(self, name, types, comment=""):
-        super().__init__(name, comment)
-        self._types = tuple(types)
-        self._values = tuple([None] * len(types))
-
-    def set(self, *args):
-        if len(args) < len(self._types): # Less than to account for additional, not parsed values
-            raise ValueError("Keyword {0} requires {1} values, {2} given"
-                             .format(self.name, len(self._types), len(args)))
-
-        values = []
-        for type_, value in zip(self._types, args):
-            if value is not None:
-                value = type_(value)
-            values.append(value)
-
-        self._values = tuple(values)
-
-    def get(self):
-        return self._values
-
-    def copy(self):
-        return self.__class__(self.name, self._types, self.comment)
-
-    def write(self, index_table):
-        tmpvalues = self.get()
-        if None in tmpvalues:
-            return []
-
-        values = []
-        for type_, value in zip(self._types, tmpvalues):
-            if hasattr(type_, 'convert'):
-                value = type_.convert(value, index_table)
-            values.append(value)
-
-        return [self._create_line(self.name, values, self.comment)]
 

@@ -5,7 +5,7 @@
 # Third party modules.
 
 # Local modules.
-from pypenelopetools.penelope.separator import Separator, EndSeparator
+from pypenelopetools.penelope.separator import Separator
 
 # Globals and constants variables.
 
@@ -18,4 +18,4 @@ XRAY_SPLITTING = Separator('>>>>>>>> X-ray splitting.')
 EMERGING_PARTICLES = Separator('>>>>>>>> Emerging particles. Energy and angular distributions.')
 ENERGY_DEPOSITON_DETECTORS = Separator('>>>>>>>> Energy-deposition detectors (up to 25).')
 JOB_PROPERTIES = Separator('>>>>>>>> Job properties.')
-END = EndSeparator()
+END = Separator('Ends the reading of input data', 'END')

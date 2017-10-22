@@ -3,17 +3,18 @@ Geometry definition for PENGEOM
 """
 
 # Standard library modules.
+import os
 from itertools import chain
 from operator import methodcaller, attrgetter
 
 # Third party modules.
 
 # Local modules.
-from pypenelopetools.pengeom.keyword import \
-    LINE_SIZE, LINE_START, LINE_SEPARATOR, LINE_END
 from pypenelopetools.pengeom.mixin import ModuleMixin
 from pypenelopetools.pengeom.module import Module
-from pypenelopetools.material.material import VACUUM
+from pypenelopetools.pengeom.surface import SurfaceImplicit, SurfaceReduced
+from pypenelopetools.pengeom.base import _GeometryBase, LINE_SIZE, LINE_START, LINE_SEPARATOR, LINE_END
+from pypenelopetools.material import VACUUM
 
 # Globals and constants variables.
 
@@ -26,7 +27,7 @@ def _topological_sort(d, k):
         yield from _topological_sort(d, ii)
     yield k
 
-class Geometry(ModuleMixin):
+class Geometry(ModuleMixin, _GeometryBase):
 
     def __init__(self, title="Untitled", tilt_deg=0.0, rotation_deg=0.0):
         """
@@ -40,23 +41,144 @@ class Geometry(ModuleMixin):
         self.rotation_deg = rotation_deg
         self._modules = set()
 
+    def _read(self, fileobj, material_lookup, surface_lookup, module_lookup):
+        line = self._read_next_line(fileobj)
+        if line != LINE_START:
+            raise IOError('Expected start line')
+
+        line = self._read_next_line(fileobj)
+        self.title = ''
+        while line != LINE_SEPARATOR:
+            line = line.lstrip('C').strip()
+            self.title += line
+            line = self._read_next_line(fileobj)
+
+        line = self._peek_next_line(fileobj)
+        while line != LINE_END:
+            # Parse section name
+            section_name, index, _ = self._parse_line(line)
+            index = int(index)
+
+            # Parse surface or module
+            if section_name == 'SURFACE':
+                # Read 2 lines down the INDICES line
+                offset = fileobj.tell()
+                self._read_next_line(fileobj)
+                indices_line = self._read_next_line(fileobj)
+                _, indices, _ = self._parse_line(indices_line)
+                indices = map(int, indices.split(','))
+                fileobj.seek(offset)
+
+                if sum(indices) == 0:
+                    surface = SurfaceImplicit()
+                else:
+                    surface = SurfaceReduced()
+
+                surface._read(fileobj, material_lookup, surface_lookup, module_lookup)
+                surface_lookup[index] = surface
+
+            elif section_name == 'MODULE':
+                module = Module()
+                module._read(fileobj, material_lookup, surface_lookup, module_lookup)
+                self.add_module(module)
+                module_lookup[index] = module
+
+            else:
+                raise IOError('Cannot read {} section'.format(section_name))
+
+            # Next line
+            line = self._peek_next_line(fileobj).rstrip()
+
+    def read(self, fileobj, material_lookup):
+        """
+        Reads a geometry file (.geo).
+        
+        :arg fileobj: file object opened with read access
+        :arg material_lookup: a lookup table for the materials used in the
+            geometry. The lookup table is a dictionary where the keys are 
+            material indexes in the geometry file and the values, 
+            :class:`Material <pypenelopetools.Material>` instances. 
+        """
+        surface_lookup = {}
+        module_lookup = {}
+        material_lookup.setdefault(0, VACUUM)
+
+        self._read(fileobj, material_lookup, surface_lookup, module_lookup)
+
+    def _write(self, fileobj, index_lookup):
+        fileobj.write(LINE_START + os.linesep)
+        fileobj.write('       ' + self.title + os.linesep)
+        fileobj.write(LINE_SEPARATOR + os.linesep)
+
+        # Surfaces
+        surfaces = sorted((index_lookup[surface], surface)
+                          for surface in self.get_surfaces())
+
+        for _index, surface in surfaces:
+            surface._write(fileobj, index_lookup)
+
+        # Modules
+        modules = sorted((index_lookup[module], module)
+                          for module in self.get_modules())
+
+        for _index, module in modules:
+            module._write(fileobj, index_lookup)
+
+        # Extra module for tilt and rotation
+        if self.tilt_deg != 0.0 or self.rotation_deg != 0.0:
+            extra = self._create_extra_module()
+
+            index_lookup[extra] = len(self.get_modules()) + 1
+            extra._write(fileobj, index_lookup)
+
+        # End of line
+        fileobj.write(LINE_END + os.linesep)
+
+    def write(self, fileobj, index_lookup=None):
+        """
+        Writes the geometry file (.geo) to create this geometry.
+        
+        :arg fileobj: file object opened with write access
+        :arg index_lookup: a lookup table for the surfaces, modules and materials
+            of this geometry. If ``None``, the index lookup is generated by the
+            method :meth:`indexify <pypenelopetools.pengeom.Geometry.indexify>`.
+            
+        :return: lookup table
+        """
+        if not index_lookup:
+            index_lookup = self.indexify()
+        self._write(fileobj, index_lookup)
+        return index_lookup
+
     def get_materials(self):
+        """
+        Returns all materials in this geometry.
+        """
         return set(map(attrgetter('material'), self.get_modules()))
 
     def get_surfaces(self):
+        """
+        Returns all surfaces in this geometry.
+        """
         return set(chain(*map(methodcaller('get_surfaces'), self.get_modules())))
 
     def indexify(self):
-        index_table = {}
+        """
+        Returns a lookup table which associates the surfaces, modules and 
+        materials of this geometry to their index used in the geometry file. 
+        The lookup table is a dictionary where the keys are surfaces, modules 
+        and materials instances, and the values, an integer index.
+        """
+        index_lookup = {}
 
         # Materials
-        index_table[VACUUM] = 0
+        index_lookup[VACUUM] = 0
         for i, material in enumerate(self.get_materials(), 1):
-            index_table[material] = i
+            index_lookup[material] = i
 
         # Surfaces
         for i, surface in enumerate(self.get_surfaces(), 1):
-            index_table[surface] = i
+            index_lookup[surface] = i
 
         # Modules
         modules_dep = {} # module dependencies
@@ -72,9 +194,9 @@ class Geometry(ModuleMixin):
                     modules_order.append(dep_module)
 
         for i, module in enumerate(modules_order, 1):
-            index_table[module] = i
+            index_lookup[module] = i
 
-        return index_table
+        return index_lookup
 
     def _create_extra_module(self):
         extra = Module(VACUUM, description='Extra module for rotation and tilt')
@@ -92,42 +214,6 @@ class Geometry(ModuleMixin):
         extra.rotation.phi_deg = 90.0
 
         return extra
-
-    def to_geo(self, index_table):
-        lines = []
-
-        lines.append(LINE_START)
-        lines.append('       ' + self.title)
-        lines.append(LINE_SEPARATOR)
-
-        # Surfaces
-        surfaces = sorted((index_table[surface], surface)
-                          for surface in self.get_surfaces())
-
-        for _index, surface in surfaces:
-            lines.extend(surface.to_geo(index_table))
-            lines.append(LINE_SEPARATOR)
-
-        # Modules
-        modules = sorted((index_table[module], module)
-                          for module in self.get_modules())
-
-        for _index, module in modules:
-            lines.extend(module.to_geo(index_table))
-            lines.append(LINE_SEPARATOR)
-
-        # Extra module for tilt and rotation
-        if self.tilt_deg != 0.0 or self.rotation_deg != 0.0:
-            extra = self._create_extra_module()
-
-            index_table[extra] = len(self.get_modules()) + 1
-            lines.extend(extra.to_geo(index_table))
-            lines.append(LINE_SEPARATOR)
-
-        # End of line
-        lines.append(LINE_END)
-
-        return lines
 
     @property
     def title(self):

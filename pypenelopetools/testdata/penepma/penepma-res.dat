@@ -1,0 +1,53 @@
+
+
+   ***********************************
+   **   Program PENEPMA. Results.   **
+   ***********************************
+
+   Simulation time .........................  1.949920E+02 sec
+   Simulation speed ........................  2.291479E+02 showers/sec
+
+   Simulated primary showers ...............  4.468200E+04
+
+   Upbound primary particles ...............  1.349200E+04
+   Downbound primary particles .............  0.000000E+00
+   Absorbed primary particles ..............  3.119000E+04
+
+   Upbound fraction ...................  3.117275E-01 +- 7.9E-03
+   Downbound fraction .................  0.000000E+00 +- 0.0E+00
+   Absorption fraction ................  6.980440E-01 +- 6.5E-03
+
+   Secondary-particle generation probabilities:
+                   ----------------------------------------------
+                   |  electrons   |   photons    |  positrons   |
+   --------------------------------------------------------------
+   |   upbound     | 9.771483E-03 | 8.416581E-04 | 0.000000E+00 |
+   |               |  +- 1.3E-03  |  +- 9.1E-06  |  +- 0.0E+00  |
+   --------------------------------------------------------------
+   |   downbound   | 0.000000E+00 | 0.000000E+00 | 0.000000E+00 |
+   |               |  +- 0.0E+00  |  +- 0.0E+00  |  +- 0.0E+00  |
+   --------------------------------------------------------------
+   |   absorbed    | 1.070119E+00 | 1.975118E-03 | 0.000000E+00 |
+   |               |  +- 1.4E-02  |  +- 1.8E-05  |  +- 0.0E+00  |
+   --------------------------------------------------------------
+
+   Average deposited energies (bodies):
+      Body    2 ......  1.174728E+04 +- 7.4E+01 eV    (effic. = 1.15E+03)
+
+   Average photon energy at the detectors:
+      Detector # 1 ...  4.673420E+00 +- 5.7E-02 eV    (effic. = 3.05E+02)
+      Detector # 2 ...  1.466286E-01 +- 7.4E-03 eV    (effic. = 1.79E+01)
+      Detector # 3 ...  2.899320E-01 +- 1.1E-02 eV    (effic. = 3.43E+01)
+      Detector # 4 ...  4.227645E-01 +- 1.3E-02 eV    (effic. = 4.81E+01)
+      Detector # 5 ...  5.488068E-01 +- 1.5E-02 eV    (effic. = 6.06E+01)
+      Detector # 6 ...  6.711430E-01 +- 1.7E-02 eV    (effic. = 7.24E+01)
+      Detector # 7 ...  7.438198E-01 +- 1.8E-02 eV    (effic. = 7.76E+01)
+      Detector # 8 ...  7.975043E-01 +- 1.9E-02 eV    (effic. = 8.23E+01)
+      Detector # 9 ...  7.671009E-01 +- 1.9E-02 eV    (effic. = 7.73E+01)
+
+   Last random seeds =  616846078 ,  938690756
+
+   Reference line: 29010300,  detector =  1,  tolerance = 1.250E-03
+                                   Relative uncertainty = 3.559E-02
+
+   ------------------------------------------------------------------------

@@ -1,4 +1,4 @@
-#pyPENELOPEtools
+# pyPENELOPEtools
 
 [![PyPI](https://img.shields.io/pypi/v/pypenelopetools.svg)](https://pypi.python.org/pypi/pypenelopetools/)
 [![TravisCI](https://travis-ci.org/pymontecarlo/pypenelopetools.svg?branch=master)](https://travis-ci.org/pymontecarlo/pypenelopetools)
@@ -12,7 +12,7 @@ with the goal to facilitate the integration with [pyMonteCarlo](https://github.c
 
 **pyPENELOPEtools** is currently under development.
 
-##What is PENELOPE?
+## What is PENELOPE?
 
 PENELOPE (*Penetration and ENErgy LOss of Positrons and Electrons*) is a
 a general-purpose Monte Carlo code system for the simulation of coupled 
@@ -45,7 +45,7 @@ In principle, the user should provide a main steering program to follow the
 particle histories through the material structure and to keep score of 
 quantities of interest.
 
-##Authors
+## Authors
 
 - [Philippe T. Pinard](https://github.com/ppinard) (High Wycombe, United Kingdom)
 - [Hendrix Demers](https://github.com/drix00) (McGill University, Montreal, Canada)

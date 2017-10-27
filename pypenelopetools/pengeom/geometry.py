@@ -3,17 +3,18 @@ Geometry definition for PENGEOM
 """
 
 # Standard library modules.
-import math
+import os
 from itertools import chain
 from operator import methodcaller, attrgetter
 
 # Third party modules.
 
 # Local modules.
-from pypenelopetools.pengeom.common import \
-    ModuleMixin, LINE_SIZE, LINE_START, LINE_SEPARATOR, LINE_END
+from pypenelopetools.pengeom.mixin import ModuleMixin
 from pypenelopetools.pengeom.module import Module
-from pypenelopetools.material.material import VACUUM
+from pypenelopetools.pengeom.surface import SurfaceImplicit, SurfaceReduced
+from pypenelopetools.pengeom.base import _GeometryBase, LINE_SIZE, LINE_START, LINE_SEPARATOR, LINE_END
+from pypenelopetools.material import VACUUM
 
 # Globals and constants variables.
 
@@ -26,27 +27,148 @@ def _topological_sort(d, k):
         yield from _topological_sort(d, ii)
     yield k
 
-class Geometry(ModuleMixin):
+class Geometry(ModuleMixin, _GeometryBase):
 
-    def __init__(self, title="Untitled", tilt_rad=0.0, rotation_rad=0.0):
+    def __init__(self, title="Untitled", tilt_deg=0.0, rotation_deg=0.0):
         """
         Creates a new PENELOPE geometry.
         
-        :arg tilt_rad: Specimen tilt in radians along the x-axis
-        :arg rotation_rad: Specimen rotation in radians along the z-axis
+        :arg tilt_deg: Specimen tilt in degrees along the x-axis
+        :arg rotation_deg: Specimen rotation in degrees along the z-axis
         """
         self.title = title
-        self.tilt_rad = tilt_rad
-        self.rotation_rad = rotation_rad
+        self.tilt_deg = tilt_deg
+        self.rotation_deg = rotation_deg
         self._modules = set()
 
+    def _read(self, fileobj, material_lookup, surface_lookup, module_lookup):
+        line = self._read_next_line(fileobj)
+        if line != LINE_START:
+            raise IOError('Expected start line')
+
+        line = self._read_next_line(fileobj)
+        self.title = ''
+        while line != LINE_SEPARATOR:
+            line = line.lstrip('C').strip()
+            self.title += line
+            line = self._read_next_line(fileobj)
+
+        line = self._peek_next_line(fileobj)
+        while line != LINE_END:
+            # Parse section name
+            section_name, index, _ = self._parse_line(line)
+            index = int(index)
+
+            # Parse surface or module
+            if section_name == 'SURFACE':
+                # Read 2 lines down the INDICES line
+                offset = fileobj.tell()
+                self._read_next_line(fileobj)
+                indices_line = self._read_next_line(fileobj)
+                _, indices, _ = self._parse_line(indices_line)
+                indices = map(int, indices.split(','))
+                fileobj.seek(offset)
+
+                if sum(indices) == 0:
+                    surface = SurfaceImplicit()
+                else:
+                    surface = SurfaceReduced()
+
+                surface._read(fileobj, material_lookup, surface_lookup, module_lookup)
+                surface_lookup[index] = surface
+
+            elif section_name == 'MODULE':
+                module = Module()
+                module._read(fileobj, material_lookup, surface_lookup, module_lookup)
+                self.add_module(module)
+                module_lookup[index] = module
+
+            else:
+                raise IOError('Cannot read {} section'.format(section_name))
+
+            # Next line
+            line = self._peek_next_line(fileobj).rstrip()
+
+    def read(self, fileobj, material_lookup):
+        """
+        Reads a geometry file (.geo).
+        
+        :arg fileobj: file object opened with read access
+        :arg material_lookup: a lookup table for the materials used in the
+            geometry. The lookup table is a dictionary where the keys are 
+            material indexes in the geometry file and the values, 
+            :class:`Material <pypenelopetools.Material>` instances. 
+        """
+        surface_lookup = {}
+        module_lookup = {}
+        material_lookup.setdefault(0, VACUUM)
+
+        self._read(fileobj, material_lookup, surface_lookup, module_lookup)
+
+    def _write(self, fileobj, index_lookup):
+        fileobj.write(LINE_START + os.linesep)
+        fileobj.write('       ' + self.title + os.linesep)
+        fileobj.write(LINE_SEPARATOR + os.linesep)
+
+        # Surfaces
+        surfaces = sorted((index_lookup[surface], surface)
+                          for surface in self.get_surfaces())
+
+        for _index, surface in surfaces:
+            surface._write(fileobj, index_lookup)
+
+        # Modules
+        modules = sorted((index_lookup[module], module)
+                          for module in self.get_modules())
+
+        for _index, module in modules:
+            module._write(fileobj, index_lookup)
+
+        # Extra module for tilt and rotation
+        if self.tilt_deg != 0.0 or self.rotation_deg != 0.0:
+            extra = self._create_extra_module()
+
+            index_lookup[extra] = len(self.get_modules()) + 1
+            extra._write(fileobj, index_lookup)
+
+        # End of line
+        fileobj.write(LINE_END + os.linesep)
+
+    def write(self, fileobj, index_lookup=None):
+        """
+        Writes the geometry file (.geo) to create this geometry.
+        
+        :arg fileobj: file object opened with write access
+        :arg index_lookup: a lookup table for the surfaces, modules and materials
+            of this geometry. If ``None``, the index lookup is generated by the
+            method :meth:`indexify <pypenelopetools.pengeom.Geometry.indexify>`.
+            
+        :return: lookup table
+        """
+        if not index_lookup:
+            index_lookup = self.indexify()
+        self._write(fileobj, index_lookup)
+        return index_lookup
+
     def get_materials(self):
+        """
+        Returns all materials in this geometry.
+        """
         return set(map(attrgetter('material'), self.get_modules()))
 
     def get_surfaces(self):
+        """
+        Returns all surfaces in this geometry.
+        """
         return set(chain(*map(methodcaller('get_surfaces'), self.get_modules())))
 
-    def _indexify(self):
+    def indexify(self):
+        """
+        Returns a lookup table which associates the surfaces, modules and 
+        materials of this geometry to their index used in the geometry file. 
+        The lookup table is a dictionary where the keys are surfaces, modules 
+        and materials instances, and the values, an integer index.
+        """
         index_lookup = {}
 
         # Materials
@@ -55,7 +177,7 @@ class Geometry(ModuleMixin):
             index_lookup[material] = i
 
         # Surfaces
-        for i, surface in enumerate(self.get_surfaces()):
+        for i, surface in enumerate(self.get_surfaces(), 1):
             index_lookup[surface] = i
 
         # Modules
@@ -71,7 +193,7 @@ class Geometry(ModuleMixin):
                 if dep_module not in modules_order:
                     modules_order.append(dep_module)
 
-        for i, module in enumerate(modules_order):
+        for i, module in enumerate(modules_order, 1):
             index_lookup[module] = i
 
         return index_lookup
@@ -87,48 +209,11 @@ class Geometry(ModuleMixin):
             extra.add_module(module)
 
         ## Change of Euler angles convention from ZXZ to ZYZ
-        extra.rotation.omega_rad = (self.rotation_rad - math.pi / 2.0) % (2 * math.pi)
-        extra.rotation.theta_rad = self.tilt_rad
-        extra.rotation.phi_rad = math.pi / 2.0
+        extra.rotation.omega_deg = (self.rotation_deg - 90.0) % 360.0
+        extra.rotation.theta_deg = self.tilt_deg
+        extra.rotation.phi_deg = 90.0
 
         return extra
-
-    def to_geo(self):
-        index_lookup = self._indexify()
-
-        lines = []
-
-        lines.append(LINE_START)
-        lines.append('       %s' % self.title)
-        lines.append(LINE_SEPARATOR)
-
-        # Surfaces
-        surfaces = sorted((index_lookup[surface], surface)
-                          for surface in self.get_surfaces())
-
-        for _index, surface in surfaces:
-            lines.extend(surface.to_geo(index_lookup))
-            lines.append(LINE_SEPARATOR)
-
-        # Modules
-        modules = sorted((index_lookup[module], module)
-                          for module in self.get_modules())
-
-        for _index, module in modules:
-            lines.extend(module.to_geo(index_lookup))
-            lines.append(LINE_SEPARATOR)
-
-        # Extra module for tilt and rotation
-        extra = self._create_extra_module()
-
-        index_lookup[extra] = len(self.get_modules())
-        lines.extend(extra.to_geo(index_lookup))
-        lines.append(LINE_SEPARATOR)
-
-        # End of line
-        lines.append(LINE_END)
-
-        return lines
 
     @property
     def title(self):
@@ -141,30 +226,30 @@ class Geometry(ModuleMixin):
     @title.setter
     def title(self, title):
         if len(title) > LINE_SIZE - 3:
-            raise ValueError("The length of the title (%i) must be less than %i." %
-                             (len(title), LINE_SIZE - 3))
+            raise ValueError("The length of the title ({0:d}) must be less than {1:d}."
+                             .format(len(title), LINE_SIZE - 3))
         self._title = title
 
     @property
-    def tilt_rad(self):
+    def tilt_deg(self):
         """
-        Specimen tilt in radians along the x-axis
+        Specimen tilt in degrees along the x-axis
         """
-        return self._tilt_rad
+        return self._tilt_deg
 
-    @tilt_rad.setter
-    def tilt_rad(self, angle_rad):
-        while angle_rad < 0:
-            angle_rad += 2.0 * math.pi
-        self._tilt_rad = angle_rad
+    @tilt_deg.setter
+    def tilt_deg(self, angle_deg):
+        while angle_deg < 0:
+            angle_deg += 360.0
+        self._tilt_deg = angle_deg
 
     @property
-    def rotation_rad(self):
+    def rotation_deg(self):
         """
-        Specimen rotation in radians along the z-axis
+        Specimen rotation in degrees along the z-axis
         """
-        return self._rotation_rad
+        return self._rotation_deg
 
-    @rotation_rad.setter
-    def rotation_rad(self, angle_rad):
-        self._rotation_rad = angle_rad
+    @rotation_deg.setter
+    def rotation_deg(self, angle_deg):
+        self._rotation_deg = angle_deg

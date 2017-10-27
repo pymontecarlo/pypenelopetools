@@ -3,31 +3,27 @@ Definition of module
 """
 
 # Standard library modules.
+import os
 
 # Third party modules.
 
 # Local modules.
 from pypenelopetools.pengeom.transformation import Rotation, Shift
-from pypenelopetools.pengeom.common import \
-    Keyword, PengeomComponent, DescriptionMixin, ModuleMixin
+from pypenelopetools.pengeom.mixin import DescriptionMixin, ModuleMixin
+from pypenelopetools.pengeom.base import _GeometryBase, LINE_EXTRA, LINE_SEPARATOR
+from pypenelopetools.material import VACUUM
 
 # Globals and constants variables.
-from pypenelopetools.pengeom.common import LINE_EXTRA
-
 SIDEPOINTER_POSITIVE = 1
 SIDEPOINTER_NEGATIVE = -1
 
-class Module(DescriptionMixin, ModuleMixin,
-             metaclass=PengeomComponent):
+class Module(DescriptionMixin, ModuleMixin, _GeometryBase):
 
-    _KEYWORD_MODULE = Keyword("MODULE")
-    _KEYWORD_MATERIAL = Keyword('MATERIAL')
-    _KEYWORD_SURFACE = Keyword("SURFACE")
-    _KEYWORD_SIDEPOINTER = ', SIDE POINTER='
-    _KEYWORD_MODULE = Keyword('MODULE')
-
-    def __init__(self, material, description=''):
+    def __init__(self, material=None, description=''):
+        if material is None:
+            material = VACUUM
         self.material = material
+
         self.description = description
 
         self._surfaces = {}
@@ -37,13 +33,96 @@ class Module(DescriptionMixin, ModuleMixin,
         self._shift = Shift()
 
     def __repr__(self):
-        return '<Module(description=%s, material=%s, surfaces_count=%i, modules_count=%i, rotation=%s, shift=%s)>' % \
-            (self.description, self.material, len(self._surfaces),
-             len(self._modules), str(self.rotation), str(self.shift))
+        return '<Module(description={0}, material={1}, surfaces_count={2:d}, modules_count={3:d}, rotation={4}, shift={5})>' \
+            .format(self.description, self.material, len(self._surfaces),
+                    len(self._modules), str(self.rotation), str(self.shift))
+
+    def _read(self, fileobj, material_lookup, surface_lookup, module_lookup):
+        line = self._read_next_line(fileobj)
+        _, _, self.description = self._parse_line(line)
+
+        line = self._read_next_line(fileobj)
+        keyword, material_index, _ = self._parse_line(line)
+        if keyword != 'MATERIAL':
+            raise IOError('Expected keyword "MATERIAL" instead of "{0}"'.format(keyword))
+
+        material_index = int(material_index)
+        if material_index not in material_lookup:
+            raise IOError('No material {0} in lookup table'.format(material_index))
+        self.material = material_lookup[material_index]
+
+        line = self._read_next_line(fileobj)
+        while line != LINE_EXTRA and line != LINE_SEPARATOR:
+            keyword, index, termination = self._parse_line(line)
+            index = int(index)
+
+            if keyword == 'SURFACE':
+                pointer = int(termination[16:18])
+                surface = surface_lookup[index]
+                self.add_surface(surface, pointer)
+
+            elif keyword == 'MODULE':
+                submodule = module_lookup[index]
+                self.add_module(submodule)
+
+            else:
+                raise IOError('Unknown keyword: {0}'.format(keyword))
+
+            line = self._read_next_line(fileobj)
+
+        if line == LINE_EXTRA:
+            extra_offset = fileobj.tell()
+            self.rotation._read(fileobj, material_lookup, surface_lookup, module_lookup)
+
+            fileobj.seek(extra_offset)
+            self.shift._read(fileobj, material_lookup, surface_lookup, module_lookup)
+
+    def _write(self, fileobj, index_lookup):
+        index = index_lookup[self]
+        text = "{:4d}".format(index)
+        termination = " " + self.description
+        line = self._create_line('MODULE', text, termination)
+        fileobj.write(line + os.linesep)
+
+        # Material index
+        index = index_lookup[self.material]
+        text = "{:4d}".format(index)
+        line = self._create_line('MATERIAL', text)
+        fileobj.write(line + os.linesep)
+
+        # Surface pointers
+        surfaces = sorted((index_lookup[surface], surface, pointer)
+                          for surface, pointer in self._surfaces.items())
+
+        for index, surface, pointer in surfaces:
+            text = "{:4d}".format(index)
+            termination = ", SIDE POINTER=({:2d})".format(pointer)
+            line = self._create_line('SURFACE', text, termination)
+            fileobj.write(line + os.linesep)
+
+        # Module indexes
+        modules = sorted((index_lookup[module], module)
+                          for module in self.get_modules())
+
+        for index, module in modules:
+            text = "{:4d}".format(index)
+            line = self._create_line('MODULE', text)
+            fileobj.write(line + os.linesep)
+
+        # Separator
+        fileobj.write(LINE_EXTRA + os.linesep)
+
+        # Rotation
+        self.rotation._write(fileobj, index_lookup)
+
+        # Shift
+        self.shift._write(fileobj, index_lookup)
+
+        fileobj.write(LINE_SEPARATOR + os.linesep)
 
     def add_surface(self, surface, pointer):
         if pointer not in [SIDEPOINTER_NEGATIVE, SIDEPOINTER_POSITIVE]:
-            raise ValueError("Pointer (%s) must be either -1 or 1." % pointer)
+            raise ValueError("Pointer ({0}) must be either -1 or 1.".format(pointer))
         if surface in self._surfaces:
             raise ValueError("Module already contains this surface.")
         self._surfaces[surface] = pointer
@@ -62,54 +141,6 @@ class Module(DescriptionMixin, ModuleMixin,
 
     def get_surfaces(self):
         return self._surfaces.keys()
-
-    def to_geo(self, index_lookup):
-        """
-        Returns the lines of this class to create a GEO file.
-        """
-        lines = []
-
-        index = index_lookup[self]
-        text = "%4i" % (index + 1,)
-        comment = " %s" % self.description
-        line = self._KEYWORD_MODULE.create_line(text, comment)
-        lines.append(line)
-
-        # Material index
-        index = index_lookup[self.material]
-        text = "%4i" % index
-        line = self._KEYWORD_MATERIAL.create_line(text)
-        lines.append(line)
-
-        # Surface pointers
-        surfaces = sorted((index_lookup[surface], surface, pointer)
-                          for surface, pointer in self._surfaces.items())
-
-        for index, surface, pointer in surfaces:
-            text = "%4i" % (index + 1,)
-            comment = "%s(%2i)" % (self._KEYWORD_SIDEPOINTER, pointer)
-            line = self._KEYWORD_SURFACE.create_line(text, comment)
-            lines.append(line)
-
-        # Module indexes
-        modules = sorted((index_lookup[module], module)
-                          for module in self.get_modules())
-
-        for index, module in modules:
-            text = "%4i" % (index + 1,)
-            line = self._KEYWORD_MODULE.create_line(text)
-            lines.append(line)
-
-        # Separator
-        lines.append(LINE_EXTRA)
-
-        # Rotation
-        lines.extend(self.rotation.to_geo(index_lookup))
-
-        # Shift
-        lines.extend(self.shift.to_geo(index_lookup))
-
-        return lines
 
     @property
     def rotation(self):

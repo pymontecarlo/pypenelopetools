@@ -1,181 +1,189 @@
 """"""
 
 # Standard library modules.
+import os
 import math
 
 # Third party modules.
 
 # Local modules.
-from pypenelopetools.pengeom.common import Keyword, PengeomComponent
+from pypenelopetools.pengeom.base import _GeometryBase, LINE_SEPARATOR
 
 # Globals and constants variables.
 
-class Rotation(metaclass=PengeomComponent):
+class Rotation(_GeometryBase):
 
-    _KEYWORD_OMEGA = Keyword('OMEGA=', ' DEG          (DEFAULT=0.0)')
-    _KEYWORD_THETA = Keyword('THETA=', ' DEG          (DEFAULT=0.0)')
-    _KEYWORD_PHI = Keyword('PHI=', ' DEG          (DEFAULT=0.0)')
-
-    def __init__(self, omega_rad=0.0, theta_rad=0.0, phi_rad=0.0):
+    def __init__(self, omega_deg=0.0, theta_deg=0.0, phi_deg=0.0):
         """
         Represents a rotation using 3 Euler angles (YZY).
 
-        :arg omega_rad: rotation around the z-axis (rad)
-        :arg theta_rad: rotation around the y-axis (rad)
-        :arg phi_rad: rotation around the new z-axis (rad)
+        :arg omega_deg: rotation around the z-axis (deg)
+        :arg theta_deg: rotation around the y-axis (deg)
+        :arg phi_deg: rotation around the new z-axis (deg)
         """
-        self.omega_rad = omega_rad
-        self.theta_rad = theta_rad
-        self.phi_rad = phi_rad
+        self.omega_deg = omega_deg
+        self.theta_deg = theta_deg
+        self.phi_deg = phi_deg
 
     def __repr__(self):
-        return "<Rotation(omega=%s, theta=%s, phi=%s)>" % \
-                    (self.omega_rad, self.theta_rad, self.phi_rad)
+        return "<Rotation(omega={0:g} deg, theta={1:g} deg, phi={2:g} deg)>" \
+                .format(self.omega_deg, self.theta_deg, self.phi_deg)
 
     def __str__(self):
-        return '(omega=%s, theta=%s, phi=%s)' % \
-                    (self.omega_rad, self.theta_rad, self.phi_rad)
+        return '(omega={0:g} deg, theta={1:g} deg, phi={2:g} deg)' \
+                .format(self.omega_deg, self.theta_deg, self.phi_deg)
 
-    def to_geo(self, index_lookup):
-        """
-        Returns the lines of this class to create a GEO file.
-        """
-        lines = []
+    def _read(self, fileobj, material_lookup, surface_lookup, module_lookup):
+        line = self._peek_next_line(fileobj)
+        while line != LINE_SEPARATOR:
+            keyword, value, termination = self._parse_expline(line)
 
-        line = self._KEYWORD_OMEGA.create_expline(math.degrees(self.omega_rad))
-        lines.append(line)
+            if termination.startswith('RAD'):
+                value = math.degrees(value)
 
-        line = self._KEYWORD_THETA.create_expline(math.degrees(self.theta_rad))
-        lines.append(line)
+            if keyword == 'OMEGA=':
+                self.omega_deg = value
+            elif keyword == 'THETA=':
+                self.theta_deg = value
+            elif keyword == 'PHI=':
+                self.phi_deg = value
 
-        line = self._KEYWORD_PHI.create_expline(math.degrees(self.phi_rad))
-        lines.append(line)
+            line = self._read_next_line(fileobj)
 
-        return lines
+    def _write(self, fileobj, index_lookup):
+        line = self._create_expline('OMEGA=', self.omega_deg, ' DEG          (DEFAULT=0.0)')
+        fileobj.write(line + os.linesep)
+
+        line = self._create_expline('THETA=', self.theta_deg, ' DEG          (DEFAULT=0.0)')
+        fileobj.write(line + os.linesep)
+
+        line = self._create_expline('PHI=', self.phi_deg, ' DEG          (DEFAULT=0.0)')
+        fileobj.write(line + os.linesep)
 
     @property
-    def omega_rad(self):
+    def omega_deg(self):
         """
-        Rotation around the z-axis (rad).
-        The value must be between 0 and 2pi.
+        Rotation around the z-axis (deg).
+        The value must be between 0 and 360.
         """
         return self._omega
 
-    @omega_rad.setter
-    def omega_rad(self, angle):
-        if angle < 0 or angle > 2 * math.pi:
-            raise ValueError("Angle (%s) must be between [0,pi]." % angle)
+    @omega_deg.setter
+    def omega_deg(self, angle):
+        if angle < 0 or angle > 360.0:
+            raise ValueError("Angle ({0}) must be between [0,360].".format(angle))
         self._omega = angle
 
     @property
-    def theta_rad(self):
+    def theta_deg(self):
         """
-        Rotation around the y-axis (rad).
-        The value must be between 0 and 2pi.
+        Rotation around the y-axis (deg).
+        The value must be between 0 and 360.
         """
         return self._theta
 
-    @theta_rad.setter
-    def theta_rad(self, angle):
-        if angle < 0 or angle > 2 * math.pi:
-            raise ValueError("Angle (%s) must be between [0,pi]." % angle)
+    @theta_deg.setter
+    def theta_deg(self, angle):
+        if angle < 0 or angle > 360:
+            raise ValueError("Angle ({0}) must be between [0,360].".format(angle))
         self._theta = angle
 
     @property
-    def phi_rad(self):
+    def phi_deg(self):
         """
-        Rotation around the new z-axis (rad).
+        Rotation around the new z-axis (deg).
         The new z-axis refer to the axis after the omega and theta rotation were
         applied on the original coordinate system.
-        The value must be between 0 and 2pi.
+        The value must be between 0 and 360.
         """
         return self._phi
 
-    @phi_rad.setter
-    def phi_rad(self, angle):
-        if angle < 0 or angle > 2 * math.pi:
-            raise ValueError("Angle (%s) must be between [0,pi]." % angle)
+    @phi_deg.setter
+    def phi_deg(self, angle):
+        if angle < 0 or angle > 360:
+            raise ValueError("Angle ({0}) must be between [0,360].".format(angle))
         self._phi = angle
 
-class Shift(metaclass=PengeomComponent):
+class Shift(_GeometryBase):
 
-    _KEYWORD_X = Keyword('X-SHIFT=', '              (DEFAULT=0.0)')
-    _KEYWORD_Y = Keyword('Y-SHIFT=', '              (DEFAULT=0.0)')
-    _KEYWORD_Z = Keyword('Z-SHIFT=', '              (DEFAULT=0.0)')
-
-    def __init__(self, x_m=0.0, y_m=0.0, z_m=0.0):
+    def __init__(self, x_cm=0.0, y_cm=0.0, z_cm=0.0):
         """
         Represents a translation in space.
 
-        :arg x_m: translation along the x direction (m)
-        :arg y_m: translation along the y direction (m)
-        :arg z_m: translation along the z direction (m)
+        :arg x_cm: translation along the x direction (cm)
+        :arg y_cm: translation along the y direction (cm)
+        :arg z_cm: translation along the z direction (cm)
         """
-        self.x_m = x_m
-        self.y_m = y_m
-        self.z_m = z_m
+        self.x_cm = x_cm
+        self.y_cm = y_cm
+        self.z_cm = z_cm
 
     def __repr__(self):
-        return "<Shift(x=%s, y=%s, z=%s)>" % (self.x_m, self.y_m, self.z_m)
+        return "<Shift(x={0:g} cm, y={1:g} cm, z={2:g} cm)>" \
+            .format(self.x_cm, self.y_cm, self.z_cm)
 
     def __str__(self):
-        return "(x=%s, y=%s, z=%s)" % (self.x_m, self.y_m, self.z_m)
+        return "(x={0:g} cm, y={1:g} cm, z={2:g} cm)" \
+            .format(self.x_cm, self.y_cm, self.z_cm)
 
-    def to_geo(self, index_lookup):
-        """
-        Returns the lines of this class to create a GEO file.
-        """
-        lines = []
+    def _read(self, fileobj, material_lookup, surface_lookup, module_lookup):
+        line = self._peek_next_line(fileobj)
+        while line != LINE_SEPARATOR:
+            keyword, value, _ = self._parse_expline(line)
 
-        line = self._KEYWORD_X.create_expline(self.x_m * 100.0)
-        lines.append(line)
+            if keyword == 'X-SHIFT=':
+                self.x_cm = value
+            elif keyword == 'Y-SHIFT=':
+                self.y_cm = value
+            elif keyword == 'Z-SHIFT=':
+                self.z_cm = value
 
-        line = self._KEYWORD_Y.create_expline(self.y_m * 100.0)
-        lines.append(line)
+            line = self._read_next_line(fileobj)
 
-        line = self._KEYWORD_Z.create_expline(self.z_m * 100.0)
-        lines.append(line)
+    def _write(self, fileobj, index_lookup):
+        line = self._create_expline('X-SHIFT=', self.x_cm, '              (DEFAULT=0.0)')
+        fileobj.write(line + os.linesep)
 
-        return lines
+        line = self._create_expline('Y-SHIFT=', self.y_cm, '              (DEFAULT=0.0)')
+        fileobj.write(line + os.linesep)
+
+        line = self._create_expline('Z-SHIFT=', self.z_cm, '              (DEFAULT=0.0)')
+        fileobj.write(line + os.linesep)
 
     @property
-    def x_m(self):
+    def x_cm(self):
         """
-        Translation along the x direction (m).
+        Translation along the x direction (cm).
         """
         return self._x
 
-    @x_m.setter
-    def x_m(self, shift):
+    @x_cm.setter
+    def x_cm(self, shift):
         self._x = shift
 
     @property
-    def y_m(self):
+    def y_cm(self):
         """
-        Translation along the y direction (m).
+        Translation along the y direction (cm).
         """
         return self._y
 
-    @y_m.setter
-    def y_m(self, shift):
+    @y_cm.setter
+    def y_cm(self, shift):
         self._y = shift
 
     @property
-    def z_m(self):
+    def z_cm(self):
         """
-        Translation along the z direction (m).
+        Translation along the z direction (cm).
         """
         return self._z
 
-    @z_m.setter
-    def z_m(self, shift):
+    @z_cm.setter
+    def z_cm(self, shift):
         self._z = shift
 
-class Scale(metaclass=PengeomComponent):
-
-    _KEYWORD_X = Keyword('X-SCALE=', '              (DEFAULT=1.0)')
-    _KEYWORD_Y = Keyword('Y-SCALE=', '              (DEFAULT=1.0)')
-    _KEYWORD_Z = Keyword('Z-SCALE=', '              (DEFAULT=1.0)')
+class Scale(_GeometryBase):
 
     def __init__(self, x=1.0, y=1.0, z=1.0):
         """
@@ -190,27 +198,35 @@ class Scale(metaclass=PengeomComponent):
         self.z = z
 
     def __repr__(self):
-        return "<Shift(x=%s, y=%s, z=%s)>" % (self.x, self.y, self.z)
+        return "<Shift(x={0:g}, y={1:g}, z={2:g})>" \
+            .format(self.x, self.y, self.z)
 
     def __str__(self):
-        return "(x=%s, y=%s, z=%s)" % (self.x, self.y, self.z)
+        return "(x={0:g}, y={1:g}, z={2:g})".format(self.x, self.y, self.z)
 
-    def to_geo(self, index_lookup):
-        """
-        Returns the lines of this class to create a GEO file.
-        """
-        lines = []
+    def _read(self, fileobj, material_lookup, surface_lookup, module_lookup):
+        line = self._peek_next_line(fileobj)
+        while line != LINE_SEPARATOR:
+            keyword, value, _ = self._parse_expline(line)
 
-        line = self._KEYWORD_X.create_expline(self.x)
-        lines.append(line)
+            if keyword == 'X-SCALE=':
+                self.x = value
+            elif keyword == 'Y-SCALE=':
+                self.y = value
+            elif keyword == 'Z-SCALE=':
+                self.z = value
 
-        line = self._KEYWORD_Y.create_expline(self.y)
-        lines.append(line)
+            line = self._read_next_line(fileobj)
 
-        line = self._KEYWORD_Z.create_expline(self.z)
-        lines.append(line)
+    def _write(self, fileobj, index_lookup):
+        line = self._create_expline('X-SCALE=', self.x, '              (DEFAULT=1.0)')
+        fileobj.write(line + os.linesep)
 
-        return lines
+        line = self._create_expline('Y-SCALE=', self.y, '              (DEFAULT=1.0)')
+        fileobj.write(line + os.linesep)
+
+        line = self._create_expline('Z-SCALE=', self.z, '              (DEFAULT=1.0)')
+        fileobj.write(line + os.linesep)
 
     @property
     def x(self):

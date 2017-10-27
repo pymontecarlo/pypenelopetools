@@ -7,25 +7,21 @@ __all__ = ['SurfaceImplicit', 'SurfaceReduced',
            'AXIS_X', 'AXIS_Y', 'AXIS_Z']
 
 # Standard library modules.
-import math
+import os
 
 # Third party modules.
 
 # Local modules.
-from pypenelopetools.pengeom.common import \
-    Keyword, PengeomComponent, DescriptionMixin, LINE_EXTRA
 from pypenelopetools.pengeom.transformation import Rotation, Shift, Scale
+from pypenelopetools.pengeom.base import _GeometryBase, LINE_EXTRA, LINE_SEPARATOR
+from pypenelopetools.pengeom.mixin import DescriptionMixin
 
 # Globals and constants variables.
 AXIS_X = 'x'
 AXIS_Y = 'y'
 AXIS_Z = 'z'
 
-class _Surface(DescriptionMixin,
-               metaclass=PengeomComponent):
-
-    _KEYWORD_SURFACE = Keyword("SURFACE")
-    _KEYWORD_INDICES = Keyword('INDICES=')
+class _SurfaceBase(DescriptionMixin, _GeometryBase):
 
     def __init__(self, description=''):
         self.description = description
@@ -33,19 +29,12 @@ class _Surface(DescriptionMixin,
         self._rotation = Rotation()
         self._shift = Shift()
 
-    def to_geo(self, index_lookup):
-        lines = []
-
+    def _write(self, fileobj, index_lookup):
         index = index_lookup[self]
-        text = "%4i" % (index + 1,)
-        comment = " %s" % self.description
-        line = self._KEYWORD_SURFACE.create_line(text, comment)
-        lines.append(line)
-
-        lines.extend(self.rotation.to_geo(index_lookup))
-        lines.extend(self.shift.to_geo(index_lookup))
-
-        return lines
+        text = "{:4d}".format(index)
+        comment = " " + self.description
+        line = self._create_line("SURFACE", text, comment)
+        fileobj.write(line + os.linesep)
 
     @property
     def rotation(self):
@@ -63,56 +52,73 @@ class _Surface(DescriptionMixin,
         """
         return self._shift
 
-class SurfaceImplicit(_Surface):
+class SurfaceImplicit(_SurfaceBase):
 
-    _KEYWORD_AXX = Keyword('AXX=', '              (DEFAULT=0.0)')
-    _KEYWORD_AXY = Keyword('AXY=', '              (DEFAULT=0.0)')
-    _KEYWORD_AXZ = Keyword('AXZ=', '              (DEFAULT=0.0)')
-    _KEYWORD_AYY = Keyword('AYY=', '              (DEFAULT=0.0)')
-    _KEYWORD_AYZ = Keyword('AYZ=', '              (DEFAULT=0.0)')
-    _KEYWORD_AZZ = Keyword('AZZ=', '              (DEFAULT=0.0)')
-    _KEYWORD_AX = Keyword('AX=', '              (DEFAULT=0.0)')
-    _KEYWORD_AY = Keyword('AY=', '              (DEFAULT=0.0)')
-    _KEYWORD_AZ = Keyword('AZ=', '              (DEFAULT=0.0)')
-    _KEYWORD_A0 = Keyword('A0=', '              (DEFAULT=0.0)')
-
-    def __init__(self, coefficients=[0.0] * 10, description=''):
+    def __init__(self, coefficients=None, description=''):
         super().__init__(description)
 
+        if coefficients is None:
+            coefficients = [0.0] * 10
         self.coefficients = coefficients
 
     def __repr__(self):
-        coeffs = ['%s=%s' % (key, value) for key, value in self.coefficients.iteritems()]
-        return '<Surface(description=%s, %s, rotation=%s, shift=%s)>' % \
-            (self.description, ', '.join(coeffs), str(self.rotation), str(self.shift))
+        coeffs = ['{0}={1}'.format(key, value)
+                  for key, value in self.coefficients.items()]
+        return '<Surface(description={0}, {1}, rotation={2}, shift={3})>' \
+            .format(self.description, ', '.join(coeffs), str(self.rotation), str(self.shift))
 
-    def to_geo(self, index_lookup):
-        def create_coefficient_line(key):
-            value = self.coefficients[key]
-            keyword = getattr(self, "_KEYWORD_A" + key.upper())
-            return keyword.create_expline(value)
+    def _read(self, fileobj, material_lookup, surface_lookup, module_lookup):
+        line = self._read_next_line(fileobj)
+        _, _, self.description = self._parse_line(line)
 
-        lines = super().to_geo(index_lookup)
+        line = self._read_next_line(fileobj)
+        if line != 'INDICES=( 0, 0, 0, 0, 0)':
+            raise IOError('Expected line "INDICES=( 0, 0, 0, 0, 0)" instead of "{0}"'
+                          .format(line))
+
+        line = self._read_next_line(fileobj)
+        while line != LINE_EXTRA and line != LINE_SEPARATOR:
+            keyword, value, _ = self._parse_expline(line)
+            key = keyword[1:-1].lower()
+            self.coefficients[key] = value
+            line = self._read_next_line(fileobj)
+
+        if line == LINE_EXTRA:
+            extra_offset = fileobj.tell()
+            self.rotation._read(fileobj, material_lookup, surface_lookup, module_lookup)
+
+            fileobj.seek(extra_offset)
+            self.shift._read(fileobj, material_lookup, surface_lookup, module_lookup)
+
+    def _create_coefficient_line(self, key):
+        value = self.coefficients[key]
+        return self._create_expline('A{}='.format(key.upper()), value, '              (DEFAULT=0.0)')
+
+    def _write(self, fileobj, index_lookup):
+        super()._write(fileobj, index_lookup)
 
         # Indices
-        text = "%2i,%2i,%2i,%2i,%2i" % (0, 0, 0, 0, 0)
-        line = self._KEYWORD_INDICES.create_line(text)
-        lines.insert(1, line)
+        text = "{0:2d},{1:2d},{2:2d},{3:2d},{4:2d}".format(0, 0, 0, 0, 0)
+        line = self._create_line('INDICES=', text)
+        fileobj.write(line + os.linesep)
 
         # Coefficients
-        lines.insert(2, create_coefficient_line('xx'))
-        lines.insert(3, create_coefficient_line('xy'))
-        lines.insert(4, create_coefficient_line('xz'))
-        lines.insert(5, create_coefficient_line('yy'))
-        lines.insert(6, create_coefficient_line('yz'))
-        lines.insert(7, create_coefficient_line('zz'))
-        lines.insert(8, create_coefficient_line('x'))
-        lines.insert(9, create_coefficient_line('y'))
-        lines.insert(10, create_coefficient_line('z'))
-        lines.insert(11, create_coefficient_line('0'))
-        lines.insert(12, LINE_EXTRA)
+        fileobj.write(self._create_coefficient_line('xx') + os.linesep)
+        fileobj.write(self._create_coefficient_line('xy') + os.linesep)
+        fileobj.write(self._create_coefficient_line('xz') + os.linesep)
+        fileobj.write(self._create_coefficient_line('yy') + os.linesep)
+        fileobj.write(self._create_coefficient_line('yz') + os.linesep)
+        fileobj.write(self._create_coefficient_line('zz') + os.linesep)
+        fileobj.write(self._create_coefficient_line('x') + os.linesep)
+        fileobj.write(self._create_coefficient_line('y') + os.linesep)
+        fileobj.write(self._create_coefficient_line('z') + os.linesep)
+        fileobj.write(self._create_coefficient_line('0') + os.linesep)
+        fileobj.write(LINE_EXTRA + os.linesep)
 
-        return lines
+        self.rotation._write(fileobj, index_lookup)
+        self.shift._write(fileobj, index_lookup)
+
+        fileobj.write(LINE_SEPARATOR + os.linesep)
 
     @property
     def coefficients(self):
@@ -152,31 +158,53 @@ class SurfaceImplicit(_Surface):
                  'x': coefficients[6], 'y': coefficients[7], 'z': coefficients[8],
                  '0': coefficients[9]}
 
-class SurfaceReduced(_Surface):
+class SurfaceReduced(_SurfaceBase):
 
-    def __init__(self, indices, description=''):
+    def __init__(self, indices=None, description=''):
         super().__init__(description)
 
+        if indices is None:
+            indices = (0, 0, 0, 0, 0)
         self.indices = indices
         self._scale = Scale()
 
     def __repr__(self):
-        return '<Surface(description=%s, indices=%s, scale=%s, rotation=%s, shift=%s)>' % \
-            (self.description, str(self.indices), str(self.scale),
-             str(self.rotation), str(self.shift))
+        return '<Surface(description={0}, indices={1}, scale={2}, rotation={3}, shift={4})>' \
+            .format(self.description, str(self.indices), str(self.scale),
+                    str(self.rotation), str(self.shift))
 
-    def to_geo(self, index_lookup):
-        lines = super().to_geo(index_lookup)
+    def _read(self, fileobj, material_lookup, surface_lookup, module_lookup):
+        line = self._read_next_line(fileobj)
+        _, _, self.description = self._parse_line(line)
+
+        line = self._read_next_line(fileobj)
+        keyword, text, _termination = self._parse_line(line)
+        if keyword != 'INDICES=':
+            raise IOError('Expected keyword "INDICES=" instead of "{0}"'.format(keyword))
+        self.indices = tuple(map(int, text.split(',')))
+
+        extra_offset = fileobj.tell()
+        self.rotation._read(fileobj, material_lookup, surface_lookup, module_lookup)
+
+        fileobj.seek(extra_offset)
+        self.shift._read(fileobj, material_lookup, surface_lookup, module_lookup)
+
+        fileobj.seek(extra_offset)
+        self.scale._read(fileobj, material_lookup, surface_lookup, module_lookup)
+
+    def _write(self, fileobj, index_lookup):
+        super()._write(fileobj, index_lookup)
 
         # Indices
-        text = "%2i,%2i,%2i,%2i,%2i" % self.indices
-        line = self._KEYWORD_INDICES.create_line(text)
-        lines.insert(1, line)
+        text = "{0:2d},{1:2d},{2:2d},{3:2d},{4:2d}".format(*self.indices)
+        line = self._create_line('INDICES=', text)
+        fileobj.write(line + os.linesep)
 
-        for i, line in enumerate(self.scale.to_geo(index_lookup)):
-            lines.insert(2 + i, line)
+        self.scale._write(fileobj, index_lookup)
+        self.rotation._write(fileobj, index_lookup)
+        self.shift._write(fileobj, index_lookup)
 
-        return lines
+        fileobj.write(LINE_SEPARATOR + os.linesep)
 
     @property
     def indices(self):
@@ -194,7 +222,7 @@ class SurfaceReduced(_Surface):
 
         for indice in indices:
             if not indice in [-1, 0, 1]:
-                raise ValueError("Index (%s) must be either -1, 0 or 1." % indice)
+                raise ValueError("Index ({:d}) must be either -1, 0 or 1.".format(indice))
 
         self._indices = tuple(indices)
 
@@ -206,84 +234,84 @@ class SurfaceReduced(_Surface):
         """
         return self._scale
 
-def xplane(x_m):
+def xplane(x_cm):
     """
     Returns a surface for a plane X=x
 
-    :arg z_m: intercept on the x-axis (in m)
+    :arg x_cm: intercept on the x-axis (in cm)
 
     :rtype: :class:`.Surface`
     """
-    s = SurfaceReduced((0, 0, 0, 1, 0), 'Plane X=%4.2f m' % x_m)
-    s.shift.x_m = x_m
-    s.rotation.theta_rad = math.pi / 2.0
+    s = SurfaceReduced((0, 0, 0, 1, 0), 'Plane X={:4.2f} cm'.format(x_cm))
+    s.shift.x_cm = x_cm
+    s.rotation.theta_deg = 90.0
     return s
 
-def yplane(y_m):
+def yplane(y_cm):
     """
     Returns a surface for a plane Y=y
 
-    :arg y_m: intercept on the y-axis (in m)
+    :arg y_cm: intercept on the y-axis (in cm)
 
     :rtype: :class:`.Surface`
     """
-    s = SurfaceReduced((0, 0, 0, 1, 0), 'Plane Y=%4.2f m' % y_m)
-    s.shift.y_m = y_m
-    s.rotation.theta_rad = math.pi / 2.0
-    s.rotation.phi_rad = math.pi / 2.0
+    s = SurfaceReduced((0, 0, 0, 1, 0), 'Plane Y={:4.2f} cm'.format(y_cm))
+    s.shift.y_cm = y_cm
+    s.rotation.theta_deg = 90.0
+    s.rotation.phi_deg = 90.0
     return s
 
-def zplane(z_m):
+def zplane(z_cm):
     """
     Returns a surface for a plane Z=z
 
-    :arg z_m: intercept on the z-axis (in m)
+    :arg z_cm: intercept on the z-axis (in cm)
 
     :rtype: :class:`.Surface`
     """
-    s = SurfaceReduced((0, 0, 0, 1, 0), 'Plane Z=%4.2f m' % z_m)
-    s.shift.z_m = z_m
+    s = SurfaceReduced((0, 0, 0, 1, 0), 'Plane Z={:4.2f} cm'.format(z_cm))
+    s.shift.z_cm = z_cm
     return s
 
-def cylinder(radius_m, axis=AXIS_Z):
+def cylinder(radius_cm, axis=AXIS_Z):
     """
     Returns a surface for a cylinder along *axis* with *radius*
 
-    :arg radius_m: radius of the cylinder (in m)
+    :arg radius_cm: radius of the cylinder (in cm)
     :arg axis: axis of the cylinder (:const:`AXIS_X`, :const:`AXIS_Y` or :const:`AXIS_Z`)
 
     :rtype: :class:`.Surface`
     """
     axis = axis.lower()
-    description = 'Cylinder of radius %4.2f m along %s-axis' % (radius_m, axis)
+    description = 'Cylinder of radius {0:4.2f} cm along {1}-axis'.format(radius_cm, axis)
     s = SurfaceReduced((1, 1, 0, 0, -1), description)
 
-    s.scale.x = radius_m * 100
-    s.scale.y = radius_m * 100
+    s.scale.x = radius_cm
+    s.scale.y = radius_cm
 
     if axis == 'z':
         pass
     elif axis == 'x':
-        s.rotation.theta_rad = math.pi / 2.0
+        s.rotation.theta_deg = 90.0
     elif axis == 'y':
-        s.rotation.theta_rad = math.pi / 2.0
-        s.rotation.phi_rad = math.pi / 2.0
+        s.rotation.theta_deg = 90.0
+        s.rotation.phi_deg = 90.0
 
     return s
 
-def sphere(radius_m):
+def sphere(radius_cm):
     """
     Returns a surface for a sphere or *radius*
 
-    :arg radius_m: radius of the cylinder (in m)
+    :arg radius_cm: radius of the cylinder (in cm)
 
     :rtype: :class:`.Surface`
     """
-    description = 'Sphere of radius %4.2f m' % radius_m
+    description = 'Sphere of radius {:4.2f} cm'.format(radius_cm)
     s = SurfaceReduced((1, 1, 1, 0, -1), description)
 
-    s.scale.x = radius_m * 100
-    s.scale.y = radius_m * 100
-    s.scale.z = radius_m * 100
+    s.scale.x = radius_cm
+    s.scale.y = radius_cm
+    s.scale.z = radius_cm
 
     return s

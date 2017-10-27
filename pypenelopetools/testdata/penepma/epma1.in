@@ -1,0 +1,78 @@
+TITLE  A Cu slab
+       .
+       >>>>>>>> Electron beam definition.
+SENERG 15e3                      [Energy of the electron beam, in eV]
+SPOSIT 0 0 1                     [Coordinates of the electron source]
+SDIREC 180 0              [Direction angles of the beam axis, in deg]
+SAPERT 0                                      [Beam aperture, in deg]
+       .
+       >>>>>>>> Material data and simulation parameters.
+                Up to 10 materials; 2 lines for each material.
+MFNAME Cu.mat                         [Material file, up to 20 chars]
+MSIMPA 1e3 1e3 1e3 0.2 0.2 1e3 1e3          [EABS(1:3),C1,C2,WCC,WCR]
+       .
+       >>>>>>>> Geometry of the sample.
+GEOMFN epma1.geo                 [Geometry definition file, 20 chars]
+DSMAX  1 1.0e-4             [IB, Maximum step length (cm) in body IB]
+       .
+       >>>>>>>> Interaction forcing.
+IFORCE 1 1 4 -5     0.9 1.0           [KB,KPAR,ICOL,FORCER,WLOW,WHIG]
+IFORCE 1 1 5 -250   0.9 1.0           [KB,KPAR,ICOL,FORCER,WLOW,WHIG]
+IFORCE 1 2 2  10    1e-3 1.0          [KB,KPAR,ICOL,FORCER,WLOW,WHIG]
+IFORCE 1 2 3  10    1e-3 1.0          [KB,KPAR,ICOL,FORCER,WLOW,WHIG]
+       .
+       >>>>>>>> Bremsstrahlung splitting.
+IBRSPL 1 2                                      [KB,splitting factor]
+       .
+       >>>>>>>> X-ray splitting.
+IXRSPL 1 2                                      [KB,splitting factor]
+       .
+       >>>>>>>> Emerging particles. Energy and angular distributions.
+NBE    0.0 0.0 300                [E-interval and no. of energy bins]
+NBANGL 45 30              [Nos. of bins for the angles THETA and PHI]
+       .
+       >>>>>>>> Photon detectors (up to 25 different detectors).
+                IPSF=0, do not create a phase-space file.
+                IPSF=1, creates a phase-space file.
+PDANGL 0 90  0 360 0                   [Angular window, in deg, IPSF]
+PDENER 0.0 0.0 1000                  [Energy window, no. of channels]
+       .
+PDANGL 5 15  0 360 0                   [Angular window, in deg, IPSF]
+PDENER 0.0 0.0 1000                  [Energy window, no. of channels]
+       .
+PDANGL 15 25 0 360 0                   [Angular window, in deg, IPSF]
+PDENER 0.0 0.0 1000                  [Energy window, no. of channels]
+       .
+PDANGL 25 35 0 360 0                   [Angular window, in deg, IPSF]
+PDENER 0.0 0.0 1000                  [Energy window, no. of channels]
+       .
+PDANGL 35 45 0 360 0                   [Angular window, in deg, IPSF]
+PDENER 0.0 0.0 1000                  [Energy window, no. of channels]
+       .
+PDANGL 45 55 0 360 0                   [Angular window, in deg, IPSF]
+PDENER 0.0 0.0 1000                  [Energy window, no. of channels]
+       .
+PDANGL 55 65 0 360 0                   [Angular window, in deg, IPSF]
+PDENER 0.0 0.0 1000                  [Energy window, no. of channels]
+       .
+PDANGL 65 75 0 360 0                   [Angular window, in deg, IPSF]
+PDENER 0.0 0.0 1000                  [Energy window, no. of channels]
+       .
+PDANGL 75 85 0 360 0                   [Angular window, in deg, IPSF]
+PDENER 0.0 0.0 1000                  [Energy window, no. of channels]
+       .
+       >>>>>>>> Spatial distribution of x-ray emission events.
+GRIDX  -4e-5 4e-5 60      [X coords of the box vertices, no. of bins]
+GRIDY  -4e-5 4e-5 60      [Y coords of the box vertices, no. of bins]
+GRIDZ  -6e-5 0.   60      [Z coords of the box vertices, no. of bins]
+XRLINE 29010300                 [X-ray line, IZ*1e6+S1*1e4+S2*1e2+S3]
+       .
+       >>>>>>>> Job properties
+RESUME dump1.dat               [Resume from this dump file, 20 chars]
+DUMPTO dump1.dat                  [Generate this dump file, 20 chars]
+DUMPP  60                                    [Dumping period, in sec]
+       .
+RSEED  -10   1                 [Seeds of the random-number generator]
+REFLIN 29010300 1 1.25E-3        [IZ*1e6+S1*1e4+S2*1e2,detector,tol.]
+NSIMSH 2.0e9                    [Desired number of simulated showers]
+TIME   2.0e9                       [Allotted simulation time, in sec]

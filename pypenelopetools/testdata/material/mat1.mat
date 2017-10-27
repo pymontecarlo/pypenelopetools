@@ -1,0 +1,10 @@
+ PENELOPE (v. 2014)  Material data file ...............
+ Material: mat1                                                          
+ Mass density = 8.90000000E+00 g/cm**3
+ Number of elements in the molecule =  2
+   atomic number = 29,  atoms/molecule = 6.86012233E-01
+   atomic number = 30,  atoms/molecule = 1.00000000E+00
+ Mean excitation energy = 3.26787000E+02 eV
+ Number of oscillators = 17 (E/P inelastic model)
+   1  2.68600000E+00  0.00000000E+00  1.34960000E+01   0  30
+ We do not parse pass this line

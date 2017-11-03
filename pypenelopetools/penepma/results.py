@@ -4,7 +4,7 @@
 import os
 
 # Third party modules.
-from uncertainties import ufloat
+from uncertainties import ufloat, unumpy as unumpy
 
 import pyxray
 
@@ -145,25 +145,15 @@ class PenepmaResult(_PenelopeResultBase):
         with open(filepath, 'r') as fp:
             self.read(fp)
 
-class PenepmaIntensityResult(_PenelopeResultBase):
+class _PenepmaPhotonDetectorResult(_PenelopeResultBase):
 
     def __init__(self, detector_index):
-        """
-        Intensities of a detector. 
-        """
         super().__init__()
-
         self.detector_index = detector_index
         self.theta1_deg = ufloat(0.0, 0.0)
         self.theta2_deg = ufloat(0.0, 0.0)
         self.phi1_deg = ufloat(0.0, 0.0)
         self.phi2_deg = ufloat(0.0, 0.0)
-
-        self.primary_intensities_1_per_sr_electron = {}
-        self.characteristic_fluorescence_intensities_1_per_sr_electron = {}
-        self.bremsstrahlung_fluorescence_intensities_1_per_sr_electron = {}
-        self.total_fluorescence_intensities_1_per_sr_electron = {}
-        self.total_intensities_1_per_sr_electron = {}
 
     def read(self, fileobj):
         line = self._read_until_line_startswith(fileobj, '#  Results from PENEPMA. Output from photon detector')
@@ -182,6 +172,23 @@ class PenepmaIntensityResult(_PenelopeResultBase):
         phi1_deg, phi2_deg = self._read_all_values(line)
         self.phi1_deg = ufloat(phi1_deg, 0.0)
         self.phi2_deg = ufloat(phi2_deg, 0.0)
+
+class PenepmaIntensityResult(_PenepmaPhotonDetectorResult):
+
+    def __init__(self, detector_index):
+        """
+        Intensities of a detector. 
+        """
+        super().__init__(detector_index)
+
+        self.primary_intensities_1_per_sr_electron = {}
+        self.characteristic_fluorescence_intensities_1_per_sr_electron = {}
+        self.bremsstrahlung_fluorescence_intensities_1_per_sr_electron = {}
+        self.total_fluorescence_intensities_1_per_sr_electron = {}
+        self.total_intensities_1_per_sr_electron = {}
+
+    def read(self, fileobj):
+        super().read(fileobj)
 
         self.primary_intensities_1_per_sr_electron.clear()
         self.characteristic_fluorescence_intensities_1_per_sr_electron.clear()
@@ -206,3 +213,49 @@ class PenepmaIntensityResult(_PenelopeResultBase):
         filepath = os.path.join(dirpath, 'pe-intens-{:02d}.dat'.format(self.detector_index))
         with open(filepath, 'r') as fp:
             self.read(fp)
+
+class PenepmaSpectrumResult(_PenepmaPhotonDetectorResult):
+
+    def __init__(self, detector_index):
+        super().__init__(detector_index)
+
+        self.energy_window_start_eV = ufloat(0.0, 0.0)
+        self.energy_window_end_eV = ufloat(0.0, 0.0)
+        self.channel_width_eV = ufloat(0.0, 0.0)
+
+        self.spectrum = unumpy.uarray([], [])
+
+    def read(self, fileobj):
+        super().read(fileobj)
+
+        line = self._read_until_line_startswith(fileobj, '#  Energy window =')
+        start_eV, end_eV = self._read_all_values(line)
+        self.energy_window_start_eV = ufloat(start_eV, 0.0)
+        self.energy_window_end_eV = ufloat(end_eV, 0.0)
+
+        line = self._read_until_line_startswith(fileobj, '#  Channel width =')
+        channel_width_eV, = self._read_all_values(line)
+        self.channel_width_eV = ufloat(channel_width_eV, 0.0)
+
+        spectrum = []
+        spectrum_unc = []
+        self._read_until_end_of_comments(fileobj)
+        for line in fileobj:
+            energy_eV, val, unc = self._read_all_values(line)
+            spectrum.append([energy_eV, val])
+            spectrum_unc.append([0.0, unc / 3])
+
+        self.spectrum = unumpy.uarray(spectrum, spectrum_unc)
+
+    def read_directory(self, dirpath):
+        filepath = os.path.join(dirpath, 'pe-spect-{:02d}.dat'.format(self.detector_index))
+        with open(filepath, 'r') as fp:
+            self.read(fp)
+
+    @property
+    def energy_eV(self):
+        return self.spectrum[:, 0]
+
+    @property
+    def intensities_1_per_sr_electron(self):
+        return self.spectrum[:, 1]

@@ -10,7 +10,8 @@ import os
 import pyxray
 
 # Local modules.
-from pypenelopetools.penepma.results import PenepmaResult, PenepmaIntensityResult
+from pypenelopetools.penepma.results import \
+    PenepmaResult, PenepmaIntensityResult, PenepmaSpectrumResult
 
 # Globals and constants variables.
 
@@ -220,6 +221,64 @@ class TestPenepmaIntensityResult(unittest.TestCase):
         filepath = os.path.join(self.testdatadir, 'penepma', 'pe-intens-01.dat')
         with open(filepath, 'r') as fp:
             self.assertRaises(IOError, result.read, fp)
+
+    def testread_directory(self):
+        dirpath = os.path.join(self.testdatadir, 'penepma')
+        self.result.read_directory(dirpath)
+        self._test_result(self.result)
+
+class TestPenepmaSpectrumResult(unittest.TestCase):
+
+    def setUp(self):
+        super().setUp()
+
+        self.testdatadir = os.path.join(os.path.dirname(__file__), '..', 'testdata')
+        self.result = PenepmaSpectrumResult(1)
+
+    def _test_result(self, result):
+        self.assertEqual(1, result.detector_index)
+
+        self.assertAlmostEqual(0.0, result.theta1_deg.n, 8)
+        self.assertAlmostEqual(0.0, result.theta1_deg.s, 8)
+        self.assertAlmostEqual(90.0, result.theta2_deg.n, 8)
+        self.assertAlmostEqual(0.0, result.theta2_deg.s, 8)
+        self.assertAlmostEqual(0.0, result.phi1_deg.n, 8)
+        self.assertAlmostEqual(0.0, result.phi1_deg.s, 8)
+        self.assertAlmostEqual(360.0, result.phi2_deg.n, 8)
+        self.assertAlmostEqual(0.0, result.phi2_deg.s, 8)
+
+        self.assertAlmostEqual(0.0, result.energy_window_start_eV.n, 8)
+        self.assertAlmostEqual(0.0, result.energy_window_start_eV.s, 8)
+        self.assertAlmostEqual(15e3, result.energy_window_end_eV.n, 8)
+        self.assertAlmostEqual(0.0, result.energy_window_end_eV.s, 8)
+
+        self.assertAlmostEqual(15.0, result.channel_width_eV, 8)
+
+        self.assertEqual(1000, len(result.spectrum))
+
+        self.assertAlmostEqual(7.500001, result.spectrum[0, 0].n, 8)
+        self.assertAlmostEqual(0.0, result.spectrum[0, 0].s, 8)
+        self.assertAlmostEqual(7.500001, result.energy_eV[0].n, 8)
+        self.assertAlmostEqual(0.0, result.energy_eV[0].s, 8)
+        self.assertAlmostEqual(0.0, result.spectrum[0, 1].n, 8)
+        self.assertAlmostEqual(0.0, result.spectrum[0, 1].s, 8)
+        self.assertAlmostEqual(0.0, result.intensities_1_per_sr_electron[0].n, 8)
+        self.assertAlmostEqual(0.0, result.intensities_1_per_sr_electron[0].s, 8)
+
+        self.assertAlmostEqual(7.507501e3, result.spectrum[500, 0].n, 8)
+        self.assertAlmostEqual(0.0, result.spectrum[500, 0].s, 8)
+        self.assertAlmostEqual(7.507501e3, result.energy_eV[500].n, 8)
+        self.assertAlmostEqual(0.0, result.energy_eV[500].s, 8)
+        self.assertAlmostEqual(6.014721e-9, result.spectrum[500, 1].n, 12)
+        self.assertAlmostEqual(2.163525e-9, result.spectrum[500, 1].s * 3, 12)
+        self.assertAlmostEqual(6.014721e-9, result.intensities_1_per_sr_electron[500].n, 12)
+        self.assertAlmostEqual(2.163525e-9, result.intensities_1_per_sr_electron[500].s * 3, 12)
+
+    def testread(self):
+        filepath = os.path.join(self.testdatadir, 'penepma', 'pe-spect-01.dat')
+        with open(filepath, 'r') as fp:
+            self.result.read(fp)
+        self._test_result(self.result)
 
     def testread_directory(self):
         dirpath = os.path.join(self.testdatadir, 'penepma')

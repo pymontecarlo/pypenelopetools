@@ -6,7 +6,6 @@ cache:
 matrix:
   include:
   - python: '3.6'
-    env: DEPLOY=yes
     os: linux
 install:
 - pip install --cache-dir $HOME/.pip-cache --upgrade pip codecov

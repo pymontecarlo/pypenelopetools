@@ -200,7 +200,7 @@ class PenepmaIntensityResult(_PenepmaPhotonDetectorResult):
             z = int(line[3:5])
             dst = pyxray.atomic_subshell(line[6:8].strip())
             src = pyxray.atomic_subshell(line[9:11].strip())
-            xrayline = pyxray.XrayLine(z, (src, dst))
+            xrayline = pyxray.xray_line(z, (src, dst))
 
             _e, val_p, unc_p, val_c, unc_c, val_b, unc_b, val_tf, unc_tf, val_t, unc_t = self._read_all_values(line)
             self.primary_intensities_1_per_sr_electron[xrayline] = ufloat(val_p, unc_p / 3)

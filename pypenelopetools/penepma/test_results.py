@@ -166,7 +166,7 @@ class TestPenepmaIntensityResult(unittest.TestCase):
         self.assertEqual(10, len(result.total_fluorescence_intensities_1_per_sr_electron))
         self.assertEqual(10, len(result.total_intensities_1_per_sr_electron))
 
-        cu_l1_m3 = pyxray.XrayLine(29, 'L1-M3')
+        cu_l1_m3 = pyxray.xray_line(29, 'L1-M3')
 
         intensity = result.primary_intensities_1_per_sr_electron[cu_l1_m3]
         self.assertAlmostEqual(1.518793e-6, intensity.n, 8)
@@ -188,7 +188,7 @@ class TestPenepmaIntensityResult(unittest.TestCase):
         self.assertAlmostEqual(1.520476e-6, intensity.n, 8)
         self.assertAlmostEqual(1.28e-7, intensity.s * 3, 8)
 
-        cu_k_l3 = pyxray.XrayLine(29, 'K-L3')
+        cu_k_l3 = pyxray.xray_line(29, 'K-L3')
 
         intensity = result.primary_intensities_1_per_sr_electron[cu_k_l3]
         self.assertAlmostEqual(1.995294e-5, intensity.n, 8)

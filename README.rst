@@ -44,6 +44,12 @@ In principle, the user should provide a main steering program to follow the
 particle histories through the material structure and to keep score of 
 quantities of interest.
 
+Documentation
+-------------
+
+The `documentation <http://pypenelopetools.readthedocs.io>`_ contains the
+installation instructions, tutorials and API.
+
 Authors
 -------
 

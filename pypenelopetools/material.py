@@ -1,5 +1,18 @@
 """
-Definition of material
+Material definition.
+
+Example:
+    Create a material definition for copper::
+
+        mat = Material('copper', {29: 1.0}, 8.9)
+        with open('copper.mat.in', 'w') as fp:
+            mat.write_input(fp)
+    
+    Using the ``material`` program of PENELOPE in the ``pendbase`` folder, run::
+    
+        material.exe < copper.mat.in
+    
+    There should now be a ``copper.mat`` in the ``pendbase`` folder.
 """
 
 # Standard library modules.
@@ -14,18 +27,51 @@ from pypenelopetools.penelope.mixin import FilenameMixin
 # Globals and constants variables.
 
 class Material(FilenameMixin):
+    """
+    Creates a new material.
+    
+    Args:
+        name (str): Name of material.
+        composition (dict): Composition in weight fraction.
+            The composition is specified by a dictionary.
+            The keys are atomic numbers and the values are weight fraction 
+            between ]0.0, 1.0].
+        density_g_per_cm3 (float): Material's density in g/cm3.
+        mean_excitation_energy_eV (float, optional): mean excitation energy.
+            If ``None``, it will be calculated by PENELOPE.
+        oscillator_strength_fcb (float, optional): 
+            oscillator strength of plasmon excitation.
+            If ``None``, it will be estimated by PENELOPE.
+        plasmon_energy_wcb_eV (float, optional): energy of plasmon excitation in eV.
+            If ``None``, it will be estimated by PENELOPE.
+            
+    Attributes:
+        name (str): Name of material.
+        composition (dict): Composition in weight fraction.
+            The composition is specified by a dictionary.
+            The keys are atomic numbers and the values are weight fraction 
+            between ]0.0, 1.0].
+        density_g_per_cm3 (float): Material's density in g/cm3.
+        mean_excitation_energy_eV (float, optional): mean excitation energy.
+            If ``None``, it will be calculated by PENELOPE.
+        oscillator_strength_fcb (float, optional): 
+            oscillator strength of plasmon excitation.
+            If ``None``, it will be estimated by PENELOPE.
+        plasmon_energy_wcb_eV (float, optional): energy of plasmon excitation in eV.
+            If ``None``, it will be estimated by PENELOPE.
+    """
 
     def __init__(self, name, composition, density_g_per_cm3,
                  mean_excitation_energy_eV=None,
                  oscillator_strength_fcb=None,
-                 oscillator_energy_wcb_eV=None):
+                 plasmon_energy_wcb_eV=None):
         self.name = name
         self.filename = name[:16] + '.mat'
         self.composition = composition.copy()
         self.density_g_per_cm3 = float(density_g_per_cm3)
         self.mean_excitation_energy_eV = mean_excitation_energy_eV
         self.oscillator_strength_fcb = oscillator_strength_fcb
-        self.oscillator_energy_wcb_eV = oscillator_energy_wcb_eV
+        self.plasmon_energy_wcb_eV = plasmon_energy_wcb_eV
 
     def __repr__(self):
         return '<{0}({1})>'.format(self.__class__.__name__, self.name)
@@ -36,7 +82,11 @@ class Material(FilenameMixin):
         Reads the input file created by this class 
         (see :meth:`write_input <.Material.write_input>`).
         
-        :arg fileobj: file object opened with read access
+        Args:
+            fileobj (file object): file object opened with read access.
+            
+        Returns:
+            Material: new material.
         """
         composition_option = fileobj.readline().strip()
         assert composition_option == "1"
@@ -66,16 +116,16 @@ class Material(FilenameMixin):
 
         oscillator_option = fileobj.readline().strip()
         if oscillator_option == "1":
-            oscillator_strength_fcb, oscillator_energy_wcb_eV = map(float, fileobj.readline().split())
+            oscillator_strength_fcb, plasmon_energy_wcb_eV = map(float, fileobj.readline().split())
         else:
-            oscillator_strength_fcb = oscillator_energy_wcb_eV = None
+            oscillator_strength_fcb = plasmon_energy_wcb_eV = None
 
         filename = fileobj.readline()
 
         material = cls(name, composition, density_g_per_cm3,
                        mean_excitation_energy_eV,
                        oscillator_strength_fcb,
-                       oscillator_energy_wcb_eV)
+                       plasmon_energy_wcb_eV)
         material.filename = filename
 
         return material
@@ -85,7 +135,11 @@ class Material(FilenameMixin):
         """
         Reads a PENELOPE generated material file (.mat).
         
-        :arg fileobj: file object opened with read access
+        Args:
+            fileobj (file object): file object opened with read access.
+            
+        Returns:
+            Material: new material.
         """
         first_line = fileobj.readline().strip()
         assert first_line[:8] == 'PENELOPE'
@@ -134,19 +188,16 @@ class Material(FilenameMixin):
         line = fileobj.readline()
         _, value1, _, value2, _, _ = line.split()
         oscillator_strength_fcb = float(value1)
-        oscillator_energy_wcb_eV = float(value2)
+        plasmon_energy_wcb_eV = float(value2)
 
         return cls(name, composition, density_g_per_cm3,
                    mean_excitation_energy_eV,
                    oscillator_strength_fcb,
-                   oscillator_energy_wcb_eV)
+                   plasmon_energy_wcb_eV)
 
     def _create_lines(self):
         """
         Creates the lines of the input file of the material program.
-    
-        :arg material: definition of the material
-        :type material: :class:`.Material`
         """
         lines = []
 
@@ -187,10 +238,10 @@ class Material(FilenameMixin):
 
         # Fcb and Wcb values.
         if self.oscillator_strength_fcb is not None and \
-                self.oscillator_energy_wcb_eV is not None:
+                self.plasmon_energy_wcb_eV is not None:
             lines.append("1")
             lines.append("{0:f} {1:f}".format(self.oscillator_strength_fcb,
-                                              self.oscillator_energy_wcb_eV))
+                                              self.plasmon_energy_wcb_eV))
         else:
             lines.append("2")
 
@@ -206,7 +257,8 @@ class Material(FilenameMixin):
         
             material.exe < material.in
         
-        :arg fileobj: file object opened with write access
+        Args:
+            fileobj (file object): file object opened with write access.
         """
         lines = self._create_lines()
         fileobj.write(os.linesep.join(lines))

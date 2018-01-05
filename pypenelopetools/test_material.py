@@ -13,7 +13,7 @@ from pypenelopetools.material import Material
 
 # Globals and constants variables.
 
-class TestMMaterial(unittest.TestCase):
+class TestMaterial(unittest.TestCase):
 
     def setUp(self):
         super().setUp()
@@ -29,7 +29,7 @@ class TestMMaterial(unittest.TestCase):
         self.assertAlmostEqual(8.9, mat.density_g_per_cm3, 4)
         self.assertAlmostEqual(326.787, mat.mean_excitation_energy_eV, 4)
         self.assertAlmostEqual(2.686, mat.oscillator_strength_fcb, 4)
-        self.assertAlmostEqual(13.496, mat.oscillator_energy_wcb_eV, 4)
+        self.assertAlmostEqual(13.496, mat.plasmon_energy_wcb_eV, 4)
 
     def test__init__(self):
         self._test_material(self.mat)

@@ -60,9 +60,6 @@ class GeometryDefinitions(KeywordSequence):
         keyword = GeometryDefinitionGroup()
         super().__init__(keyword)
 
-    def set(self, zlow, zhigh, xcen=None, ycen=None, cylinders=None):
-        return super().set(zlow, zhigh, xcen, ycen, cylinders)
-
     def add(self, zlow, zhigh, xcen=None, ycen=None, cylinders=None):
         return super().add(zlow, zhigh, xcen, ycen, cylinders)
 
@@ -82,9 +79,6 @@ class SEXTND(KeywordSequence):
         keyword = TypeKeyword('SEXTND', (int, int, float),
                               comment='Extended source in KL,KC, rel. activity dens.')
         super().__init__(keyword)
-
-    def set(self, kl, kc, relac):
-        super().set(kl, kc, relac)
 
     def add(self, kl, kc, relac):
         super().add(kl, kc, relac)
@@ -124,9 +118,6 @@ class DSMAX(KeywordSequence):
                               comment="Maximum step length in body KL,KC")
         super().__init__(keyword)
 
-    def set(self, kl, kc, dsmax):
-        return super().set(kl, kc, dsmax)
-
     def add(self, kl, kc, dsmax):
         return super().add(kl, kc, dsmax)
 
@@ -148,9 +139,6 @@ class EABSB(KeywordSequence):
         keyword = TypeKeyword("EABSB", (int, int, float, float, float),
                               comment="Local EABSB(1:3) in body KL,KC")
         super().__init__(keyword)
-
-    def set(self, kl, kc, eabs1, eabs2, eabs3):
-        return super().set(kl, kc, eabs1, eabs2, eabs3)
 
     def add(self, kl, kc, eabs1, eabs2, eabs3):
         return super().add(kl, kc, eabs1, eabs2, eabs3)
@@ -185,9 +173,6 @@ class IFORCE(KeywordSequence):
                               comment="KL,KC,KPAR,ICOL,FORCER,WLOW,WHIG")
         super().__init__(keyword)
 
-    def set(self, kl, kc, kpar, icol, forcer, wlow, whig):
-        return super().set(kl, kc, kpar, icol, forcer, wlow, whig)
-
     def add(self, kl, kc, kpar, icol, forcer, wlow, whig):
         return super().add(kl, kc, kpar, icol, forcer, wlow, whig)
 
@@ -209,9 +194,6 @@ class IBRSPL(KeywordSequence):
                               comment="KL,KC,splitting factor")
         super().__init__(keyword)
 
-    def set(self, kl, kc, ibrspl):
-        return super().set(kl, kc, ibrspl)
-
     def add(self, kl, kc, ibrspl):
         return super().add(kl, kc, ibrspl)
 
@@ -230,9 +212,6 @@ class IXRSPL(KeywordSequence):
         keyword = TypeKeyword("IXRSPL", (int, int, float),
                               comment="KL,KC,splitting factor")
         super().__init__(keyword)
-
-    def set(self, kl, kc, ixrspl):
-        return super().set(kl, kc, ixrspl)
 
     def add(self, kl, kc, ixrspl):
         return super().add(kl, kc, ixrspl)
@@ -363,9 +342,6 @@ class EnergyDepositionDetectors(KeywordSequence):
         keyword = EnergyDepositionDetectorGroup()
         super().__init__(keyword)
 
-    def set(self, el, eu, nbe, spectrum_filename=None, cylinders=None):
-        return super().set(el, eu, nbe, spectrum_filename, cylinders)
-
     def add(self, el, eu, nbe, spectrum_filename=None, cylinders=None):
         return super().add(el, eu, nbe, spectrum_filename, cylinders)
 
@@ -385,15 +361,7 @@ class DOSE2D(KeywordSequence):
                               comment='Tally distributions in KL,KC with NZ,NR bins')
         super().__init__(keyword)
 
-    def set(self, kl, kc, nz, nr):
-        super().set(kl, kc, nz, nr)
-
     def add(self, kl, kc, nz, nr):
         super().add(kl, kc, nz, nr)
-
-
-
-
-
 
 

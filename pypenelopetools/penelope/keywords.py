@@ -109,9 +109,6 @@ class SPECTR(KeywordSequence):
                               comment='E bin: lower-end and total probability')
         super().__init__(keyword)
 
-    def set(self, ei, pi):
-        return super().set(ei, pi)
-
     def add(self, ei, pi):
         """
         Adds a step in the spectrum.
@@ -306,9 +303,6 @@ class Materials(KeywordSequence):
         keyword = MaterialGroup()
         super().__init__(keyword)
 
-    def set(self, index, filename, eabs1, eabs2, eabs3, c1, c2, wcc, wcr):
-        return super().set(filename, eabs1, eabs2, eabs3, c1, c2, wcc, wcr, index)
-
     def add(self, index, filename, eabs1, eabs2, eabs3, c1, c2, wcc, wcr):
         """
         Adds a new material.
@@ -385,9 +379,6 @@ class DSMAX(KeywordSequence):
                               comment="KB, maximum step length in body KB")
         super().__init__(keyword)
 
-    def set(self, kb, dsmax):
-        return super().set(kb, dsmax)
-
     def add(self, kb, dsmax):
         return super().add(kb, dsmax)
 
@@ -409,9 +400,6 @@ class EABSB(KeywordSequence):
         keyword = TypeKeyword("EABSB", (int, float, float, float),
                               comment="KB, local absorption energies, EABSB(1:3)")
         super().__init__(keyword)
-
-    def set(self, kb, eabs1, eabs2, eabs3):
-        return super().set(kb, eabs1, eabs2, eabs3)
 
     def add(self, kb, eabs1, eabs2, eabs3):
         return super().add(kb, eabs1, eabs2, eabs3)
@@ -445,9 +433,6 @@ class IFORCE(KeywordSequence):
                               comment="KB,KPAR,ICOL,FORCER,WLOW,WHIG")
         super().__init__(keyword)
 
-    def set(self, kb, kpar, icol, forcer, wlow, whig):
-        return super().set(kb, kpar, icol, forcer, wlow, whig)
-
     def add(self, kb, kpar, icol, forcer, wlow, whig):
         return super().add(kb, kpar, icol, forcer, wlow, whig)
 
@@ -469,9 +454,6 @@ class IBRSPL(KeywordSequence):
                               comment="KB,splitting factor")
         super().__init__(keyword)
 
-    def set(self, kb, ibrspl):
-        return super().set(kb, ibrspl)
-
     def add(self, kb, ibrspl):
         return super().add(kb, ibrspl)
 
@@ -489,9 +471,6 @@ class IXRSPL(KeywordSequence):
         keyword = TypeKeyword("IXRSPL", (int, float),
                               comment="KB,splitting factor")
         super().__init__(keyword)
-
-    def set(self, kb, ixrspl):
-        return super().set(kb, ixrspl)
 
     def add(self, kb, ixrspl):
         return super().add(kb, ixrspl)

@@ -51,14 +51,6 @@ class SBODY(KeywordSequence):
                               comment='Active source body; one line for each body')
         super().__init__(keyword)
 
-    def set(self, kb):
-        """
-        :arg kb: index of the body or a 
-            :class:`Module <pypenelopetools.pengeom.module.Module>` object from 
-            a :class:`Geometry <penelopetools.pengeom.geometry.Geometry>` object
-        """
-        return super().set(kb)
-
     def add(self, kb):
         """
         :arg kb: index of the body or a 
@@ -100,9 +92,6 @@ class IPSFN(KeywordSequence):
         keyword = TypeKeyword("IPSFN", (str,),
                               comment="Input psf name, up to 20 characters")
         super().__init__(keyword)
-
-    def set(self, filename):
-        return super().set(filename)
 
     def add(self, filename):
         return super().add(filename)
@@ -182,9 +171,6 @@ class PARINP(KeywordSequence):
         keyword = TypeKeyword("PARINP", (int, float),
                               comment="Replacement parameter")
         super().__init__(keyword)
-
-    def set(self, ip, parinp):
-        return super().set(ip, parinp)
 
     def add(self, ip, parinp):
         return super().add(ip, parinp)
@@ -330,15 +316,6 @@ class ImpactDetectors(KeywordSequence):
         keyword = ImpactDetectorGroup()
         super().__init__(keyword)
 
-    def set(self, el, eu, nbe, ipsf, idcut,
-            spectrum_filename=None, psf_filename=None, fln_filename=None,
-            agel=None, ageu=None, nage=None, age_filename=None,
-            kb=None, kpar=None):
-        return super().set(el, eu, nbe, ipsf, idcut,
-                           spectrum_filename, psf_filename, fln_filename,
-                           agel, ageu, nage, age_filename,
-                           kb, kpar)
-
     def add(self, el, eu, nbe, ipsf, idcut,
             spectrum_filename=None, psf_filename=None, fln_filename=None,
             agel=None, ageu=None, nage=None, age_filename=None,
@@ -380,9 +357,6 @@ class EnergyDepositionDetectors(KeywordSequence):
     def __init__(self):
         keyword = EnergyDepositionDetectorGroup()
         super().__init__(keyword)
-
-    def set(self, el, eu, nbe, spectrum_filename=None, kb=None):
-        return super().set(el, eu, nbe, spectrum_filename, kb)
 
     def add(self, el, eu, nbe, spectrum_filename=None, kb=None):
         return super().add(el, eu, nbe, spectrum_filename, kb)

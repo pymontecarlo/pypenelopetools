@@ -70,7 +70,7 @@ def create_epma1():
     input.GRIDX.set(-4e-5, 4e-5, 60)
     input.GRIDY.set(-4e-5, 4e-5, 60)
     input.GRIDZ.set(-6e-5, 0.0, 60)
-    input.XRLINE.set(29010300)
+    input.XRLINE.add(29010300)
 
     input.RESUME.set('dump1.dat')
     input.DUMPTO.set('dump1.dat')

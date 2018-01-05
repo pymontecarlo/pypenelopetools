@@ -1,4 +1,6 @@
-""""""
+"""
+Input of PENEPMA simulation.
+"""
 
 # Standard library modules.
 
@@ -14,6 +16,42 @@ import pypenelopetools.penepma.separators as penepma_separators
 # Globals and constants variables.
 
 class PenepmaInput(_PenelopeInputBase):
+    """
+    Creates an object representing a PENEPMA input file.
+    
+    Attributes:
+        TITLE (:class:`TITLE <pypenelopetools.penelope.keywords.TITLE>`): 
+            Title of the job (up to 65 characters).
+        SKPAR (:class:`SKPAR <pypenelopetools.penelope.keywords.SKPAR>`):
+            Type of primary particle KPARP (1=electrons, 2=photons or 3=positrons).
+        SENERG (:class:`SENERG <pypenelopetools.penelope.keywords.SENERG>`):
+            Initial energy SE0 of primary particles.
+        SPOSIT (:class:`SPOSIT <pypenelopetools.penelope.keywords.SPOSIT>`):
+        SRADI (:class:`SRADI <pypenelopetools.penepma.keywords.SRADI>`):
+        SDIREC (:class:`SDIREC <pypenelopetools.penepma.keywords.SDIREC>`):
+        SAPERT (:class:`SAPERT <pypenelopetools.penepma.keywords.SAPERT>`):
+        materials (:class:`Materials <pypenelopetools.penelope.keywords.Materials>`):
+        GEOMFN (:class:`GEOMFN <pypenelopetools.penelope.keywords.GEOMFN>`):
+        DSMAX (:class:`DSMAX <pypenelopetools.penelope.keywords.DSMAX>`):
+        IFORCE (:class:`IFORCE <pypenelopetools.penelope.keywords.IFORCE>`):
+        IBRSPL (:class:`IBRSPL <pypenelopetools.penelope.keywords.IBRSPL>`):
+        IXRSPL (:class:`IXRSPL <pypenelopetools.penelope.keywords.IXRSPL>`):
+        NBE (:class:`NBE <pypenelopetools.penelope.keywords.NBE>`):
+        NBANGL (:class:`NBANGL <pypenelopetools.penelope.keywords.NBANGL>`):
+        photon_detectors (:class:`PhotonDetectors <pypenelopetools.penepma.keywords.PhotonDetectors>`):
+        GRIDX (:class:`GRIDX <pypenelopetools.penelope.keywords.GRIDX>`):
+        GRIDY (:class:`GRIDY <pypenelopetools.penelope.keywords.GRIDY>`):
+        GRIDZ (:class:`GRIDZ <pypenelopetools.penelope.keywords.GRIDZ>`):
+        XRAYE (:class:`XRAYE <pypenelopetools.penepma.keywords.XRAYE>`):
+        XRLINE (:class:`XRLINE <pypenelopetools.penepma.keywords.XRLINE>`):
+        RESUME (:class:`RESUME <pypenelopetools.penelope.keywords.RESUME>`):
+        DUMPTO (:class:`DUMPTO <pypenelopetools.penelope.keywords.DUMPTO>`):
+        DUMPP (:class:`DUMPP <pypenelopetools.penelope.keywords.DUMPP>`):
+        RSEED (:class:`RSEED <pypenelopetools.penelope.keywords.RSEED>`):
+        REFLIN (:class:`REFLIN <pypenelopetools.penepma.keywords.REFLIN>`):
+        NSIMSH (:class:`NSIMSH <pypenelopetools.penelope.keywords.NSIMSH>`):
+        TIME (:class:`TIME <pypenelopetools.penelope.keywords.TIME>`):
+    """
 
     def __init__(self):
         self.TITLE = penelope_keywords.TITLE()

@@ -34,7 +34,7 @@ def create_example1_disc():
 
     input.materials.add(1, material_cu.filename, 1e3, 1e3, 1e3, 0.05, 0.05, 1e3, 1e3)
 
-    input.DSMAX.set(1, 1, 1e-4)
+    input.DSMAX.add(1, 1, 1e-4)
 
     input.IFORCE.add(1, 1, 1, 4, 2000, 0.1, 2.0)
     input.IFORCE.add(1, 1, 1, 5, 200, 0.1, 2.0)
@@ -51,7 +51,7 @@ def create_example1_disc():
     detector = input.energy_deposition_detectors.add(0, 0, 100)
     detector.EDBODY.add(1, 1)
 
-    input.DOSE2D.set(1, 1, 100, 50)
+    input.DOSE2D.add(1, 1, 100, 50)
 
     input.RESUME.set('dump.dat')
     input.DUMPTO.set('dump.dat')
@@ -102,7 +102,7 @@ def create_example3_detector():
     detector = input.energy_deposition_detectors.add(0, 1e7, 1000)
     detector.EDBODY.add(3, 1)
 
-    input.DOSE2D.set(3, 1, 50, 50)
+    input.DOSE2D.add(3, 1, 50, 50)
 
     input.RESUME.set('dump.dat')
     input.DUMPTO.set('dump.dat')

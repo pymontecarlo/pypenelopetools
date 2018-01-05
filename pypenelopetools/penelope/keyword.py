@@ -21,10 +21,6 @@ class _KeywordBase(_InputLineBase):
         return self.name
 
     @abc.abstractmethod
-    def set(self, *args):
-        raise NotImplementedError
-
-    @abc.abstractmethod
     def get(self):
         raise NotImplementedError
 
@@ -165,10 +161,6 @@ class KeywordSequence(_KeywordBase):
 
     def clear(self):
         self._keywords.clear()
-
-    def set(self, *args):
-        self.clear()
-        return self.add(*args)
 
     def get(self):
         values = []

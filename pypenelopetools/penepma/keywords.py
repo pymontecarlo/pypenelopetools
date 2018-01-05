@@ -121,9 +121,6 @@ class PhotonDetectors(KeywordSequence):
         keyword = PhotonDetectorGroup()
         super().__init__(keyword)
 
-    def set(self, theta1, theta2, phi1, phi2, ipsf, edel, edeu, nche, emission_filename=None):
-        super().set(theta1, theta2, phi1, phi2, ipsf, edel, edeu, nche, emission_filename)
-
     def add(self, theta1, theta2, phi1, phi2, ipsf, edel, edeu, nche, emission_filename=None):
         super().add(theta1, theta2, phi1, phi2, ipsf, edel, edeu, nche, emission_filename)
 
@@ -140,9 +137,6 @@ class XRAYE(KeywordSequence):
                               comment='Energy interval where x rays are mapped')
         super().__init__(keyword)
 
-    def set(self, emin, emax):
-        super().set(emin, emax)
-
     def add(self, emin, emax):
         super().add(emin, emax)
 
@@ -157,9 +151,6 @@ class XRLINE(KeywordSequence):
         keyword = TypeKeyword('XRLINE', (int,),
                               comment='X-ray line, IZ*1e6+S1*1e4+S2*1e2')
         super().__init__(keyword)
-
-    def set(self, izs1s200):
-        super().set(izs1s200)
 
     def add(self, izs1s200):
         super().add(izs1s200)

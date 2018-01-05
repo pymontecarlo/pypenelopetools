@@ -33,7 +33,7 @@ class TITLE(TypeKeyword):
         Sets value.
         
         Args:
-            title (str): title of the job (up to 65 characters).
+            title (str): Title of the job (up to 65 characters).
         """
         super().set(title)
 
@@ -114,8 +114,8 @@ class SPECTR(KeywordSequence):
         Adds a step in the spectrum.
         
         Args:
-            ei (float): lower end-point of an energy bin of the source spectrum in eV
-            pi (float): associated relative probability
+            ei (float): Lower end-point of an energy bin of the source spectrum in eV
+            pi (float): Associated relative probability
         """
         return super().add(ei, pi)
 
@@ -141,9 +141,9 @@ class SGPOL(TypeKeyword):
         Sets Stokes polarisation parameters.
         
         Args:
-            sp1 (float): degrees of linear polarisation at 45 deg azimuth
-            sp2 (float): degrees of circular polarisation
-            sp3 (float): degrees of linear polarisation at 0 deg azimuth
+            sp1 (float): Degrees of linear polarisation at 45 deg azimuth
+            sp2 (float): Degrees of circular polarisation
+            sp3 (float): Degrees of linear polarisation at 0 deg azimuth
         """
         super().set(sp1, sp2, sp3)
 
@@ -185,9 +185,9 @@ class SCONE(TypeKeyword):
         Sets angles.
         
         Args:
-            theta (float): polar angle of the beam axis direction in deg.
-            phi (float): azimuthal angle of the beam axis direction in deg.
-            alpha (float): angular aperture in deg.
+            theta (float): Polar angle of the beam axis direction in deg.
+            phi (float): Azimuthal angle of the beam axis direction in deg.
+            alpha (float): Angular aperture in deg.
         """
         super().set(theta, phi, alpha)
 
@@ -211,10 +211,10 @@ class SRECTA(TypeKeyword):
         Sets angles.
         
         Args:
-            thetal (float): lower limit polar angle in deg.
-            thetau (float): upper limit polar angle in deg.
-            phil (float): lower limit azimuthal angle in deg.
-            phiu (float): upper limit azimuthal angle in deg.
+            thetal (float): Lower limit polar angle in deg.
+            thetau (float): Upper limit polar angle in deg.
+            phil (float): Lower limit azimuthal angle in deg.
+            phiu (float): Upper limit azimuthal angle in deg.
         """
         super().set(thetal, thetau, phil, phiu)
 
@@ -233,7 +233,7 @@ class MFNAME(TypeKeyword):
         Sets filename.
         
         Args:
-            filename (str): file name of material file (up to 20 characters).
+            filename (str): File name of material file (up to 20 characters).
         """
         super().set(filename)
 
@@ -255,13 +255,13 @@ class MSIMPA(TypeKeyword):
         Sets parameters.
         
         Args:
-            eabs1 (float): absorption energy of electrons.
-            eabs2 (float): absorption energy of photons.
-            eabs3 (float): absorption energy of positrons.
-            c1 (float): elastic scattering coefficient.
-            c2 (float): elastic scattering coefficient.
-            wcc (float): cutoff energy losses for inelastic collisions.
-            wcr (float): cutoff energy losses for Bremsstrahlung emission.
+            eabs1 (float): Absorption energy of electrons in eV.
+            eabs2 (float): Absorption energy of photons in eV.
+            eabs3 (float): Absorption energy of positrons in eV.
+            c1 (float): Elastic scattering coefficient.
+            c2 (float): Elastic scattering coefficient.
+            wcc (float): Cutoff energy losses for inelastic collisions in eV.
+            wcr (float): Cutoff energy losses for Bremsstrahlung emission in eV.
         """
         super().set(eabs1, eabs2, eabs3, c1, c2, wcc, wcr)
 
@@ -279,15 +279,15 @@ class MaterialGroup(KeywordGroup):
         Sets material file name and simulation parameters.
         
         Args:
-            filename (str): file name of material file (up to 20 characters).
-            eabs1 (float): absorption energy of electrons.
-            eabs2 (float): absorption energy of photons.
-            eabs3 (float): absorption energy of positrons.
-            c1 (float): elastic scattering coefficient.
-            c2 (float): elastic scattering coefficient.
-            wcc (float): cutoff energy losses for inelastic collisions.
-            wcr (float): cutoff energy losses for Bremsstrahlung emission.
-            index (int, optional): index of this material in the geometry
+            filename (str): File name of material file (up to 20 characters).
+            eabs1 (float): Absorption energy of electrons in eV.
+            eabs2 (float): Absorption energy of photons in eV.
+            eabs3 (float): Absorption energy of positrons in eV.
+            c1 (float): Elastic scattering coefficient.
+            c2 (float): Elastic scattering coefficient.
+            wcc (float): Cutoff energy losses for inelastic collisions in eV.
+            wcr (float): Cutoff energy losses for Bremsstrahlung emission in eV.
+            index (int, optional): Index of this material in the geometry
         """
         self.MFNAME.set(filename)
         self.MSIMPA.set(eabs1, eabs2, eabs3, c1, c2, wcc, wcr)
@@ -297,7 +297,7 @@ class MaterialGroup(KeywordGroup):
         return (self.MFNAME, self.MSIMPA)
 
 class Materials(KeywordSequence):
-    """All materials of a simulation."""
+    """Definition of materials."""
 
     def __init__(self):
         keyword = MaterialGroup()
@@ -308,15 +308,15 @@ class Materials(KeywordSequence):
         Adds a new material.
         
         Args:
-            index (int): index of this material in the geometry
-            filename (str): file name of material file (up to 20 characters).
-            eabs1 (float): absorption energy of electrons.
-            eabs2 (float): absorption energy of photons.
-            eabs3 (float): absorption energy of positrons.
-            c1 (float): elastic scattering coefficient.
-            c2 (float): elastic scattering coefficient.
-            wcc (float): cutoff energy losses for inelastic collisions.
-            wcr (float): cutoff energy losses for Bremsstrahlung emission.
+            index (int): Index of this material in the geometry
+            filename (str): File name of material file (up to 20 characters).
+            eabs1 (float): Absorption energy of electrons in eV.
+            eabs2 (float): Absorption energy of photons in eV.
+            eabs3 (float): Absorption energy of positrons in eV.
+            c1 (float): Elastic scattering coefficient.
+            c2 (float): Elastic scattering coefficient.
+            wcc (float): Cutoff energy losses for inelastic collisions in eV.
+            wcr (float): Cutoff energy losses for Bremsstrahlung emission in eV.
         """
         return super().add(filename, eabs1, eabs2, eabs3, c1, c2, wcc, wcr, index)
 
@@ -336,7 +336,7 @@ class Materials(KeywordSequence):
             keyword.write(fileobj)
 
 class GEOMFN(TypeKeyword):
-    """PENGEOM geometry definition file name.
+    """Name of geometry definition file.
     
     The bodies in the material structure are normally identified
     by the sequential labels assigned by PENGEOM. For complex
@@ -361,17 +361,16 @@ class GEOMFN(TypeKeyword):
         Sets filename.
         
         Args:
-            filename (str): file name of material file (up to 20 characters).
+            filename (str): File name of material file (up to 20 characters).
         """
         super().set(filename)
 
 class DSMAX(KeywordSequence):
-    """
-    Maximum step length DSMAX(KB) of electrons and positrons in
-    body KB. This parameter is important only for thin bodies;
-    it should be given a value of the order of one tenth of the
-    body thickness or less.
-      DEFAULT: DSMAX=1.0E20 (no step length control)
+    """Maximum step length of electrons and positrons in body. 
+    
+    .. note::
+       This parameter is important only for thin bodies; it should be given a 
+       value of the order of one tenth of the body thickness or less.
     """
 
     def __init__(self):
@@ -380,20 +379,25 @@ class DSMAX(KeywordSequence):
         super().__init__(keyword)
 
     def add(self, kb, dsmax):
+        """
+        Sets maximum step length.
+        
+        Args:
+            kb (int): Index of body.
+            dsmax: Maximum step length in cm.
+        """
         return super().add(kb, dsmax)
 
 class EABSB(KeywordSequence):
-    """
-    Local absorption energies EABSB(KPAR,KB) of particles of
-    type KPAR in body KB. These values must be larger than
-    EABS(KPAR,M), where M is the material of body KB. When the
+    """Local absorption energies EABSB(KPAR,KB) of particles of type KPAR in body KB. 
+    
+    These values must be larger than EABS(KPAR,M), where M is the material of body KB. When the
     particle is moving within body KB, the absorption energy
     EABS(KPAR,M) is temporarily set equal to EABSB(KPAR,KB).
     Thus, the simulation of the particle history is discontinued
     when the energy becomes less than EABSB(KPAR,KB). This
     feature can be used, e.g., to reduce the simulation work in
     regions of lesser interest.
-        DEFAULTS: EABSB(KPAR,KB)=EABS(KPAR,M)  (no action)
     """
 
     def __init__(self):
@@ -402,30 +406,38 @@ class EABSB(KeywordSequence):
         super().__init__(keyword)
 
     def add(self, kb, eabs1, eabs2, eabs3):
+        """
+        Sets local absorption energies.
+        
+        Args:
+            kb (int): Index of body.
+            eabs1 (float): Absorption energy of electrons in eV.
+            eabs2 (float): Absorption energy of photons in eV.
+            eabs3 (float): Absorption energy of positrons in eV.
+        """
         return super().add(kb, eabs1, eabs2, eabs3)
 
 class IFORCE(KeywordSequence):
-    """
-    Activates forcing of interactions of type ICOL of particles
-    KPAR in body KB. FORCER is the forcing factor, which must
+    """Forcing of interactions. 
+    
+    FORCER is the forcing factor, which must
     be larger than unity. WLOW and WHIG are the lower and upper
     limits of the weight window where interaction forcing is
     applied. When several interaction mechanisms are forced in
     the same body, the effective weight window is set equal to
     the intersection of the windows for these mechanisms.
-      DEFAULT: no interaction forcing
     
     If the mean free path for real interactions of type ICOL is
     MFP, the program will simulate interactions of this type
     (real or forced) with an effective mean free path equal to
     MFP/FORCER.
     
-    TRICK: a negative input value of FORCER, -FN, is assumed to
-    mean that a particle with energy E=EPMAX should interact,
-    on average, +FN times in the course of its slowing down to
-    rest, for electrons and positrons, or along a mean free
-    path, for photons. This is very useful, e.g., to generate
-    x-ray spectra from bulk samples.
+    .. hint::
+       A negative input value of FORCER, -FN, is assumed to mean that a particle 
+       with energy E=EPMAX should interact, on average, +FN times in the course 
+       of its slowing down to rest, for electrons and positrons, or along a mean
+       free path, for photons. This is very useful, e.g., to generate x-ray 
+       spectra from bulk samples.
     """
 
     def __init__(self):
@@ -434,19 +446,23 @@ class IFORCE(KeywordSequence):
         super().__init__(keyword)
 
     def add(self, kb, kpar, icol, forcer, wlow, whig):
+        """
+        Adds forcing for an interaction.
+        
+        Args:
+            kb (int): Index of body.
+            kparp (int): Type of primary particles.
+                0=user defined, 1=electrons, 2=photons or 3=positrons
+        """
         return super().add(kb, kpar, icol, forcer, wlow, whig)
 
 class IBRSPL(KeywordSequence):
-    """
-    Activates bremsstrahlung splitting in body KB for electrons
-    and positrons with weights in the window (WLOW,WHIG) where
-    interaction forcing is applied. The integer IBRSPL is the
-    splitting factor.
-      DEFAULT: no bremsstrahlung splitting
+    """Bremsstrahlung splitting for electrons and positrons.
     
-    Note that bremsstrahlung splitting is applied in combination
-    with interaction forcing and, consequently, it is activated
-    only in those bodies where interaction forcing is active.
+    .. note:: 
+       Note that bremsstrahlung splitting is applied in combination
+       with interaction forcing and, consequently, it is activated
+       only in those bodies where interaction forcing is active.
     """
 
     def __init__(self):
@@ -455,16 +471,22 @@ class IBRSPL(KeywordSequence):
         super().__init__(keyword)
 
     def add(self, kb, ibrspl):
+        """
+        Add Bremsstrahlung splitting.
+        
+        Args:
+            kb (int): Index of body.
+            ibrspl (int): Splitting factor.
+        """
         return super().add(kb, ibrspl)
 
 class IXRSPL(KeywordSequence):
-    """
-    Splitting of characteristic x rays emitted in body KB, from
-    any element. Each unsplit x ray with ILB(2)=2 (i.e., of the
-    second generation) when extracted from the secondary stack
-    is split into IXRSPL quanta. The new, lighter, quanta are
-    assigned random directions distributed isotropically.
-      DEFAULT: no x-ray splitting
+    """Splitting of characteristic x rays emitted. 
+    
+    Each unsplit x ray with ILB(2)=2 (i.e., of the second generation) when 
+    extracted from the secondary stack is split into IXRSPL quanta. 
+    The new, lighter, quanta are assigned random directions distributed 
+    isotropically.
     """
 
     def __init__(self):
@@ -473,45 +495,46 @@ class IXRSPL(KeywordSequence):
         super().__init__(keyword)
 
     def add(self, kb, ixrspl):
+        """
+        Add characteristic x rays splitting.
+        
+        Args:
+            kb (int): Index of body.
+            ixrspl (int): Splitting factor.
+        """
         return super().add(kb, ixrspl)
 
 class NBE(TypeKeyword):
-    """
-    Limits EL and EU of the interval where energy distributions
-    of emerging particles are tallied. Number of energy bins
-    (.LE. 1000).
-      DEFAULT: EL=0.0, EU=EPMAX, NBE=500
-    
-    NBE is the number of bins in the output energy distribution
-    (.LE. 1000). If NBE is positive, energy bins have uniform
-    width, DE=(EU-EL)/NBE. When NBE is negative, the bin width
-    increases geometrically with the energy, i.e., the energy
-    bins have uniform width on a logarithmic scale.
-    """
+    """Definition of energy distributions of emerging particles."""
 
     def __init__(self):
         super().__init__("NBE", (float, float, int),
                          comment="Energy window and no. of bins")
 
     def set(self, el, eu, nbe):
+        """
+        Sets energy distributions.
+        
+        Args:
+            el (float): Lower limit in eV.
+            eu (float): Upper limit in eV.
+            nbe (int): Number of bins in the output energy distribution.
+                Should be less than 1000. 
+                If NBE is positive, energy bins have uniform width, 
+                DE=(EU-EL)/NBE. 
+                When NBE is negative, the bin width increases geometrically 
+                with the energy, i.e., the energy bins have uniform width on a 
+                logarithmic scale.
+        """
         super().set(el, eu, nbe)
 
 class NBANGL(TypeKeyword):
-    """
-    Numbers of bins for the polar angle THETA and the azimuthal
-    angle PHI, respectively, NBTH and NBPH (.LE. 3600 and 180,
-    respectively).
-      DEFAULT: NBTH=90, NBPH=1 (azimuthal average)
+    """Definition of angular distributions of emerging particles.
     
-    If NBTH is positive, angular bins have uniform width,
-    DTH=180./NBTHE. When NBTH is negative, the bin width
-    increases geometrically with THETA, i.e., the bins have
-    uniform width on a logarithmic scale.
-    
-    NOTE: In the output files, the terms 'upbound' and
-    'downbound' are used to denote particles that leave the
-    material system moving upwards (W>0) and downwards (W<0),
-    respectively.
+    .. note::
+       In the output files, the terms 'upbound' and 'downbound' are used to 
+       denote particles that leave the material system moving upwards (W>0) and 
+       downwards (W<0), respectively.
     """
 
     def __init__(self):
@@ -519,124 +542,127 @@ class NBANGL(TypeKeyword):
                          comment="No. of bins for the angles THETA and PHI")
 
     def set(self, nbth, nbph):
+        """
+        Sets angular distributions.
+        
+        Args:
+            nbth (int): Numbers of bins for the polar angle THETA. 
+                Should be less than 3600.
+                If NBTH is positive, angular bins have uniform width,
+                DTH=180./NBTHE. 
+                When NBTH is negative, the bin width increases geometrically 
+                with THETA, i.e., the bins have uniform width on a logarithmic 
+                scale.
+            nbph (int): Number of bins for the azimuthal angle PHI
+                Should be less than 180.
+        """
         super().set(nbth, nbph)
 
+#TODO: Fix ENDETC, EDSPC. It should be a KeywordSequence
 class ENDETC(TypeKeyword):
-    """
-    Starts the definition of a new energy-deposition detector.
-    Up to 25 different detectors can be considered.
-    EL and EU are the lower and upper limits of the energy
-      window covered by the detector.
-    NBE is the number of bins in the output energy spectrum of
-      the detector (.LE. 1000). If NBE is positive, energy bins
-      have uniform width, DE=(EU-EL)/NBE. When NBE is negative,
-      the bin width increases geometrically with the energy,
-      i.e., the energy bins have uniform width on a logarithmic
-      scale.
-    
-      DEFAULTS: None
-    """
+    """Definition of an energy-deposition detector."""
 
     def __init__(self):
         super().__init__('ENDETC', (float, float, int),
                          comment='Energy window and no. of bins')
 
     def set(self, el, eu, nbe):
+        """
+        Sets energy limits.
+        
+        Args:
+            el (float): Lower limit in eV.
+            eu (float): Upper limit in eV.
+            nbe (int): Number of bins in the output energy distribution.
+                Should be less than 1000. 
+                If NBE is positive, energy bins have uniform width, 
+                DE=(EU-EL)/NBE. 
+                When NBE is negative, the bin width increases geometrically 
+                with the energy, i.e., the energy bins have uniform width on a 
+                logarithmic scale.
+        """
         super().set(el, eu, nbe)
 
 class EDSPC(TypeKeyword):
-    """
-    Name of the output spectrum file (up to 20 characters).
-        DEFAULT: 'spc-enddet-##.dat'
-    """
+    """Name of the output spectrum file."""
 
     def __init__(self):
         super().__init__('EDSPC', (str,),
                          comment='Output spectrum file name, 20 chars')
 
     def set(self, filename):
+        """
+        Sets filename.
+        
+        Args:
+            filename (str): File name of output spectrum file (up to 20 characters).
+        """
         super().set(filename)
 
 class GRIDX(TypeKeyword):
-    """
-    Generally, the program can calculate the dose distribution inside a
-    parallelepiped (dose box) whose edges are parallel to the axes of the
-    laboratory frame. The dose box is defined by giving the coordinates
-    of its vertices. The dose is tallied using a uniform orthogonal grid
-    with NDBX, NDBY and NDBZ bins (= voxels) along the directions of
-    the respective coordinate axes. These numbers should be odd, to make
-    sure that each 'central' axis (i.e., the line that join the centres
-    of two opposite faces of the box) goes through the centres of a row
-    of voxels.
-    
-    X-coordinates of the vertices of the dose box and number of
-    bins in the X direction.
-      DEFAULT: None
-    """
+    """Definition of x-coordinates of the vertices of the dose box."""
 
     def __init__(self):
         super().__init__('GRIDX', (float, float, int),
                          comment='X coords of the box vertices, no. of bins')
 
     def set(self, xl, xu, ndbx):
+        """
+        Sets dimensions.
+        
+        Args:
+            xl (float): Lower limit of the dose box along the x-axis in cm.
+            xu (float): Upper limit of the dose box along the x-axis in cm.
+            ndbx (int): Number of bins (i.e. voxels) along the x-axis.
+        """
         super().set(xl, xu, ndbx)
 
 class GRIDY(TypeKeyword):
-    """
-    Generally, the program can calculate the dose distribution inside a
-    parallelepiped (dose box) whose edges are parallel to the axes of the
-    laboratory frame. The dose box is defined by giving the coordinates
-    of its vertices. The dose is tallied using a uniform orthogonal grid
-    with NDBX, NDBY and NDBZ bins (= voxels) along the directions of
-    the respective coordinate axes. These numbers should be odd, to make
-    sure that each 'central' axis (i.e., the line that join the centres
-    of two opposite faces of the box) goes through the centres of a row
-    of voxels.
-    
-    Y-coordinates of the vertices of the dose box and number of
-    bins in the Y direction.
-      DEFAULT: None
-    """
+    """Definition of y-coordinates of the vertices of the dose box."""
 
     def __init__(self):
         super().__init__('GRIDY', (float, float, int),
                          comment='Y coords of the box vertices, no. of bins')
 
     def set(self, yl, yu, ndby):
+        """
+        Sets dimensions.
+        
+        Args:
+            yl (float): Lower limit of the dose box along the y-axis in cm.
+            yu (float): Upper limit of the dose box along the y-axis in cm.
+            ndby (int): Number of bins (i.e. voxels) along the y-axis.
+        """
         super().set(yl, yu, ndby)
 
 class GRIDZ(TypeKeyword):
-    """
-    Generally, the program can calculate the dose distribution inside a
-    parallelepiped (dose box) whose edges are parallel to the axes of the
-    laboratory frame. The dose box is defined by giving the coordinates
-    of its vertices. The dose is tallied using a uniform orthogonal grid
-    with NDBX, NDBY and NDBZ bins (= voxels) along the directions of
-    the respective coordinate axes. These numbers should be odd, to make
-    sure that each 'central' axis (i.e., the line that join the centres
-    of two opposite faces of the box) goes through the centres of a row
-    of voxels.
-    
-    Z-coordinates of the vertices of the dose box and number of
-    bins in the Z direction.
-      DEFAULT: None
-    """
+    """Definition of z-coordinates of the vertices of the dose box."""
 
     def __init__(self):
         super().__init__('GRIDZ', (float, float, int),
                          comment='Z coords of the box vertices, no. of bins')
 
     def set(self, zl, zu, ndbz):
+        """
+        Sets dimensions.
+        
+        Args:
+            zl (float): Lower limit of the dose box along the z-axis in cm.
+            zu (float): Upper limit of the dose box along the z-axis in cm.
+            ndbz (int): Number of bins (i.e. voxels) along the z-axis.
+        """
         super().set(zl, zu, ndbz)
 
 class RESUME(TypeKeyword):
-    """
-    The program will read the dump file named `dump1.dmp' (up to
-    20 characters) and resume the simulation from the point
-    where it was left. Use this option very, _VERY_ carefully.
-    Make sure that the input data file is fully consistent with
-    the one used to generate the dump file.
-      DEFAULT: off
+    """Name of the resume file.
+    
+    The program will read the dump file named ``dump1.dmp`` and resume the 
+    simulation from the point where it was left. 
+    
+    .. warning::
+       Use this option very, **VERY** carefully.
+       Make sure that the input data file is fully consistent with the one used 
+       to generate the dump file.
     """
 
     def __init__(self):
@@ -644,17 +670,22 @@ class RESUME(TypeKeyword):
                          comment='Resume from this dump file, 20 chars')
 
     def set(self, filename):
+        """
+        Sets filename.
+        
+        Args:
+            filename (str): File name of resume file (up to 20 characters).
+        """
         super().set(filename)
 
 class DUMPTO(TypeKeyword):
-    """
-    Generate a dump file named 'dump2.dmp' (up to 20 characters)
-    after completing the simulation run. This allows the
-    simulation to be resumed later on to improve statistics.
-      DEFAULT: off
+    """Name of dump file.
     
-    NOTE: If the file 'dump2.dmp' already exists, it is
-    overwritten.
+    Generate a dump file named 'dump2.dmp' after completing the simulation run. 
+    This allows the simulation to be resumed later on to improve statistics.
+    
+    .. note:: 
+       If the file 'dump2.dmp' already exists, it is overwritten.
     """
 
     def __init__(self):
@@ -662,66 +693,88 @@ class DUMPTO(TypeKeyword):
                          comment='Generate this dump file, 20 chars')
 
     def set(self, filename):
+        """
+        Sets filename.
+        
+        Args:
+            filename (str): File name of dump file (up to 20 characters).
+        """
         super().set(filename)
 
 class DUMPP(TypeKeyword):
-    """
-    When the DUMPTO option is activated, simulation results are
-    written in the output files every DUMPP seconds. This option
-    is useful to check the progress of long simulations. It also
-    allows the program to be run with a long execution time and
-    to be stopped when the required statistical uncertainty has
-    been reached.
-      DEFAULT: DUMPP=1.0E15
+    """Dump interval.
+    
+    When the DUMPTO option is activated, simulation results are written in the 
+    output files every DUMPP seconds. 
+    This option is useful to check the progress of long simulations. 
+    It also allows the program to be run with a long execution time and to be 
+    stopped when the required statistical uncertainty has been reached.
     """
 
     def __init__(self):
         super().__init__('DUMPP', (float,), comment='Dumping period, in sec')
 
     def set(self, dumpp):
+        """
+        Sets interval.
+        
+        Args:
+            dumpp (int): Dump interval in seconds.
+        """
         super().set(dumpp)
 
 class RSEED(TypeKeyword):
-    """
-    Seeds of the random-number generator. When ISEED1 is equal
-    to a negative integer, -N, the seeds are set by calling
-    subroutine RAND0(N) with the input argument equal to N. This
-    ensures that sequences of random numbers used in different
-    runs of the program (with different values of N) are truly
-    independent.
-      DEFAULT: ISEED1=1, ISEED2=1
-    """
+    """Seeds of the random-number generator."""
 
     def __init__(self):
         super().__init__('RSEED', (int, int),
                          comment='Seeds of the random-number generator')
 
     def set(self, iseed1, iseed2):
+        """
+        Sets seeds.
+        
+        Args:
+            iseed1 (int): First seed.
+                When ISEED1 is equal to a negative integer, -N, the seeds are 
+                set by calling subroutine RAND0(N) with the input argument 
+                equal to N.
+                This ensures that sequences of random numbers used in different
+                runs of the program (with different values of N) are truly
+                independent.
+            iseed2 (int): Second seed.
+        """
         super().set(iseed1, iseed2)
 
 class NSIMSH(TypeKeyword):
-    """
-    Desired number of simulated showers.
-        DEFAULT: DSHN=2.0E9
-    """
+    """Desired number of simulated showers."""
 
     def __init__(self):
         super().__init__('NSIMSH', (float,),
                          comment='Desired number of simulated showers')
 
     def set(self, dshn):
+        """
+        Sets showers.
+        
+        Args:
+            dshn (int): Number of simulated showers.
+        """
         super().set(dshn)
 
 class TIME(TypeKeyword):
-    """
-    Allotted simulation time, in sec.
-        DEFAULT: TIMEA=2.0E9
-    """
+    """Allotted simulation time."""
 
     def __init__(self):
         super().__init__('TIME', (float,),
                          comment='Allotted simulation time, in sec')
 
     def set(self, timea):
+        """
+        Sets simulation time.
+        
+        Args:
+            timea (int): Allotted simulation time in seconds.
+        """
         super().set(timea)
 

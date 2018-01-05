@@ -9,3 +9,10 @@ Input
     :undoc-members:
     :show-inheritance:
     :inherited-members:
+    
+Keywords
+--------
+
+.. automodule:: pypenelopetools.penepma.keywords
+    :members:
+    :show-inheritance:

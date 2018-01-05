@@ -27,30 +27,55 @@ class PenepmaInput(_PenelopeInputBase):
         SENERG (:class:`SENERG <pypenelopetools.penelope.keywords.SENERG>`):
             Initial energy SE0 of primary particles.
         SPOSIT (:class:`SPOSIT <pypenelopetools.penelope.keywords.SPOSIT>`):
+            Coordinates of the source centre.
         SRADI (:class:`SRADI <pypenelopetools.penepma.keywords.SRADI>`):
+            Initial position of the particle is sampled randomly within a circle.
         SDIREC (:class:`SDIREC <pypenelopetools.penepma.keywords.SDIREC>`):
+            Polar and azimuthal angles of the electron beam axis direction.
         SAPERT (:class:`SAPERT <pypenelopetools.penepma.keywords.SAPERT>`):
+            Angular aperture of the electron beam.
         materials (:class:`Materials <pypenelopetools.penelope.keywords.Materials>`):
+            Definition of materials.
         GEOMFN (:class:`GEOMFN <pypenelopetools.penelope.keywords.GEOMFN>`):
+            Name of geometry definition file.
         DSMAX (:class:`DSMAX <pypenelopetools.penelope.keywords.DSMAX>`):
+            Maximum step length of electrons and positrons in body.
         IFORCE (:class:`IFORCE <pypenelopetools.penelope.keywords.IFORCE>`):
+            Forcing of interactions.
         IBRSPL (:class:`IBRSPL <pypenelopetools.penelope.keywords.IBRSPL>`):
+            Bremsstrahlung splitting for electrons and positrons.
         IXRSPL (:class:`IXRSPL <pypenelopetools.penelope.keywords.IXRSPL>`):
+            Splitting of characteristic x rays emitted.
         NBE (:class:`NBE <pypenelopetools.penelope.keywords.NBE>`):
+            Definition of energy distributions of emerging particles.
         NBANGL (:class:`NBANGL <pypenelopetools.penelope.keywords.NBANGL>`):
+            Definition of angular distributions of emerging particles.
         photon_detectors (:class:`PhotonDetectors <pypenelopetools.penepma.keywords.PhotonDetectors>`):
+            Definition of the photon detectors.
         GRIDX (:class:`GRIDX <pypenelopetools.penelope.keywords.GRIDX>`):
+            Definition of x-coordinates of the vertices of the dose box.
         GRIDY (:class:`GRIDY <pypenelopetools.penelope.keywords.GRIDY>`):
+            Definition of y-coordinates of the vertices of the dose box.
         GRIDZ (:class:`GRIDZ <pypenelopetools.penelope.keywords.GRIDZ>`):
+            Definition of z-coordinates of the vertices of the dose box.
         XRAYE (:class:`XRAYE <pypenelopetools.penepma.keywords.XRAYE>`):
+            Space distribution of emission sites of x rays within an energy interval.
         XRLINE (:class:`XRLINE <pypenelopetools.penepma.keywords.XRLINE>`):
+            Space distribution of emission sites of x rays.
         RESUME (:class:`RESUME <pypenelopetools.penelope.keywords.RESUME>`):
+            Name of the resume file.
         DUMPTO (:class:`DUMPTO <pypenelopetools.penelope.keywords.DUMPTO>`):
+            Name of dump file.
         DUMPP (:class:`DUMPP <pypenelopetools.penelope.keywords.DUMPP>`):
+            Dump interval.
         RSEED (:class:`RSEED <pypenelopetools.penelope.keywords.RSEED>`):
+            Seeds of the random-number generator.
         REFLIN (:class:`REFLIN <pypenelopetools.penepma.keywords.REFLIN>`):
+            Termination of simulation based on relative statistical uncertainty of the intensity of line.
         NSIMSH (:class:`NSIMSH <pypenelopetools.penelope.keywords.NSIMSH>`):
+            Desired number of simulated showers.
         TIME (:class:`TIME <pypenelopetools.penelope.keywords.TIME>`):
+            Allotted simulation time.
     """
 
     def __init__(self):

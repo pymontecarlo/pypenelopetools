@@ -19,7 +19,7 @@ but with the goal to facilitate the integration with
 Contents:
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 2
 
    installation
    tutorial

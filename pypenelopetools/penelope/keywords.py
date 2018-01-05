@@ -12,9 +12,7 @@ from pypenelopetools.penelope.keyword import \
 # Globals and constants variables.
 
 class TITLE(TypeKeyword):
-    """
-    Title of the job (up to 65 characters).
-    DEFAULT: none (the input file must start with this line)
+    """Title of the job.
     
     The TITLE string is used to mark dump files. To prevent the
     improper use of wrong resuming files, change the title each
@@ -31,6 +29,12 @@ class TITLE(TypeKeyword):
         return name, (' '.join(values),), comment
 
     def set(self, title):
+        """
+        Sets value.
+        
+        Args:
+            title (str): title of the job (up to 65 characters).
+        """
         super().set(title)
 
     def validate(self, title):
@@ -39,10 +43,8 @@ class TITLE(TypeKeyword):
         return super().validate(title)
 
 class SKPAR(TypeKeyword):
-    """
-    Type of primary particle KPARP (1=electrons, 2=photons or
-    3=positrons).
-      DEFAULT: KPARP=1
+    """Type of primary particle KPARP (1=electrons, 2=photons or 3=positrons).
+    
     If KPARP=0, the initial states of primary particles are
     set by subroutine SOURCE, to be provided by the user. An
     example of that subroutine, corresponding to a 60-Co source
@@ -55,6 +57,13 @@ class SKPAR(TypeKeyword):
                          comment="Primary particles: 1=electron, 2=photon, 3=positron")
 
     def set(self, kparp):
+        """
+        Sets value.
+        
+        Args:
+            kparp (int): Type of primary particles.
+                0=user defined, 1=electrons, 2=photons or 3=positrons
+        """
         super().set(kparp)
 
     def validate(self, kparp):
@@ -63,17 +72,19 @@ class SKPAR(TypeKeyword):
         return super().validate(kparp)
 
 class SENERG(TypeKeyword):
-    """
-    For a monoenergetic source, initial energy SE0 of primary
-    particles.
-    DEFAULT: SE0=1.0E6
-    """
+    """For a monoenergetic source, initial energy SE0 of primary particles."""
 
     def __init__(self):
         super().__init__('SENERG', (float,),
                          comment="Initial energy (monoenergetic sources only)")
 
     def set(self, se0):
+        """
+        Sets value.
+        
+        Args:
+            se0 (float): Initial energy of primary particles in eV
+        """
         super().set(se0)
 
     def validate(self, se0):
@@ -82,7 +93,8 @@ class SENERG(TypeKeyword):
         return super().validate(se0)
 
 class SPECTR(KeywordSequence):
-    """
+    """Define a source with continuous (stepwise constant) spectrum.
+    
     For a source with continuous (stepwise constant) spectrum,
     each 'SPECTR' line gives the lower end-point of an energy
     bin of the source spectrum (Ei) and the associated relative
@@ -90,7 +102,6 @@ class SPECTR(KeywordSequence):
     lines, in arbitrary order. The upper end of the spectrum is
     defined by entering a line with Ei equal to the upper energy
     end point and with a negative Pi value.
-      DEFAULT: none
     """
 
     def __init__(self):
@@ -102,10 +113,18 @@ class SPECTR(KeywordSequence):
         return super().set(ei, pi)
 
     def add(self, ei, pi):
+        """
+        Adds a step in the spectrum.
+        
+        Args:
+            ei (float): lower end-point of an energy bin of the source spectrum in eV
+            pi (float): associated relative probability
+        """
         return super().add(ei, pi)
 
 class SGPOL(TypeKeyword):
-    """
+    """Activates the simulation of polarisation effects in the scattering of photons.
+    
     This line activates the simulation of polarisation effects
     in the scattering of photons (electrons and positrons are
     assumed to be unpolarised). SP1, SP2, SP3 are the Stokes
@@ -114,7 +133,6 @@ class SGPOL(TypeKeyword):
     polarisation, and of linear polarisation at zero azimuth,
     respectively. It is assumed that secondary photons are
     emitted with null polarisation (SP1=SP2=SP3=0).
-      DEFAULT: none
     """
 
     def __init__(self):
@@ -122,30 +140,40 @@ class SGPOL(TypeKeyword):
                          comment="Stokes parameters for polarized photons")
 
     def set(self, sp1, sp2, sp3):
+        """
+        Sets Stokes polarisation parameters.
+        
+        Args:
+            sp1 (float): degrees of linear polarisation at 45 deg azimuth
+            sp2 (float): degrees of circular polarisation
+            sp3 (float): degrees of linear polarisation at 0 deg azimuth
+        """
         super().set(sp1, sp2, sp3)
 
 class SPOSIT(TypeKeyword):
-    """
-    Coordinates of the source centre.
-    """
+    """Coordinates of the source centre."""
 
     def __init__(self):
         super().__init__("SPOSIT", (float, float, float),
                          comment="Coordinates of the source")
 
     def set(self, sx0, sy0, sz0):
+        """
+        Sets coordinates.
+        
+        Args:
+            sx0 (float): x-coordinate in cm.
+            sy0 (float): y-coordinate in cm.
+            sz0 (float): z-coordinate in cm.
+        """
         super().set(sx0, sy0, sz0)
 
 class SCONE(TypeKeyword):
-    """
-    The initial direction of primary particles is sampled uniformly
-    within a circle on the unit sphere (conical beam), or within a
-    'rectangular' window on the unit sphere (rectangular beam).
+    """Initial direction of primary particles is sampled uniformly within a conical beam.
     
     Conical source beam. Polar and azimuthal angles of the
     beam axis direction, THETA and PHI, and angular aperture,
     ALPHA, in deg.
-      DEFAULTS: THETA=0.0, PHI=0.0, ALPHA=0.0
     
     The case ALPHA=0 defines a monodirectional source, and ALPHA
     =180 deg corresponds to an isotropic source.
@@ -156,16 +184,21 @@ class SCONE(TypeKeyword):
                          comment="Conical beam; angles in deg")
 
     def set(self, theta, phi, alpha):
+        """
+        Sets angles.
+        
+        Args:
+            theta (float): polar angle of the beam axis direction in deg.
+            phi (float): azimuthal angle of the beam axis direction in deg.
+            alpha (float): angular aperture in deg.
+        """
         super().set(theta, phi, alpha)
 
 class SRECTA(TypeKeyword):
-    """
-    The initial direction of primary particles is sampled uniformly
-    within a 'rectangular' window on the unit sphere (rectangular beam).
+    """Initial direction of primary particles is sampled uniformly within a rectangular beam.
     
     Rectangular source beam. Limiting polar and azimuthal angles
     of the source beam window, (THETAL,THETAU)x(PHIL,PHIU), in deg.
-      DEFAULTS: THETAL=0.0, THETAU=0.0, PHIL=0.0, PHIU=0.0
     
     The case THETAL=THETAU, PHIL=PHIU defines a monodirectional
     source. To define an isotropic source, set THETAL=0, THETAU=
@@ -177,43 +210,66 @@ class SRECTA(TypeKeyword):
                          comment="Rectangular beam; angles in deg")
 
     def set(self, thetal, thetau, phil, phiu):
+        """
+        Sets angles.
+        
+        Args:
+            thetal (float): lower limit polar angle in deg.
+            thetau (float): upper limit polar angle in deg.
+            phil (float): lower limit azimuthal angle in deg.
+            phiu (float): upper limit azimuthal angle in deg.
+        """
         super().set(thetal, thetau, phil, phiu)
 
 class MFNAME(TypeKeyword):
+    """Name of a PENELOPE input material data file.
+    
+    This file must be generated in advance by running the program MATERIAL.
+    """
 
     def __init__(self):
         super().__init__("MFNAME", (str,),
                          comment="Material file, up to 20 chars")
 
     def set(self, filename):
+        """
+        Sets filename.
+        
+        Args:
+            filename (str): file name of material file (up to 20 characters).
+        """
         super().set(filename)
 
 class MSIMPA(TypeKeyword):
+    """Set of simulation parameters for this material
+    
+    * absorption energies, EABS(1:3,M), 
+    * elastic scattering parameters, C1(M) and C2(M), and 
+    * cutoff energy losses for inelastic collisions and Bremsstrahlung emission, 
+      WCC(M) and WCR(M).
+    """
 
     def __init__(self):
         super().__init__("MSIMPA", (float, float, float, float, float, float, float),
                          comment="EABS(1:3),C1,C2,WCC,WCR")
 
     def set(self, eabs1, eabs2, eabs3, c1, c2, wcc, wcr):
+        """
+        Sets parameters.
+        
+        Args:
+            eabs1 (float): absorption energy of electrons.
+            eabs2 (float): absorption energy of photons.
+            eabs3 (float): absorption energy of positrons.
+            c1 (float): elastic scattering coefficient.
+            c2 (float): elastic scattering coefficient.
+            wcc (float): cutoff energy losses for inelastic collisions.
+            wcr (float): cutoff energy losses for Bremsstrahlung emission.
+        """
         super().set(eabs1, eabs2, eabs3, c1, c2, wcc, wcr)
 
 class MaterialGroup(KeywordGroup):
-    """
-    Name of a PENELOPE input material data file (up to 20
-    characters). This file must be generated in advance by
-    running the program MATERIAL.
-      DEFAULT: none
-      
-    Set of simulation parameters for this material; absorption
-    energies, EABS(1:3,M), elastic scattering parameters, C1(M)
-    and C2(M), and cutoff energy losses for inelastic collisions
-    and bremsstrahlung emission, WCC(M) and WCR(M).
-      DEFAULTS: EABS(1,M)=EABS(3,M)=0.01*EPMAX,
-                EABS(2,M)=0.001*EPMAX
-                C1(M)=C2(M)=0.1, WCC=EABS(1,M), WCR=EABS(2,M)
-    EPMAX is the upper limit of the energy interval covered by
-    the simulation lookup tables.
-    """
+    """Group to define both material file name and its simulation parameters."""
 
     def __init__(self):
         super().__init__()
@@ -222,6 +278,20 @@ class MaterialGroup(KeywordGroup):
         self.index = None
 
     def set(self, filename, eabs1, eabs2, eabs3, c1, c2, wcc, wcr, index=None):
+        """
+        Sets material file name and simulation parameters.
+        
+        Args:
+            filename (str): file name of material file (up to 20 characters).
+            eabs1 (float): absorption energy of electrons.
+            eabs2 (float): absorption energy of photons.
+            eabs3 (float): absorption energy of positrons.
+            c1 (float): elastic scattering coefficient.
+            c2 (float): elastic scattering coefficient.
+            wcc (float): cutoff energy losses for inelastic collisions.
+            wcr (float): cutoff energy losses for Bremsstrahlung emission.
+            index (int, optional): index of this material in the geometry
+        """
         self.MFNAME.set(filename)
         self.MSIMPA.set(eabs1, eabs2, eabs3, c1, c2, wcc, wcr)
         self.index = index
@@ -230,6 +300,7 @@ class MaterialGroup(KeywordGroup):
         return (self.MFNAME, self.MSIMPA)
 
 class Materials(KeywordSequence):
+    """All materials of a simulation."""
 
     def __init__(self):
         keyword = MaterialGroup()
@@ -239,6 +310,20 @@ class Materials(KeywordSequence):
         return super().set(filename, eabs1, eabs2, eabs3, c1, c2, wcc, wcr, index)
 
     def add(self, index, filename, eabs1, eabs2, eabs3, c1, c2, wcc, wcr):
+        """
+        Adds a new material.
+        
+        Args:
+            index (int): index of this material in the geometry
+            filename (str): file name of material file (up to 20 characters).
+            eabs1 (float): absorption energy of electrons.
+            eabs2 (float): absorption energy of photons.
+            eabs3 (float): absorption energy of positrons.
+            c1 (float): elastic scattering coefficient.
+            c2 (float): elastic scattering coefficient.
+            wcc (float): cutoff energy losses for inelastic collisions.
+            wcr (float): cutoff energy losses for Bremsstrahlung emission.
+        """
         return super().add(filename, eabs1, eabs2, eabs3, c1, c2, wcc, wcr, index)
 
     def _add_keyword(self, keyword):
@@ -257,14 +342,7 @@ class Materials(KeywordSequence):
             keyword.write(fileobj)
 
 class GEOMFN(TypeKeyword):
-    """
-    PENGEOM geometry definition file name (a string of up to
-    20 characters).
-      DEFAULT: none.
-    
-    --> The geometry definition file can be debugged/visualised
-    with the viewers GVIEW2D and GVIEW3D (operable only under
-    Windows).
+    """PENGEOM geometry definition file name.
     
     The bodies in the material structure are normally identified
     by the sequential labels assigned by PENGEOM. For complex
@@ -285,6 +363,12 @@ class GEOMFN(TypeKeyword):
                          comment='Geometry file, up to 20 chars')
 
     def set(self, filename):
+        """
+        Sets filename.
+        
+        Args:
+            filename (str): file name of material file (up to 20 characters).
+        """
         super().set(filename)
 
 class DSMAX(KeywordSequence):

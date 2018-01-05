@@ -35,7 +35,7 @@ PENELOPE incorporates a flexible geometry package called PENGEOM that permits
 automatic tracking of particles in complex geometries consisting of homogeneous
 bodies limited by quadratic surfaces. 
 The PENELOPE code system is distributed by the 
-[OECD/NEA Data Bank](http://www.nea.fr). 
+`OECD/NEA Data Bank <http://www.nea.fr>`_. 
 
 PENELOPE is coded as a set of `FORTRAN <http://en.wikipedia.org/wiki/Fortran>`_ 
 subroutines, which perform the random sampling of interactions and the tracking 

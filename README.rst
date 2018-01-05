@@ -1,18 +1,21 @@
-# pyPENELOPEtools
+pyPENELOPEtools
+===============
 
-[![PyPI](https://img.shields.io/pypi/v/pypenelopetools.svg)](https://pypi.python.org/pypi/pypenelopetools/)
-[![TravisCI](https://travis-ci.org/pymontecarlo/pypenelopetools.svg?branch=master)](https://travis-ci.org/pymontecarlo/pypenelopetools)
-[![Codecov](https://codecov.io/github/pymontecarlo/pypenelopetools/coverage.svg?branch=master)](https://codecov.io/gh/pymontecarlo/pypenelopetools)
+.. image:: https://img.shields.io/pypi/v/pypenelopetools.svg
+.. image:: https://img.shields.io/travis/pymontecarlo/pypenelopetools.svg
+.. image:: https://img.shields.io/codecov/c/github/pymontecarlo/pypenelopetools.svg
 
 **pyPENELOPEtools** is an open-source software to facilitate the use of the 
 Monte Carlo code PENELOPE and its main programs such as PENEPMA. 
 It is a programming interface to setup, run and analyze Monte Carlo simulations.
-Most of the code was adapted from [pyPENELOPE](http://pypenelope.sourceforge.net/), but
-with the goal to facilitate the integration with [pyMonteCarlo](https://github.com/pymontecarlo/pymontecarlo).
+Most of the code was adapted from `pyPENELOPE <http://pypenelope.sourceforge.net>`_, but
+with the goal to facilitate the integration with 
+`pyMonteCarlo <https://github.com/pymontecarlo/pymontecarlo>`_.
 
 **pyPENELOPEtools** is currently under development.
 
-## What is PENELOPE?
+What is PENELOPE?
+-----------------
 
 PENELOPE (*Penetration and ENErgy LOss of Positrons and Electrons*) is a
 a general-purpose Monte Carlo code system for the simulation of coupled 
@@ -33,19 +36,16 @@ automatic tracking of particles in complex geometries consisting of homogeneous
 bodies limited by quadratic surfaces. 
 The PENELOPE code system is distributed by the 
 [OECD/NEA Data Bank](http://www.nea.fr). 
-The distribution package includes a report :cite:`Salvat2006` that provides 
-detailed information on the physical models and random sampling algorithms 
-adopted in PENELOPE, on the PENGEOM geometry package, and on the structure and 
-operation of the simulation routines.
 
-PENELOPE is coded as a set of [FORTRAN](http://en.wikipedia.org/wiki/Fortran) 
+PENELOPE is coded as a set of `FORTRAN <http://en.wikipedia.org/wiki/Fortran>`_ 
 subroutines, which perform the random sampling of interactions and the tracking 
 of particles (either electrons, positrons or photons). 
 In principle, the user should provide a main steering program to follow the 
 particle histories through the material structure and to keep score of 
 quantities of interest.
 
-## Authors
+Authors
+-------
 
-- [Philippe T. Pinard](https://github.com/ppinard) (High Wycombe, United Kingdom)
-- [Hendrix Demers](https://github.com/drix00) (McGill University, Montreal, Canada)
+- `Philippe T. Pinard <https://github.com/ppinard>`_ (High Wycombe, United Kingdom)
+- `Hendrix Demers <https://github.com/drix00>`_ (McGill University, Montreal, Canada)

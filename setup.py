@@ -12,6 +12,9 @@ import versioneer
 # Globals and constants variables.
 BASEDIR = os.path.abspath(os.path.dirname(__file__))
 
+with open(os.path.join(BASEDIR, 'README.rst'), 'r') as fp:
+    LONG_DESCRIPTION = fp.read()
+
 PACKAGES = find_packages()
 INSTALL_REQUIRES = ['pyxray', 'uncertainties', 'numpy']
 
@@ -21,6 +24,7 @@ setup(name="pyPENELOPEtools",
       version=versioneer.get_version(),
       url='https://github.com/pymontecarlo/pypenelopetools',
       description="Python interface to facilitate the use of the Monte Carlo code PENELOPE and its main programs",
+      long_description=LONG_DESCRIPTION,
       author="Hendrix Demers and Philippe T. Pinard",
       author_email="hendrix.demers@mail.mcgill.ca and philippe.pinard@gmail.com",
       license="Apache License, Version 2.0",

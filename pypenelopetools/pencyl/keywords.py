@@ -44,7 +44,7 @@ class GeometryDefinitionGroup(KeywordGroup):
 
         keyword = TypeKeyword('CYLIND', (int, float, float),
                               comment='Material, R_inner and R_outer')
-        self.CYLIND = KeywordSequence(keyword)
+        self.CYLIND = KeywordSequence(keyword, maxlength=50)
 
     def get_keywords(self):
         return (self.LAYER, self.CENTER, self.CYLIND)
@@ -56,9 +56,9 @@ class GeometryDefinitionGroup(KeywordGroup):
 
 class GeometryDefinitions(KeywordSequence):
 
-    def __init__(self):
+    def __init__(self, maxlength=100):
         keyword = GeometryDefinitionGroup()
-        super().__init__(keyword)
+        super().__init__(keyword, maxlength)
 
     def add(self, zlow, zhigh, xcen=None, ycen=None, cylinders=None):
         return super().add(zlow, zhigh, xcen, ycen, cylinders)
@@ -75,10 +75,10 @@ class SEXTND(KeywordSequence):
     are written in the output geometry report.
     """
 
-    def __init__(self):
+    def __init__(self, maxlength=5000):
         keyword = TypeKeyword('SEXTND', (int, int, float),
                               comment='Extended source in KL,KC, rel. activity dens.')
-        super().__init__(keyword)
+        super().__init__(keyword, maxlength)
 
     def add(self, kl, kc, relac):
         super().add(kl, kc, relac)
@@ -113,10 +113,10 @@ class DSMAX(KeywordSequence):
       DEFAULT: DSMAX=0.1 times the cylinder thickness
     """
 
-    def __init__(self):
+    def __init__(self, maxlength=5000):
         keyword = TypeKeyword("DSMAX", (int, int, float),
                               comment="Maximum step length in body KL,KC")
-        super().__init__(keyword)
+        super().__init__(keyword, maxlength)
 
     def add(self, kl, kc, dsmax):
         return super().add(kl, kc, dsmax)
@@ -135,10 +135,10 @@ class EABSB(KeywordSequence):
       DEFAULTS: EABSB(KPAR,KL,KC)=EABS(KPAR,M)  (no action)
     """
 
-    def __init__(self):
+    def __init__(self, maxlength=5000):
         keyword = TypeKeyword("EABSB", (int, int, float, float, float),
                               comment="Local EABSB(1:3) in body KL,KC")
-        super().__init__(keyword)
+        super().__init__(keyword, maxlength)
 
     def add(self, kl, kc, eabs1, eabs2, eabs3):
         return super().add(kl, kc, eabs1, eabs2, eabs3)
@@ -168,10 +168,10 @@ class IFORCE(KeywordSequence):
     x-ray spectra from bulk samples.
     """
 
-    def __init__(self):
+    def __init__(self, maxlength=120000):
         keyword = TypeKeyword("IFORCE", (int, int, int, int, float, float, float),
                               comment="KL,KC,KPAR,ICOL,FORCER,WLOW,WHIG")
-        super().__init__(keyword)
+        super().__init__(keyword, maxlength)
 
     def add(self, kl, kc, kpar, icol, forcer, wlow, whig):
         return super().add(kl, kc, kpar, icol, forcer, wlow, whig)
@@ -189,10 +189,10 @@ class IBRSPL(KeywordSequence):
     only in those bodies where interaction forcing is active.
     """
 
-    def __init__(self):
+    def __init__(self, maxlength=5000):
         keyword = TypeKeyword("IBRSPL", (int, int, float),
                               comment="KL,KC,splitting factor")
-        super().__init__(keyword)
+        super().__init__(keyword, maxlength)
 
     def add(self, kl, kc, ibrspl):
         return super().add(kl, kc, ibrspl)
@@ -208,10 +208,10 @@ class IXRSPL(KeywordSequence):
       DEFAULT: no x-ray splitting
     """
 
-    def __init__(self):
+    def __init__(self, maxlength=5000):
         keyword = TypeKeyword("IXRSPL", (int, int, float),
                               comment="KL,KC,splitting factor")
-        super().__init__(keyword)
+        super().__init__(keyword, maxlength)
 
     def add(self, kl, kc, ixrspl):
         return super().add(kl, kc, ixrspl)
@@ -326,7 +326,7 @@ class EnergyDepositionDetectorGroup(KeywordGroup):
         self.EDSPC = penelope_keywords.EDSPC()
 
         keyword = TypeKeyword('EDBODY', (int, int), comment='Active cylinder')
-        self.EDBODY = KeywordSequence(keyword)
+        self.EDBODY = KeywordSequence(keyword, maxlength=5000)
 
     def get_keywords(self):
         return (self.ENDETC, self.EDSPC, self.EDBODY)
@@ -338,9 +338,9 @@ class EnergyDepositionDetectorGroup(KeywordGroup):
 
 class EnergyDepositionDetectors(KeywordSequence):
 
-    def __init__(self):
+    def __init__(self, maxlength=25):
         keyword = EnergyDepositionDetectorGroup()
-        super().__init__(keyword)
+        super().__init__(keyword, maxlength)
 
     def add(self, el, eu, nbe, spectrum_filename=None, cylinders=None):
         return super().add(el, eu, nbe, spectrum_filename, cylinders)
@@ -356,10 +356,10 @@ class DOSE2D(KeywordSequence):
       DEFAULT: off
     """
 
-    def __init__(self):
+    def __init__(self, maxlength=10):
         keyword = TypeKeyword('DOSE2D', (int, int, int, int),
                               comment='Tally distributions in KL,KC with NZ,NR bins')
-        super().__init__(keyword)
+        super().__init__(keyword, maxlength)
 
     def add(self, kl, kc, nz, nr):
         super().add(kl, kc, nz, nr)

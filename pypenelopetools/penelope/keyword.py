@@ -185,17 +185,21 @@ class KeywordSequence(_KeywordBase):
     Sequence of keywords, keywords that can be defined multiple times.
     
     Args:
-        keyword (_KeywordBase): Base keyword
+        keyword (_KeywordBase): Base keyword.
+        maxlength (int): Maximum number of keywords that can be added.
     """
 
-    def __init__(self, keyword):
+    def __init__(self, keyword, maxlength):
         self._base_keyword = keyword
         self._keywords = []
+        self._maxlength = maxlength
 
     def _create_keyword(self):
         return self._base_keyword.copy()
 
     def _add_keyword(self, keyword):
+        if len(self._keywords) >= self._maxlength:
+            raise ValueError('Exceeded maximum number of keywords.')
         self._keywords.append(keyword)
 
     def add(self, *args):

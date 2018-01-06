@@ -46,10 +46,10 @@ class SBODY(KeywordSequence):
     The program stops if the source box has not been defined previously.
     """
 
-    def __init__(self):
+    def __init__(self, maxlength=5000):
         keyword = TypeKeyword("SBODY", (int,),
                               comment='Active source body; one line for each body')
-        super().__init__(keyword)
+        super().__init__(keyword, maxlength)
 
     def add(self, kb):
         """
@@ -88,10 +88,10 @@ class IPSFN(KeywordSequence):
     detector with the flag IPSF=1 (see below).
     """
 
-    def __init__(self):
+    def __init__(self, maxlength=100):
         keyword = TypeKeyword("IPSFN", (str,),
                               comment="Input psf name, up to 20 characters")
-        super().__init__(keyword)
+        super().__init__(keyword, maxlength)
 
     def add(self, filename):
         return super().add(filename)
@@ -167,10 +167,10 @@ class PARINP(KeywordSequence):
       DEFAULT:  none
     """
 
-    def __init__(self):
+    def __init__(self, maxlength=500):
         keyword = TypeKeyword("PARINP", (int, float),
                               comment="Replacement parameter")
-        super().__init__(keyword)
+        super().__init__(keyword, maxlength)
 
     def add(self, ip, parinp):
         return super().add(ip, parinp)
@@ -288,10 +288,10 @@ class ImpactDetectorGroup(KeywordGroup):
                                   comment='Age-distribution file name, 20 chars')
 
         keyword = TypeKeyword('IDBODY', (int,), comment='Active body')
-        self.IDBODY = KeywordSequence(keyword)
+        self.IDBODY = KeywordSequence(keyword, maxlength=5000)
 
         keyword = TypeKeyword('IDKPAR', (int,), comment='Kind of detected particles')
-        self.IDKPAR = KeywordSequence(keyword)
+        self.IDKPAR = KeywordSequence(keyword, maxlength=3)
 
     def get_keywords(self):
         return (self.IMPDET, self.IDSPC, self.IDPSF, self.IDFLNC,
@@ -312,9 +312,9 @@ class ImpactDetectorGroup(KeywordGroup):
 
 class ImpactDetectors(KeywordSequence):
 
-    def __init__(self):
+    def __init__(self, maxlength=25):
         keyword = ImpactDetectorGroup()
-        super().__init__(keyword)
+        super().__init__(keyword, maxlength)
 
     def add(self, el, eu, nbe, ipsf, idcut,
             spectrum_filename=None, psf_filename=None, fln_filename=None,
@@ -332,9 +332,9 @@ class EnergyDepositionDetectorGroup(KeywordGroup):
     spectrum is the distribution of absorbed energy (per primary shower)
     in the active bodies.
     
-             *** WARNING: The energy-deposition spectrum may be strongly
-             biased when interaction forcing is applied, even outside the
-             detector bodies.
+    .. warning::
+       The energy-deposition spectrum may be strongly biased when interaction 
+       forcing is applied, even outside the detector bodies.
     """
 
     def __init__(self):
@@ -342,7 +342,7 @@ class EnergyDepositionDetectorGroup(KeywordGroup):
         self.EDSPC = penelope_keywords.EDSPC()
 
         keyword = TypeKeyword('EDBODY', (int,), comment='Active body')
-        self.EDBODY = KeywordSequence(keyword)
+        self.EDBODY = KeywordSequence(keyword, maxlength=5000)
 
     def get_keywords(self):
         return (self.ENDETC, self.EDSPC, self.EDBODY)
@@ -354,9 +354,9 @@ class EnergyDepositionDetectorGroup(KeywordGroup):
 
 class EnergyDepositionDetectors(KeywordSequence):
 
-    def __init__(self):
+    def __init__(self, maxlength=25):
         keyword = EnergyDepositionDetectorGroup()
-        super().__init__(keyword)
+        super().__init__(keyword, maxlength)
 
     def add(self, el, eu, nbe, spectrum_filename=None, kb=None):
         return super().add(el, eu, nbe, spectrum_filename, kb)

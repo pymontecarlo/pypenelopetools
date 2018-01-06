@@ -137,9 +137,9 @@ class PhotonDetectors(KeywordSequence):
     Up to 25 different detectors can be defined.
     """
 
-    def __init__(self):
+    def __init__(self, maxlength=25):
         keyword = PhotonDetectorGroup()
-        super().__init__(keyword)
+        super().__init__(keyword, maxlength)
 
     def add(self, theta1, theta2, phi1, phi2, ipsf, edel, edeu, nche, emission_filename=None):
         """
@@ -186,10 +186,10 @@ class PhotonDetectors(KeywordSequence):
 class XRAYE(KeywordSequence):
     """Space distribution of emission sites of x rays within an energy interval."""
 
-    def __init__(self):
+    def __init__(self, maxlength=10):
         keyword = TypeKeyword('XRAYE', (float, float),
                               comment='Energy interval where x rays are mapped')
-        super().__init__(keyword)
+        super().__init__(keyword, maxlength)
 
     def add(self, emin, emax):
         """
@@ -204,10 +204,10 @@ class XRAYE(KeywordSequence):
 class XRLINE(KeywordSequence):
     """Space distribution of emission sites of x rays."""
 
-    def __init__(self):
+    def __init__(self, maxlength=10):
         keyword = TypeKeyword('XRLINE', (int,),
                               comment='X-ray line, IZ*1e6+S1*1e4+S2*1e2')
-        super().__init__(keyword)
+        super().__init__(keyword, maxlength)
 
     def add(self, izs1s200):
         """

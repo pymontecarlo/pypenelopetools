@@ -104,10 +104,10 @@ class SPECTR(KeywordSequence):
     end point and with a negative Pi value.
     """
 
-    def __init__(self):
+    def __init__(self, maxlength=1000):
         keyword = TypeKeyword('SPECTR', (float, float),
                               comment='E bin: lower-end and total probability')
-        super().__init__(keyword)
+        super().__init__(keyword, maxlength)
 
     def add(self, ei, pi):
         """
@@ -299,9 +299,9 @@ class MaterialGroup(KeywordGroup):
 class Materials(KeywordSequence):
     """Definition of materials."""
 
-    def __init__(self):
+    def __init__(self, maxlength=10):
         keyword = MaterialGroup()
-        super().__init__(keyword)
+        super().__init__(keyword, maxlength)
 
     def add(self, index, filename, eabs1, eabs2, eabs3, c1, c2, wcc, wcr):
         """
@@ -373,10 +373,10 @@ class DSMAX(KeywordSequence):
        value of the order of one tenth of the body thickness or less.
     """
 
-    def __init__(self):
+    def __init__(self, maxlength=5000):
         keyword = TypeKeyword("DSMAX", (int, float),
                               comment="KB, maximum step length in body KB")
-        super().__init__(keyword)
+        super().__init__(keyword, maxlength)
 
     def add(self, kb, dsmax):
         """
@@ -400,10 +400,10 @@ class EABSB(KeywordSequence):
     regions of lesser interest.
     """
 
-    def __init__(self):
+    def __init__(self, maxlength=5000):
         keyword = TypeKeyword("EABSB", (int, float, float, float),
                               comment="KB, local absorption energies, EABSB(1:3)")
-        super().__init__(keyword)
+        super().__init__(keyword, maxlength)
 
     def add(self, kb, eabs1, eabs2, eabs3):
         """
@@ -440,10 +440,10 @@ class IFORCE(KeywordSequence):
        spectra from bulk samples.
     """
 
-    def __init__(self):
+    def __init__(self, maxlength=120000):
         keyword = TypeKeyword("IFORCE", (int, int, int, float, float, float),
                               comment="KB,KPAR,ICOL,FORCER,WLOW,WHIG")
-        super().__init__(keyword)
+        super().__init__(keyword, maxlength)
 
     def add(self, kb, kpar, icol, forcer, wlow, whig):
         """
@@ -465,10 +465,10 @@ class IBRSPL(KeywordSequence):
        only in those bodies where interaction forcing is active.
     """
 
-    def __init__(self):
+    def __init__(self, maxlength=5000):
         keyword = TypeKeyword("IBRSPL", (int, float),
                               comment="KB,splitting factor")
-        super().__init__(keyword)
+        super().__init__(keyword, maxlength)
 
     def add(self, kb, ibrspl):
         """
@@ -489,10 +489,10 @@ class IXRSPL(KeywordSequence):
     isotropically.
     """
 
-    def __init__(self):
+    def __init__(self, maxlength=5000):
         keyword = TypeKeyword("IXRSPL", (int, float),
                               comment="KB,splitting factor")
-        super().__init__(keyword)
+        super().__init__(keyword, maxlength)
 
     def add(self, kb, ixrspl):
         """

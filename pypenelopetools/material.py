@@ -22,11 +22,11 @@ import os
 import pyxray
 
 # Local modules.
-from pypenelopetools.penelope.mixin import FilenameMixin
 
 # Globals and constants variables.
+FILENAME_MAXLENGTH = 20
 
-class Material(FilenameMixin):
+class Material(object):
     """
     Creates a new material.
     
@@ -263,4 +263,18 @@ class Material(FilenameMixin):
         lines = self._create_lines()
         fileobj.write(os.linesep.join(lines))
 
+    @property
+    def filename(self):
+        return self._filename
+
+    @filename.setter
+    def filename(self, filename):
+        if len(filename) > FILENAME_MAXLENGTH:
+            raise ValueError("Filename is too long. Maximum {0} characters"
+                             .format(FILENAME_MAXLENGTH))
+        self._filename = filename
+
 VACUUM = Material('Vacuum', {}, 0.0)
+"""
+Material representing vacuum.
+"""

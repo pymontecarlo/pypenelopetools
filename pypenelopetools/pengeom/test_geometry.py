@@ -12,7 +12,7 @@ import io
 # Local modules.
 from pypenelopetools.pengeom.geometry import Geometry
 from pypenelopetools.pengeom.surface import zplane, cylinder, xplane
-from pypenelopetools.pengeom.module import Module, SIDEPOINTER_NEGATIVE, SIDEPOINTER_POSITIVE
+from pypenelopetools.pengeom.module import Module, SidePointer
 from pypenelopetools.material import Material, VACUUM
 
 # Globals and constants variables.
@@ -126,17 +126,17 @@ class TestGeometry(unittest.TestCase):
 
         self.mat1 = Material('copper', {29: 1.0}, 8.9)
         self.module1 = Module(self.mat1)
-        self.module1.add_surface(surface1, SIDEPOINTER_NEGATIVE)
-        self.module1.add_surface(surface2, SIDEPOINTER_POSITIVE)
-        self.module1.add_surface(surface3, SIDEPOINTER_NEGATIVE)
-        self.module1.add_surface(surface4, SIDEPOINTER_POSITIVE)
+        self.module1.add_surface(surface1, SidePointer.NEGATIVE)
+        self.module1.add_surface(surface2, SidePointer.POSITIVE)
+        self.module1.add_surface(surface3, SidePointer.NEGATIVE)
+        self.module1.add_surface(surface4, SidePointer.POSITIVE)
         self.geo.add_module(self.module1)
 
         self.mat2 = Material('zinc', {30: 1.0}, 7.14)
         self.module2 = Module(self.mat2)
-        self.module2.add_surface(surface1, SIDEPOINTER_NEGATIVE)
-        self.module2.add_surface(surface2, SIDEPOINTER_POSITIVE)
-        self.module2.add_surface(surface3, SIDEPOINTER_NEGATIVE)
+        self.module2.add_surface(surface1, SidePointer.NEGATIVE)
+        self.module2.add_surface(surface2, SidePointer.POSITIVE)
+        self.module2.add_surface(surface3, SidePointer.NEGATIVE)
         self.module2.add_module(self.module1)
         self.geo.add_module(self.module2)
 

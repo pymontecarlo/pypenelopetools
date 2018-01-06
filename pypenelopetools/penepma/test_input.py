@@ -13,7 +13,7 @@ import os
 from pypenelopetools.penepma.input import PenepmaInput
 from pypenelopetools.material import Material
 from pypenelopetools.pengeom.surface import xplane, zplane, cylinder
-from pypenelopetools.pengeom.module import Module, SIDEPOINTER_NEGATIVE, SIDEPOINTER_POSITIVE
+from pypenelopetools.pengeom.module import Module, SidePointer
 from pypenelopetools.pengeom.geometry import Geometry
 
 # Globals and constants variables.
@@ -24,9 +24,9 @@ MATERIAL_FE = Material('Fe', {26: 1.0}, 7.874)
 def create_epma1():
     # Create geometry
     module = Module(MATERIAL_CU, 'Sample')
-    module.add_surface(zplane(0.0), SIDEPOINTER_NEGATIVE)
-    module.add_surface(zplane(-0.1), SIDEPOINTER_POSITIVE)
-    module.add_surface(cylinder(1.0), SIDEPOINTER_NEGATIVE)
+    module.add_surface(zplane(0.0), SidePointer.NEGATIVE)
+    module.add_surface(zplane(-0.1), SidePointer.POSITIVE)
+    module.add_surface(cylinder(1.0), SidePointer.NEGATIVE)
 
     geometry = Geometry('Cylindrical homogeneous foil')
     geometry.add_module(module)
@@ -91,15 +91,15 @@ def create_epma2():
     surface_divider = xplane(0.0)
 
     module_right = Module(MATERIAL_CU, 'Right half of the sample')
-    module_right.add_surface(surface_top, SIDEPOINTER_NEGATIVE)
-    module_right.add_surface(surface_bottom, SIDEPOINTER_POSITIVE)
-    module_right.add_surface(surface_cylinder, SIDEPOINTER_NEGATIVE)
-    module_right.add_surface(surface_divider, SIDEPOINTER_POSITIVE)
+    module_right.add_surface(surface_top, SidePointer.NEGATIVE)
+    module_right.add_surface(surface_bottom, SidePointer.POSITIVE)
+    module_right.add_surface(surface_cylinder, SidePointer.NEGATIVE)
+    module_right.add_surface(surface_divider, SidePointer.POSITIVE)
 
     module_left = Module(MATERIAL_FE, 'Left half of the sample')
-    module_left.add_surface(surface_top, SIDEPOINTER_NEGATIVE)
-    module_left.add_surface(surface_bottom, SIDEPOINTER_POSITIVE)
-    module_left.add_surface(surface_cylinder, SIDEPOINTER_NEGATIVE)
+    module_left.add_surface(surface_top, SidePointer.NEGATIVE)
+    module_left.add_surface(surface_bottom, SidePointer.POSITIVE)
+    module_left.add_surface(surface_cylinder, SidePointer.NEGATIVE)
     module_left.add_module(module_right)
 
     geometry = Geometry('Cylindrical homogeneous foil')

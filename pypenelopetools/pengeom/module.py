@@ -1,9 +1,10 @@
 """
-Definition of module
+Definition of module.
 """
 
 # Standard library modules.
 import os
+import enum
 
 # Third party modules.
 
@@ -14,10 +15,21 @@ from pypenelopetools.pengeom.base import _GeometryBase, LINE_EXTRA, LINE_SEPARAT
 from pypenelopetools.material import VACUUM
 
 # Globals and constants variables.
-SIDEPOINTER_POSITIVE = 1
-SIDEPOINTER_NEGATIVE = -1
+class SidePointer(enum.IntEnum):
+    POSITIVE = 1
+    NEGATIVE = -1
 
 class Module(DescriptionMixin, ModuleMixin, _GeometryBase):
+    """
+    Definition of a module.
+    
+    Args:
+        material (:obj:`Material <pypenelopetools.material.Material>`, optional):
+            Material associated with this module.
+            If ``None``, the material is set to 
+            :obj:`VACUUM <pypenelopetools.material.VACUUM>`.
+        description (str): Description of the module
+    """
 
     def __init__(self, material=None, description=''):
         if material is None:
@@ -121,7 +133,22 @@ class Module(DescriptionMixin, ModuleMixin, _GeometryBase):
         fileobj.write(LINE_SEPARATOR + os.linesep)
 
     def add_surface(self, surface, pointer):
-        if pointer not in [SIDEPOINTER_NEGATIVE, SIDEPOINTER_POSITIVE]:
+        """
+        Adds a surface.
+        
+        Args:
+            surface (:obj:`SurfaceImplicit <pypenelopetools.pengeom.surface.SurfaceImplicit>` or :obj:`SurfaceReduced <pypenelopetools.pengeom.surface.SurfaceReduced>`):
+                Surface to add.
+            pointer (:obj:`SidePointer`): 
+                Whether the surface is pointing in the positive or negative 
+                direction.
+        """
+        if isinstance(pointer, int):
+            if pointer == SidePointer.NEGATIVE:
+                pointer = SidePointer.NEGATIVE
+            elif pointer == SidePointer.POSITIVE:
+                pointer = SidePointer.POSITIVE
+        if pointer not in SidePointer:
             raise ValueError("Pointer ({0}) must be either -1 or 1.".format(pointer))
         if surface in self._surfaces:
             raise ValueError("Module already contains this surface.")

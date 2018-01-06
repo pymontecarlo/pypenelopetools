@@ -13,7 +13,7 @@ import os
 from pypenelopetools.penmain.input import PenmainInput
 from pypenelopetools.material import Material
 from pypenelopetools.pengeom.surface import sphere, zplane, cylinder
-from pypenelopetools.pengeom.module import Module, SIDEPOINTER_NEGATIVE, SIDEPOINTER_POSITIVE
+from pypenelopetools.pengeom.module import Module, SidePointer
 from pypenelopetools.pengeom.geometry import Geometry
 
 # Globals and constants variables.
@@ -24,9 +24,9 @@ def create_example1_disc():
 
     # Create geometry
     module = Module(material_cu, 'Solid cylinder')
-    module.add_surface(zplane(0.0), SIDEPOINTER_POSITIVE)
-    module.add_surface(zplane(0.005), SIDEPOINTER_NEGATIVE)
-    module.add_surface(cylinder(1.0), SIDEPOINTER_NEGATIVE)
+    module.add_surface(zplane(0.0), SidePointer.POSITIVE)
+    module.add_surface(zplane(0.005), SidePointer.NEGATIVE)
+    module.add_surface(cylinder(1.0), SidePointer.NEGATIVE)
 
     geometry = Geometry('A solid cylinder.')
     geometry.add_module(module)
@@ -79,11 +79,11 @@ def create_example2_plane():
 
     # Create geometry
     module_detector = Module(material_h2o, 'Fluence detector')
-    module_detector.add_surface(sphere(2.0), SIDEPOINTER_NEGATIVE)
+    module_detector.add_surface(sphere(2.0), SidePointer.NEGATIVE)
 
     module_phantom = Module(material_h2o, 'Water phantom')
-    module_phantom.add_surface(zplane(0.0), SIDEPOINTER_POSITIVE)
-    module_phantom.add_surface(zplane(30.0), SIDEPOINTER_NEGATIVE)
+    module_phantom.add_surface(zplane(0.0), SidePointer.POSITIVE)
+    module_phantom.add_surface(zplane(30.0), SidePointer.NEGATIVE)
 
     geometry = Geometry('Semi-infinite water phantom')
     geometry.add_module(module_detector)

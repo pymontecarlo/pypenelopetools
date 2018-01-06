@@ -150,6 +150,12 @@ class PhotonDetectors(KeywordSequence):
         .. note::
            ``phi1`` and ``phi2`` must be both either in the interval (0,360) or 
            in the interval (-180,180).
+           
+        .. important::
+           The theta angles are defined as angles from the positive z-axis.
+           This is different than the take-off angle usually used in 
+           microanalysis.
+           For a take-off angle of 30deg, theta would be 60deg.
         
         Args:
             theta1 (float): Lower limit polar angle in deg.

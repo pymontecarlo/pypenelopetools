@@ -1,4 +1,6 @@
-""""""
+"""
+Definition of base separator classes.
+"""
 
 # Standard library modules.
 import os
@@ -11,6 +13,17 @@ from pypenelopetools.penelope.base import _InputLineBase
 # Globals and constants variables.
 
 class Separator(_InputLineBase):
+    """
+    Base of all PENELOPE separators.
+    
+    Args:
+        text (str): Comment of the separator
+        name (str, optional): name of separator keyword (e.g. END)
+        
+    Attributes:
+        text (str): Comment of the separator
+        name (str, optional): name of separator keyword (e.g. END)
+    """
 
     def __init__(self, text, name=''):
         self.text = text

@@ -1,4 +1,6 @@
-""""""
+"""
+Definition of base input classes.
+"""
 
 # Standard library modules.
 import abc
@@ -11,13 +13,16 @@ from pypenelopetools.penelope.base import _InputLineBase
 # Globals and constants variables.
 
 class _PenelopeInputBase(_InputLineBase):
+    """
+    Base input class.
+    """
 
     def read(self, fileobj):
         """
         Reads an input file (i.e. ``.in``).
         
         Args:
-            fileobj (file object): file object opened with read access.
+            fileobj (file object): File object opened with read access.
         """
         for keyword in self.get_keywords():
             keyword.read(fileobj)
@@ -27,7 +32,7 @@ class _PenelopeInputBase(_InputLineBase):
         Writes to an input file (i.e. ``.in``).
         
         Args:
-            fileobj (file object): file object opened with write access.
+            fileobj (file object): File object opened with write access.
         """
         for keyword in self.get_keywords():
             keyword.write(fileobj)
@@ -35,6 +40,7 @@ class _PenelopeInputBase(_InputLineBase):
     @abc.abstractmethod
     def get_keywords(self):
         """
-        Returns a sorted list of all keywords in the input.
+        Returns:
+            list: Sorted list of all keywords in the input.
         """
         return []

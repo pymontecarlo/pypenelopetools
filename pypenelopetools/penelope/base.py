@@ -1,5 +1,5 @@
 """
-Base class to parse and read PENELOPE text files.
+Definition of base classes.
 """
 
 # Standard library modules.
@@ -18,6 +18,9 @@ SKIP_LINE = "       ."
 PATTERN_LINE = re.compile(r'([A-Z0-9 ]{6})([\w\.\-\+ ]*)(\[.*\])?')
 
 class _InputLineBase(metaclass=abc.ABCMeta):
+    """
+    Base class to parse and read PENELOPE text files.
+    """
 
     def _parse_line(self, line):
         """
@@ -25,10 +28,10 @@ class _InputLineBase(metaclass=abc.ABCMeta):
         The values are returned as a list.
         
         Args:
-            line (str): input line
+            line (str): Input line.
 
         Returns:
-            tuple(str, tuple(str), str): keyword, values, comment
+            tuple(str, tuple(str), str): Keyword, values, comment.
         """
         if line.startswith(' ' * 6):
             return None, None, line.strip()
@@ -55,12 +58,12 @@ class _InputLineBase(metaclass=abc.ABCMeta):
         their respective maximum size.
         
         Args:
-            name (str): 6-character keyword
-            values (tuple or list): values
-            comment (str, optional): comment associated with the line
+            name (str): 6-character keyword.
+            values (tuple or list): Values.
+            comment (str, optional): Comment associated with the line.
             
         Returns:
-            str: formatted line
+            str: Formatted line.
         """
         # Keyword
         name = name.ljust(LINE_KEYWORDS_SIZE)
@@ -93,10 +96,10 @@ class _InputLineBase(metaclass=abc.ABCMeta):
         Returns the next line without advancing the current position.
         
         Args:
-            fileobj (file object): file object opened with read access.
+            fileobj (file object): File object opened with read access.
             
         Returns:
-            str: next line
+            str: Next line, stripped of all trailing white spaces.
         """
         # Remember the current position
         offset = fileobj.tell()
@@ -115,10 +118,10 @@ class _InputLineBase(metaclass=abc.ABCMeta):
         Comment line (line starting with 7 spaces) are automatically skipped.
         
         Args:
-            fileobj (file object): file object opened with read access.
+            fileobj (file object): File object opened with read access.
             
         Returns:
-            str: next line
+            str: Next line, stripped of all trailing white spaces.
         """
         line = fileobj.readline().rstrip()
 
@@ -134,7 +137,7 @@ class _InputLineBase(metaclass=abc.ABCMeta):
         Reads a PENELOPE-type file.
         
         Args:
-            fileobj (file object): file object opened with read access.
+            fileobj (file object): File object opened with read access.
         """
         raise NotImplementedError
 
@@ -144,6 +147,6 @@ class _InputLineBase(metaclass=abc.ABCMeta):
         Writes to a PENELOPE-type file.
         
         Args:
-            fileobj (file object): file object opened with write access.
+            fileobj (file object): File object opened with write access.
         """
         raise NotImplementedError

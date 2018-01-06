@@ -1,4 +1,6 @@
-""""""
+"""
+Keywords used across different PENELOPE main programs.
+"""
 
 # Standard library modules.
 from operator import attrgetter

@@ -15,9 +15,17 @@ from pypenelopetools.pengeom.base import _GeometryBase, LINE_EXTRA, LINE_SEPARAT
 from pypenelopetools.material import VACUUM
 
 # Globals and constants variables.
+
 class SidePointer(enum.IntEnum):
+    """
+    Whether the surface is pointing in the positive or negative direction.
+    """
+
     POSITIVE = 1
+    """Positive direction."""
+
     NEGATIVE = -1
+    """Negative direction."""
 
 class Module(DescriptionMixin, ModuleMixin, _GeometryBase):
     """
@@ -155,32 +163,47 @@ class Module(DescriptionMixin, ModuleMixin, _GeometryBase):
         self._surfaces[surface] = pointer
 
     def pop_surface(self, surface):
+        """
+        Removes a surface.
+        
+        Args:
+            surface (:obj:`SurfaceImplicit <pypenelopetools.pengeom.surface.SurfaceImplicit>` or :obj:`SurfaceReduced <pypenelopetools.pengeom.surface.SurfaceReduced>`):
+                Surface to remove.
+        """
         self._surfaces.pop(surface)
 
     def clear_surfaces(self):
+        """
+        Clear all surfaces.
+        """
         self._surfaces.clear()
 
     def get_surface_pointer(self, surface):
         """
         Returns the surface pointer for the specified surface.
+        
+        Args:
+            surface (:obj:`SurfaceImplicit <pypenelopetools.pengeom.surface.SurfaceImplicit>` or :obj:`SurfaceReduced <pypenelopetools.pengeom.surface.SurfaceReduced>`):
+                Surface of interest.
+        
+        Returns:
+            :obj:`SidePointer`: Side pointer.
         """
         return self._surfaces[surface]
 
     def get_surfaces(self):
-        return self._surfaces.keys()
+        """
+        Returns:
+            tuple: All surfaces.
+        """
+        return tuple(self._surfaces.keys())
 
     @property
     def rotation(self):
-        """
-        Rotation of the surface.
-        The rotation is defined by a :class:`.Rotation`.
-        """
+        """:obj:`Rotation <pypenelopetools.pengeom.transformation.Rotation>`: Rotation of the module."""
         return self._rotation
 
     @property
     def shift(self):
-        """
-        Shift/translation of the surface.
-        The shift is defined by a :class:`.Shift`.
-        """
+        """:obj:`Shift <pypenelopetools.pengeom.transformation.Shift>`: Shift/translation of the module."""
         return self._shift

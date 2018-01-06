@@ -60,6 +60,6 @@ class ModuleMixin(object):
     def get_modules(self):
         """
         Returns:
-            tuple: all modules.
+            tuple: All modules.
         """
         return tuple(self._modules)

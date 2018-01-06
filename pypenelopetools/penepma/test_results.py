@@ -258,21 +258,19 @@ class TestPenepmaSpectrumResult(unittest.TestCase):
 
         self.assertAlmostEqual(7.500001, result.spectrum[0, 0].n, 8)
         self.assertAlmostEqual(0.0, result.spectrum[0, 0].s, 8)
-        self.assertAlmostEqual(7.500001, result.energy_eV[0].n, 8)
-        self.assertAlmostEqual(0.0, result.energy_eV[0].s, 8)
+        self.assertAlmostEqual(7.500001, result.energy_eV[0], 8)
+
         self.assertAlmostEqual(0.0, result.spectrum[0, 1].n, 8)
         self.assertAlmostEqual(0.0, result.spectrum[0, 1].s, 8)
-        self.assertAlmostEqual(0.0, result.intensities_1_per_sr_electron[0].n, 8)
-        self.assertAlmostEqual(0.0, result.intensities_1_per_sr_electron[0].s, 8)
+        self.assertAlmostEqual(0.0, result.intensities_1_per_sr_electron[0], 8)
 
         self.assertAlmostEqual(7.507501e3, result.spectrum[500, 0].n, 8)
         self.assertAlmostEqual(0.0, result.spectrum[500, 0].s, 8)
-        self.assertAlmostEqual(7.507501e3, result.energy_eV[500].n, 8)
-        self.assertAlmostEqual(0.0, result.energy_eV[500].s, 8)
+        self.assertAlmostEqual(7.507501e3, result.energy_eV[500], 8)
+
         self.assertAlmostEqual(6.014721e-9, result.spectrum[500, 1].n, 12)
         self.assertAlmostEqual(2.163525e-9, result.spectrum[500, 1].s * 3, 12)
-        self.assertAlmostEqual(6.014721e-9, result.intensities_1_per_sr_electron[500].n, 12)
-        self.assertAlmostEqual(2.163525e-9, result.intensities_1_per_sr_electron[500].s * 3, 12)
+        self.assertAlmostEqual(6.014721e-9, result.intensities_1_per_sr_electron[500], 12)
 
     def testread(self):
         filepath = os.path.join(self.testdatadir, 'penepma', 'pe-spect-01.dat')

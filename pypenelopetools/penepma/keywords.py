@@ -1,4 +1,6 @@
-""""""
+"""
+Keywords used specifically for PENEPMA.
+"""
 
 # Standard library modules.
 

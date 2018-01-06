@@ -9,7 +9,16 @@ Input
     :undoc-members:
     :show-inheritance:
     :inherited-members:
-    
+
+Results
+-------
+
+.. automodule:: pypenelopetools.penepma.results
+    :members:
+    :undoc-members:
+    :show-inheritance:
+    :inherited-members:
+
 Keywords
 --------
 

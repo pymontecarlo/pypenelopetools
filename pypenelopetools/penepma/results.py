@@ -1,10 +1,12 @@
-""""""
+"""
+Results of PENEPMA simulation.
+"""
 
 # Standard library modules.
 import os
 
 # Third party modules.
-from uncertainties import ufloat, unumpy as unumpy
+from uncertainties import ufloat, unumpy
 
 import pyxray
 
@@ -14,6 +16,77 @@ from pypenelopetools.penelope.result import _PenelopeResultBase
 # Globals and constants variables.
 
 class PenepmaResult(_PenelopeResultBase):
+    """
+    Results from ``penepma-res.dat``.
+    
+    .. note::
+       All results are expressed using the 
+       `uncertainties <https://pythonhosted.org/uncertainties>`_ package.
+       The nominal value can be accessed with the property ``nominal_value`` or
+       the abbreviation ``n``, whereas the standard deviation (1-sigma), with 
+       the property ``std_dev`` or ``s``.
+       For example::
+       
+           result.simulation_time_s.n #-> 100.0
+           result.simulation_time_s.s #-> 0.0
+    
+    Attributes:
+        simulation_time_s (ufloat):
+            Simulation time in seconds.
+        simulation_speed_1_per_s (ufloat):
+            Simulation speed in simulation per second.
+        simulated_primary_showers (ufloat): 
+            Number of primary showers simulated.
+            
+        upbound_primary_particles (ufloat):
+            Number of primary particles that exited the geometry upwards.
+        downbound_primary_particles (ufloat):
+            Number of primary particles that exited the geometry downwards.
+        absorbed_primary_particles (ufloat):
+            Number of primary particles that were absorbed within the geometry.
+            
+        upbound_fraction (ufloat):
+            Fraction of primary particles that exited the geometry upwards.
+        downbound_fraction (ufloat):
+            Fraction of primary particles that exited the geometry downwards.
+        absorbed_fraction (ufloat):
+            Fraction of primary particles that were absorbed within the geometry.
+            
+        upbound_secondary_electron_generation_probabilities (ufloat):
+            Probability of second generation electrons exited the geometry upwards.
+        downbound_secondary_electron_generation_probabilities (ufloat):
+            Probability of second generation electrons exited the geometry downwards.
+        absorbed_secondary_electron_generation_probabilities (ufloat):
+            Probability of second generation electrons absorbed within the geometry.
+        upbound_secondary_photon_generation_probabilities (ufloat):
+            Probability of second generation photons exited the geometry upwards.
+        downbound_secondary_photon_generation_probabilities (ufloat):
+            Probability of second generation photons exited the geometry downwards.
+        absorbed_secondary_photon_generation_probabilities (ufloat):
+            Probability of second generation photons absorbed within the geometry.
+        upbound_secondary_positron_generation_probabilities (ufloat):
+            Probability of second generation positrons exited the geometry upwards.
+        downbound_secondary_positron_generation_probabilities (ufloat):
+            Probability of second generation positrons exited the geometry downwards.
+        absorbed_secondary_positron_generation_probabilities (ufloat):
+            Probability of second generation positrons absorbed within the geometry.
+
+        average_deposited_energy_eV (dict(int, ufloat)):
+            Average deposited energy in each body.
+            Dictionary where keys are indexes of body and values, the average
+            deposited energy in eV.
+        average_photon_energy_eV (dict(int, ufloat)):
+            Average photon energy in each detector.
+            Dictionary where keys are indexes of detector and values, the 
+            average energy in eV.
+
+        last_random_seed1 (ufloat):
+            Last first seed of the random number generator.
+        last_random_seed2 (ufloat):
+            Last second seed of the random number generator.
+        reference_line_uncertainty (ufloat):
+            Relative uncertainty of the x-ray line used as a termination condition
+    """
 
     def __init__(self):
         super().__init__()
@@ -146,6 +219,24 @@ class PenepmaResult(_PenelopeResultBase):
             self.read(fp)
 
 class _PenepmaPhotonDetectorResult(_PenelopeResultBase):
+    """
+    Base result associated with a photon detector.
+    
+    Args:
+        detector_index (int): Index of the detector to read the results from.
+        
+    Attributes:
+        detector_index (int):
+            Index of detector
+        theta1_deg (ufloat): 
+            Lower limit polar angle in deg.
+        theta2_deg (ufloat): 
+            Upper limit polar angle in deg.
+        phi1_deg (ufloat): 
+            Lower limit azimuthal angle in deg.
+        phi2_deg (ufloat): 
+            Upper limit azimuthal angle in deg.
+    """
 
     def __init__(self, detector_index):
         super().__init__()
@@ -174,11 +265,69 @@ class _PenepmaPhotonDetectorResult(_PenelopeResultBase):
         self.phi2_deg = ufloat(phi2_deg, 0.0)
 
 class PenepmaIntensityResult(_PenepmaPhotonDetectorResult):
+    """
+    Results from ``pe-intens-XX.dat``, where ``XX`` is the index of the detector.
+    The intensities are given for each characteristic x-ray detected by
+    the detector.
+     
+    .. note::
+       The characteristic x-rays are expressed using :class:`XrayLine` object
+       of the `pyxray <https://github.com/openmicroanalysis/pyxray>`_ package.
+       :class:`XrayLine` objects define the atomic number and x-ray transition 
+       of characteristic x-rays.
+       
+       The intensities are expressed using the 
+       `uncertainties <https://pythonhosted.org/uncertainties>`_ package.
+       The nominal value can be accessed with the property ``nominal_value`` or
+       the abbreviation ``n``, whereas the standard deviation (1-sigma), with 
+       the property ``std_dev`` or ``s``.
+       
+       For example::
+       
+           import pyxray
+           x = pyxray.XrayLine(29, 'Ka1')
+           result.total_intensities_1_per_sr_electron[x].n #-> 8.56e-10
+           result.total_intensities_1_per_sr_electron[x].s #-> 0.15e-10
+    
+    Args:
+        detector_index (int): Index of the detector to read the results from.
+        
+    Attributes:
+        detector_index (int):
+            Index of detector
+        theta1_deg (ufloat): 
+            Lower limit polar angle in deg.
+        theta2_deg (ufloat): 
+            Upper limit polar angle in deg.
+        phi1_deg (ufloat): 
+            Lower limit azimuthal angle in deg.
+        phi2_deg (ufloat): 
+            Upper limit azimuthal angle in deg.
+            
+        primary_intensities_1_per_sr_electron (dict(XrayLine, ufloat)):
+            Intensities of characteristic x-rays generated by primary electrons
+            and measured by the detector.
+        characteristic_fluorescence_intensities_1_per_sr_electron (dict(XrayLine, ufloat)):
+            Intensities of characteristic x-rays generated by the fluorescence
+            of characteristic x-rays and measured by the detector.
+        bremsstrahlung_fluorescence_intensities_1_per_sr_electron (dict(XrayLine, ufloat)):
+            Intensities of characteristic x-rays generated by the fluorescence
+            of Bremsstrahlung x-rays and measured by the detector.
+        total_fluorescence_intensities_1_per_sr_electron (dict(XrayLine, ufloat)):
+            Intensities of characteristic x-rays generated by fluorescence
+            (characteristic and Bremsstrahlung) and measured by the detector.
+            Intensities are equal to the sum of 
+            *characteristic_fluorescence_intensities_1_per_sr_electron* and
+            *bremsstrahlung_fluorescence_intensities_1_per_sr_electron*.
+        total_intensities_1_per_sr_electron (dict(XrayLine, ufloat)):
+            Intensities of characteristic x-rays generated and measured by the 
+            detector.
+            Intensities are equal to the sum of 
+            *primary_intensities_1_per_sr_electron* and
+            *total_fluorescence_intensities_1_per_sr_electron*.
+    """
 
     def __init__(self, detector_index):
-        """
-        Intensities of a detector. 
-        """
         super().__init__(detector_index)
 
         self.primary_intensities_1_per_sr_electron = {}
@@ -215,6 +364,52 @@ class PenepmaIntensityResult(_PenepmaPhotonDetectorResult):
             self.read(fp)
 
 class PenepmaSpectrumResult(_PenepmaPhotonDetectorResult):
+    """
+    Results from ``pe-spect-XX.dat``, where ``XX`` is the index of the detector.
+    The spectrum is stored as a `numpy <http://numpy.org>`_ array where the
+    first column contains the energies in eV and the second the intensities
+    in 1/(sr.electron).
+    
+    .. note::
+       The energies and intensities are expressed using the 
+       `uncertainties <https://pythonhosted.org/uncertainties>`_ package.
+       The nominal value can be accessed with the property ``nominal_value`` or
+       the abbreviation ``n``, whereas the standard deviation (1-sigma), with 
+       the property ``std_dev`` or ``s``.
+       
+       For example::
+           
+           from uncertainty import unumpy
+           energies_eV = unumpy.nominal_values(result.spectrum[:,0])
+           intensities = unumpy.nominal_values(result.spectrum[:,1])
+    
+    Args:
+        detector_index (int): Index of the detector to read the results from.
+        
+    Attributes:
+        detector_index (int):
+            Index of detector
+        theta1_deg (ufloat): 
+            Lower limit polar angle in deg.
+        theta2_deg (ufloat): 
+            Upper limit polar angle in deg.
+        phi1_deg (ufloat): 
+            Lower limit azimuthal angle in deg.
+        phi2_deg (ufloat): 
+            Upper limit azimuthal angle in deg.
+            
+        energy_window_start_eV (ufloat):
+            Energy of first window in eV.
+        energy_window_end_eV (ufloat):
+            Energy of last window in eV.
+        channel_width_eV (ufloat):
+            Width of one channel in eV.
+
+        spectrum (unumpy.uarray):
+            Array where the first column contains the energies in eV and 
+            the second the intensities measured by the detector in 
+            1/(sr.electron).
+    """
 
     def __init__(self, detector_index):
         super().__init__(detector_index)
@@ -254,8 +449,10 @@ class PenepmaSpectrumResult(_PenepmaPhotonDetectorResult):
 
     @property
     def energy_eV(self):
-        return self.spectrum[:, 0]
+        """numpy array: Nominal values of the energy axis in eV."""
+        return unumpy.nominal_values(self.spectrum[:, 0])
 
     @property
     def intensities_1_per_sr_electron(self):
-        return self.spectrum[:, 1]
+        """numpy array: Nominal values of the intensity axis in 1/(sr.electron)."""
+        return unumpy.nominal_values(self.spectrum[:, 1])

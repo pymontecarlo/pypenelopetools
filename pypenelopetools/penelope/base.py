@@ -1,4 +1,6 @@
-""""""
+"""
+Base class to parse and read PENELOPE text files.
+"""
 
 # Standard library modules.
 import abc
@@ -22,9 +24,11 @@ class _InputLineBase(metaclass=abc.ABCMeta):
         Extracts the keyword, the values and the comment of an input line.
         The values are returned as a list.
         
-        :arg line: input line
-        
-        :return: keyword, values, comment
+        Args:
+            line (str): input line
+
+        Returns:
+            tuple(str, tuple(str), str): keyword, values, comment
         """
         if line.startswith(' ' * 6):
             return None, None, line.strip()
@@ -36,7 +40,7 @@ class _InputLineBase(metaclass=abc.ABCMeta):
         keyword, values, comment = match.groups()
 
         keyword = keyword.strip()
-        values = values.split()
+        values = tuple(values.split())
         if comment:
             comment = comment[1:-1]
 
@@ -50,9 +54,13 @@ class _InputLineBase(metaclass=abc.ABCMeta):
         The keyword and the total length of the line is checked not to exceed 
         their respective maximum size.
         
-        :arg keyword: 6-character keyword
-        :arg text: value of the keyword
-        :arg comment: comment associated with the line
+        Args:
+            name (str): 6-character keyword
+            values (tuple or list): values
+            comment (str, optional): comment associated with the line
+            
+        Returns:
+            str: formatted line
         """
         # Keyword
         name = name.ljust(LINE_KEYWORDS_SIZE)
@@ -81,6 +89,15 @@ class _InputLineBase(metaclass=abc.ABCMeta):
         return line
 
     def _peek_next_line(self, fileobj):
+        """
+        Returns the next line without advancing the current position.
+        
+        Args:
+            fileobj (file object): file object opened with read access.
+            
+        Returns:
+            str: next line
+        """
         # Remember the current position
         offset = fileobj.tell()
 
@@ -93,6 +110,16 @@ class _InputLineBase(metaclass=abc.ABCMeta):
         return line
 
     def _read_next_line(self, fileobj):
+        """
+        Returns the next line and advance the current position.
+        Comment line (line starting with 7 spaces) are automatically skipped.
+        
+        Args:
+            fileobj (file object): file object opened with read access.
+            
+        Returns:
+            str: next line
+        """
         line = fileobj.readline().rstrip()
 
         # If line starts with 7 spaces, read next
@@ -104,17 +131,19 @@ class _InputLineBase(metaclass=abc.ABCMeta):
     @abc.abstractmethod
     def read(self, fileobj):
         """
-        Reads line(s) from a file object.
+        Reads a PENELOPE-type file.
         
-        :arg fileobj: file object with read access
+        Args:
+            fileobj (file object): file object opened with read access.
         """
         raise NotImplementedError
 
     @abc.abstractmethod
     def write(self, fileobj):
         """
-        WRites line(s) to a file object.
+        Writes to a PENELOPE-type file.
         
-        :arg fileobj: file object with write access
+        Args:
+            fileobj (file object): file object opened with write access.
         """
         raise NotImplementedError

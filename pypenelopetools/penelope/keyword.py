@@ -1,5 +1,5 @@
 """
-Definition of base keyword classes
+Definition of base keyword classes.
 """
 
 # Standard library modules.
@@ -16,25 +16,45 @@ from pypenelopetools.penelope.base import _InputLineBase
 #--- Abstract classes
 
 class _KeywordBase(_InputLineBase):
+    """
+    Base of all PENELOPE keywords.
+    """
 
     def __str__(self):
         return self.name
 
     @abc.abstractmethod
     def get(self):
+        """
+        Returns:
+            tuple: Value(s) of this keyword.
+        """
         raise NotImplementedError
 
     @abc.abstractmethod
     def copy(self):
+        """
+        Returns:
+            _KeyboardBase: Deep copy of this keyword.
+        """
         raise NotImplementedError
 
     @abc.abstractproperty
     def name(self):
+        """str: Name of keyword."""
         raise NotImplementedError
 
 #--- Core classes
 
 class TypeKeyword(_KeywordBase):
+    """
+    Keyword where the :obj:`type` of the values are checked.
+    
+    Args:
+        name (str): Name of keyword.
+        types (tuple(type)): Type of each value of the keyword.
+        comment (str, optional): Comment.
+    """
 
     def __init__(self, name, types, comment=""):
         self._name = name
@@ -43,6 +63,16 @@ class TypeKeyword(_KeywordBase):
         self._comment = comment
 
     def set(self, *args):
+        """
+        Sets the value(s) of the keyword. 
+        Each value is checked if it matches the defined type.
+        
+        Args:
+            *args: Value(s).
+            
+        Raises:
+            TypeError: If one value does not match its defined type.
+        """
         if len(args) < len(self._types): # Less than to account for additional, not parsed values
             raise ValueError("Keyword {0} requires {1} values, {2} given"
                              .format(self.name, len(self._types), len(args)))
@@ -96,15 +126,27 @@ class TypeKeyword(_KeywordBase):
 
     @property
     def comment(self):
+        """str: Comment."""
         return self._comment
 
 class KeywordGroup(_KeywordBase):
+    """
+    Group of keywords, keywords that should always be defined together.
+    """
 
     @abc.abstractmethod
     def get_keywords(self):
+        """
+        Returns:
+            tuple: Keywords apart of this group.
+        """
         raise NotImplementedError
 
     def get(self):
+        """
+        Returns:
+            tuple: Value(s) of all keywords.
+        """
         values = []
 
         for keyword in self.get_keywords():
@@ -139,6 +181,12 @@ class KeywordGroup(_KeywordBase):
         return self.get_keywords()[0].name
 
 class KeywordSequence(_KeywordBase):
+    """
+    Sequence of keywords, keywords that can be defined multiple times.
+    
+    Args:
+        keyword (_KeywordBase): Base keyword
+    """
 
     def __init__(self, keyword):
         self._base_keyword = keyword
@@ -151,18 +199,35 @@ class KeywordSequence(_KeywordBase):
         self._keywords.append(keyword)
 
     def add(self, *args):
+        """Adds a new keyword definition.
+        This internally creates a new keyword based on the base keyword,
+        sets the value(s) and add it to a list.
+        
+        Args:
+            *args: Value(s).
+        """
         keyword = self._create_keyword()
         keyword.set(*args)
         self._add_keyword(keyword)
         return keyword
 
     def pop(self, index):
+        """Removes a keyword.
+        
+        Args:
+            index (int): Index of the keyword to be removed.
+        """
         self._keywords.pop(index)
 
     def clear(self):
+        """Clears all added keywords."""
         self._keywords.clear()
 
     def get(self):
+        """
+        Returns:
+            tuple: Value(s) of all keywords.
+        """
         values = []
         for keyword in self._keywords:
             values.append(keyword.get())

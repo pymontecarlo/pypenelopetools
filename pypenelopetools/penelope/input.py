@@ -2,16 +2,15 @@
 
 # Standard library modules.
 import abc
-import logging
-logger = logging.getLogger(__name__)
 
 # Third party modules.
 
 # Local modules.
+from pypenelopetools.penelope.base import _InputLineBase
 
 # Globals and constants variables.
 
-class _PenelopeInputBase(metaclass=abc.ABCMeta):
+class _PenelopeInputBase(_InputLineBase):
 
     def read(self, fileobj):
         """
@@ -25,7 +24,7 @@ class _PenelopeInputBase(metaclass=abc.ABCMeta):
 
     def write(self, fileobj):
         """
-        Writes to an input file (i.e. ``.in``)
+        Writes to an input file (i.e. ``.in``).
         
         Args:
             fileobj (file object): file object opened with write access.

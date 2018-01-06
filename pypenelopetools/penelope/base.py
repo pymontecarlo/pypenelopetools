@@ -114,7 +114,7 @@ class _InputLineBase(metaclass=abc.ABCMeta):
 
     def _read_next_line(self, fileobj):
         """
-        Returns the next line and advance the current position.
+        Returns the next line and advances the current position.
         Comment line (line starting with 7 spaces) are automatically skipped.
         
         Args:

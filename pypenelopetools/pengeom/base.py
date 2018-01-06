@@ -1,5 +1,5 @@
 """
-Common classes to PENGEOM
+Definition of base PENGEOM classes.
 """
 
 # Standard library modules.
@@ -26,10 +26,11 @@ def _toexponent(number):
     """
     Formats exponent to PENELOPE format (E22.15)
 
-    :arg number: number to format
-    :type number: :class:`float`
-
-    :rtype: :class:`str`
+    Args:
+        number (Float): Number to format
+    
+    Returns:
+        str: number to PENELOPE format (E22.15)
     """
     if number == 0.0:
         exponent = 0
@@ -56,29 +57,47 @@ def _toexponent(number):
     return number_str
 
 class _GeometryBase(metaclass=abc.ABCMeta):
+    """
+    Base class for geometry objects.
+    """
 
     @abc.abstractmethod
     def _read(self, fileobj, material_lookup, surface_lookup, module_lookup): #@NoSelf
         """
         Reads file object.
         
-        :arg fileobj: file object opened with read access
-        :arg material_lookup: a lookup table for the materials used in the
-            geometry. The lookup table is a dictionary where the keys are 
-            material indexes in the geometry file and the values, 
-            :class:`Material <pypenelopetools.Material>` instances.
-        :arg surface_lookup: a lookup table for surfaces used in the
-            geometry. The lookup table is a dictionary where the keys are 
-            surface indexes in the geometry file and the values, 
-            :class:`Surface <pypenelopetools.pengeom.surface._SurfaceBase>` instances.
-        :arg module_lookup: a lookup table for modules used in the
-            geometry. The lookup table is a dictionary where the keys are 
-            module indexes in the geometry file and the values, 
-            :class:`Module <pypenelopetools.pengeom.module.Module>` instances.
+        Args:
+            fileobj (file object): 
+                File object opened with read access.
+            material_lookup (dict(int, :class:`Material <pypenelopetools.material.Material>`)): 
+                A lookup table for the materials used in the geometry. 
+                Dictionary where the keys are material indexes in the geometry 
+                file and the values, 
+                :class:`Material <pypenelopetools.material.Material>` instances.
+            surface_lookup (dict(int, :class:`Surface <pypeneloptools.pengeom.surface._SurfaceBase>`)): 
+                A lookup table for surfaces used in the geometry. 
+                Dictionary where the keys are surface indexes in the geometry 
+                file and the values, 
+                :class:`Surface <pypenelopetools.pengeom.surface._SurfaceBase>` 
+                instances.
+            module_lookup (dict(int, :class:`Module <pypenelopetools.pengeom.module.Module>`)): 
+                A lookup table for modules used in the geometry. 
+                Dictionary where the keys are module indexes in the geometry 
+                file and the values, 
+                :class:`Module <pypenelopetools.pengeom.module.Module>` instances.
         """
         raise NotImplementedError
 
     def _peek_next_line(self, fileobj):
+        """
+        Returns the next line without advancing the current position.
+        
+        Args:
+            fileobj (file object): File object opened with read access.
+            
+        Returns:
+            str: Next line, stripped of all trailing white spaces.
+        """
         # Remember the current position
         offset = fileobj.tell()
 
@@ -91,6 +110,15 @@ class _GeometryBase(metaclass=abc.ABCMeta):
         return line
 
     def _read_next_line(self, fileobj):
+        """
+        Returns the next line and advances the current position.
+        
+        Args:
+            fileobj (file object): File object opened with read access.
+            
+        Returns:
+            str: Next line, stripped of all trailing white spaces.
+        """
         return fileobj.readline().rstrip()
 
     def _parse_line(self, line):
@@ -126,12 +154,16 @@ class _GeometryBase(metaclass=abc.ABCMeta):
         """
         Writes to file object.
         
-        :arg index_lookup: a lookup table for the surfaces, modules and materials
-            of the associated geometry. Each component is assigned an index by the 
-            method :meth:`indexify <pypenelopetools.pengeom.Geometry.indexify>`.
-            The lookup table is a dictionary where the keys are surfaces,
-            modules and materials instances, and the values, an integer index.
-        :type index_lookup: :class:`dict`
+        Args:
+            fileobj (file object): 
+                File object opened with write access.
+            index_lookup (dict(:obj:`_GeometryBase <pypenelopetools.pengeom.base._GeometryBase>`, int)): 
+                A lookup table for the surfaces, modules and materials of the 
+                associated geometry. 
+                Each component is assigned an index by the method 
+                :meth:`indexify <pypenelopetools.pengeom.geometry.Geometry.indexify>`.
+                Dictionary where the keys are surfaces, modules and materials 
+                instances, and the values, an integer index.
         """
         raise NotImplementedError
 
@@ -143,9 +175,10 @@ class _GeometryBase(metaclass=abc.ABCMeta):
         The keyword and the total length of the line is checked not to exceed
         their respective maximum size.
 
-        :arg keyword: 8-character keyword
-        :arg text: value of the keyword
-        :arg termination: comment associated with the line
+        Args:
+            keyword (str): 8-character keyword.
+            text (str): value of the keyword.
+            termination (str, optional): comment associated with the line.
         """
         keyword = keyword.ljust(LINE_KEYWORDS_SIZE)
 
@@ -161,14 +194,14 @@ class _GeometryBase(metaclass=abc.ABCMeta):
         """
         Creates a exponent line.
         This type of line is characterised by a keyword, a value express as an
-        exponent (see :meth:`._toexponent`) and a termination string.
+        exponent (see :func:`_toexponent`) and a termination string.
         The keyword and the total length of the line is checked not to exceed
         their respective maximum size.
-
-        :arg keyword: 8-character keyword
-        :arg value: value of the keyword
-        :type value: :class:`float`
-        :arg termination: termination of the line
+        
+        Args:
+            keyword (str): 8-character keyword.
+            value (float): value of the keyword.
+            termination (str, optional): comment associated with the line.
         """
         keyword = keyword.rjust(LINE_KEYWORDS_SIZE)
 

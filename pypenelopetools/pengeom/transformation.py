@@ -1,4 +1,6 @@
-""""""
+"""
+Definition of geometrical transformations.
+"""
 
 # Standard library modules.
 import os
@@ -12,15 +14,16 @@ from pypenelopetools.pengeom.base import _GeometryBase, LINE_SEPARATOR
 # Globals and constants variables.
 
 class Rotation(_GeometryBase):
+    """
+    Represents a rotation using 3 Euler angles (YZY).
+
+    Args:
+        omega_deg (float): Rotation around the z-axis (deg).
+        theta_deg (float): Rotation around the y-axis (deg).
+        phi_deg (float): Rotation around the new z-axis (deg).
+    """
 
     def __init__(self, omega_deg=0.0, theta_deg=0.0, phi_deg=0.0):
-        """
-        Represents a rotation using 3 Euler angles (YZY).
-
-        :arg omega_deg: rotation around the z-axis (deg)
-        :arg theta_deg: rotation around the y-axis (deg)
-        :arg phi_deg: rotation around the new z-axis (deg)
-        """
         self.omega_deg = omega_deg
         self.theta_deg = theta_deg
         self.phi_deg = phi_deg
@@ -62,8 +65,7 @@ class Rotation(_GeometryBase):
 
     @property
     def omega_deg(self):
-        """
-        Rotation around the z-axis (deg).
+        """float: Rotation around the z-axis (deg).
         The value must be between 0 and 360.
         """
         return self._omega
@@ -76,8 +78,7 @@ class Rotation(_GeometryBase):
 
     @property
     def theta_deg(self):
-        """
-        Rotation around the y-axis (deg).
+        """float: Rotation around the y-axis (deg).
         The value must be between 0 and 360.
         """
         return self._theta
@@ -90,8 +91,7 @@ class Rotation(_GeometryBase):
 
     @property
     def phi_deg(self):
-        """
-        Rotation around the new z-axis (deg).
+        """float: Rotation around the new z-axis (deg).
         The new z-axis refer to the axis after the omega and theta rotation were
         applied on the original coordinate system.
         The value must be between 0 and 360.
@@ -105,15 +105,16 @@ class Rotation(_GeometryBase):
         self._phi = angle
 
 class Shift(_GeometryBase):
+    """
+    Represents a translation in space.
+    
+    Args:
+        x_cm (float): Translation along the x direction (cm).
+        y_cm (float): Translation along the y direction (cm).
+        z_cm (float): Translation along the z direction (cm).
+    """
 
     def __init__(self, x_cm=0.0, y_cm=0.0, z_cm=0.0):
-        """
-        Represents a translation in space.
-
-        :arg x_cm: translation along the x direction (cm)
-        :arg y_cm: translation along the y direction (cm)
-        :arg z_cm: translation along the z direction (cm)
-        """
         self.x_cm = x_cm
         self.y_cm = y_cm
         self.z_cm = z_cm
@@ -152,9 +153,7 @@ class Shift(_GeometryBase):
 
     @property
     def x_cm(self):
-        """
-        Translation along the x direction (cm).
-        """
+        """float: Translation along the x direction (cm)."""
         return self._x
 
     @x_cm.setter
@@ -163,9 +162,7 @@ class Shift(_GeometryBase):
 
     @property
     def y_cm(self):
-        """
-        Translation along the y direction (cm).
-        """
+        """float: Translation along the y direction (cm)."""
         return self._y
 
     @y_cm.setter
@@ -174,9 +171,7 @@ class Shift(_GeometryBase):
 
     @property
     def z_cm(self):
-        """
-        Translation along the z direction (cm).
-        """
+        """float: Translation along the z direction (cm)."""
         return self._z
 
     @z_cm.setter
@@ -184,15 +179,16 @@ class Shift(_GeometryBase):
         self._z = shift
 
 class Scale(_GeometryBase):
+    """
+    Represents scaling.
+    
+    Args:
+        x (float): Scaling along the x direction.
+        y (float): Scaling along the y direction.
+        z (float): Scaling along the z direction.
+    """
 
     def __init__(self, x=1.0, y=1.0, z=1.0):
-        """
-        Represents the scaling.
-
-        :arg x: scaling along the x direction
-        :arg y: scaling along the y direction
-        :arg z: scaling along the z direction
-        """
         self.x = x
         self.y = y
         self.z = z
@@ -230,8 +226,7 @@ class Scale(_GeometryBase):
 
     @property
     def x(self):
-        """
-        Scaling along the x direction.
+        """float: Scaling along the x direction.
         The value cannot be 0.
         """
         return self._x
@@ -244,8 +239,7 @@ class Scale(_GeometryBase):
 
     @property
     def y(self):
-        """
-        Scaling along the y direction.
+        """float: Scaling along the y direction.
         The value cannot be 0.
         """
         return self._y
@@ -258,8 +252,7 @@ class Scale(_GeometryBase):
 
     @property
     def z(self):
-        """
-        Scaling along the z direction.
+        """float: Scaling along the z direction.
         The value cannot be 0.
         """
         return self._z

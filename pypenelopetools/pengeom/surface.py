@@ -1,10 +1,9 @@
 """
-Definition of surfaces
+Definition of surfaces.
 """
 
 __all__ = ['SurfaceImplicit', 'SurfaceReduced',
-           'xplane', 'yplane', 'zplane', 'cylinder', 'sphere',
-           'AXIS_X', 'AXIS_Y', 'AXIS_Z']
+           'xplane', 'yplane', 'zplane', 'cylinder', 'sphere']
 
 # Standard library modules.
 import os
@@ -17,11 +16,14 @@ from pypenelopetools.pengeom.base import _GeometryBase, LINE_EXTRA, LINE_SEPARAT
 from pypenelopetools.pengeom.mixin import DescriptionMixin
 
 # Globals and constants variables.
-AXIS_X = 'x'
-AXIS_Y = 'y'
-AXIS_Z = 'z'
 
 class _SurfaceBase(DescriptionMixin, _GeometryBase):
+    """
+    Base class for surface definition.
+    
+    Args:
+        description (str): Description of the surface
+    """
 
     def __init__(self, description=''):
         self.description = description
@@ -38,21 +40,27 @@ class _SurfaceBase(DescriptionMixin, _GeometryBase):
 
     @property
     def rotation(self):
-        """
-        Rotation of the surface.
-        The rotation is defined by a :class:`.Rotation`.
-        """
+        """:obj:`Rotation <pypenelopetools.pengeom.transformation.Rotation>`: Rotation of the surface."""
         return self._rotation
 
     @property
     def shift(self):
-        """
-        Shift/translation of the surface.
-        The shift is defined by a :class:`.Shift`.
-        """
+        """:obj:`Shift <pypenelopetools.pengeom.transformation.Shift>`: Shift/translation of the surface."""
         return self._shift
 
 class SurfaceImplicit(_SurfaceBase):
+    """
+    Definition of an implicit surface.
+    
+    Args:
+        coefficients (dict(str, float) or list(float)):
+            Coefficients for the implicit form of the quadratic equation.
+            If the argument is a :obj:`dict`, the keys are the names of 
+            coefficient (e.g. ``xx``) and the values the coefficient values.
+            If the argument is a :obj:`list`, the list must contain 10 values,
+            one for each coefficient.
+        description (str): Description of the surface
+    """
 
     def __init__(self, coefficients=None, description=''):
         super().__init__(description)
@@ -122,17 +130,17 @@ class SurfaceImplicit(_SurfaceBase):
 
     @property
     def coefficients(self):
-        """
-        Coefficients for the implicit form of the quadratic equation.
-        The coefficients are defined by a dictionary, a list or a tuple.
-        See examples below.
-
-        **Examples**::
+        """(dict(str, float) or list(float)): Coefficients for the implicit form of the quadratic equation.
+        If the value is a :obj:`dict`, the keys are the names of 
+        coefficient (e.g. ``xx``) and the values the coefficient values.
+        If the argument is a :obj:`list`, the list must contain 10 values,
+        one for each coefficient.
+        
+        Examples:
 
           >>> s = Surface()
           >>> s.coefficients = {'xx': 0.0, 'xy': 0.0, 'xz': 0.0, 'yy': 0.0, 'yz': 0.0, 'zz': 0.0, 'x': 0.0, 'y': 0.0, 'z': 0.0, '0': 0.0}
           >>> s.coefficients = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
-          >>> s.coefficients = (0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
           >>> s.coefficients = {'xx': 1.0, 'xy': 1.0}
         """
         return self._coefficients
@@ -146,6 +154,7 @@ class SurfaceImplicit(_SurfaceBase):
                                   'x': 0.0, 'y': 0.0, 'z': 0.0, '0': 0.0}
 
             for key in coefficients:
+                key = key.lower()
                 assert key in self._coefficients
                 self._coefficients[key] = coefficients[key]
         else:
@@ -159,6 +168,15 @@ class SurfaceImplicit(_SurfaceBase):
                  '0': coefficients[9]}
 
 class SurfaceReduced(_SurfaceBase):
+    """
+    Definition of a reduced/explicit surface.
+    
+    Args:
+        indices (tuple(int)):
+            Indices for the explicit form of the quadratic equation.
+            Indices are 5 integers (-1, 0 or 1) defining the surface.
+        description (str): Description of the surface
+    """
 
     def __init__(self, indices=None, description=''):
         super().__init__(description)
@@ -208,10 +226,8 @@ class SurfaceReduced(_SurfaceBase):
 
     @property
     def indices(self):
-        """
-        Indices for the explicit form of the quadratic equation.
-        The indices are defined by a :class:`tuple` containing 5 indices (-1, 0 or 1).
-        If the attribute is deleted, all the indices are set to 0.
+        """(tuple(int)):Indices for the explicit form of the quadratic equation.
+        Indices are 5 integers (-1, 0 or 1) defining the surface.
         """
         return self._indices
 
@@ -228,19 +244,18 @@ class SurfaceReduced(_SurfaceBase):
 
     @property
     def scale(self):
-        """
-        Scaling of the surface.
-        The scaling is defined by a :class:`.Scale`.
-        """
+        """:obj:`Scale <pypenelopetools.pengeom.transformation.Scale>`: Scaling of the surface."""
         return self._scale
 
 def xplane(x_cm):
     """
-    Returns a surface for a plane X=x
-
-    :arg x_cm: intercept on the x-axis (in cm)
-
-    :rtype: :class:`.Surface`
+    Returns a surface for a plane X=x.
+    
+    Args:
+        x_cm (float): Intercept on the x-axis (in cm).
+    
+    Returns:
+        :obj:`SurfaceReduced`
     """
     s = SurfaceReduced((0, 0, 0, 1, 0), 'Plane X={:4.2f} cm'.format(x_cm))
     s.shift.x_cm = x_cm
@@ -249,11 +264,13 @@ def xplane(x_cm):
 
 def yplane(y_cm):
     """
-    Returns a surface for a plane Y=y
+    Returns a surface for a plane Y=y.
+    
+    Args:
+        y_cm (float): Intercept on the y-axis (in cm).
 
-    :arg y_cm: intercept on the y-axis (in cm)
-
-    :rtype: :class:`.Surface`
+    Returns:
+        :obj:`SurfaceReduced`
     """
     s = SurfaceReduced((0, 0, 0, 1, 0), 'Plane Y={:4.2f} cm'.format(y_cm))
     s.shift.y_cm = y_cm
@@ -263,24 +280,28 @@ def yplane(y_cm):
 
 def zplane(z_cm):
     """
-    Returns a surface for a plane Z=z
+    Returns a surface for a plane Z=z.
+    
+    Args:
+        z_cm (float): Intercept on the z-axis (in cm).
 
-    :arg z_cm: intercept on the z-axis (in cm)
-
-    :rtype: :class:`.Surface`
+    Returns:
+        :obj:`SurfaceReduced`
     """
     s = SurfaceReduced((0, 0, 0, 1, 0), 'Plane Z={:4.2f} cm'.format(z_cm))
     s.shift.z_cm = z_cm
     return s
 
-def cylinder(radius_cm, axis=AXIS_Z):
+def cylinder(radius_cm, axis='x'):
     """
-    Returns a surface for a cylinder along *axis* with *radius*
+    Returns a surface for a cylinder along *axis* with *radius*.
 
-    :arg radius_cm: radius of the cylinder (in cm)
-    :arg axis: axis of the cylinder (:const:`AXIS_X`, :const:`AXIS_Y` or :const:`AXIS_Z`)
-
-    :rtype: :class:`.Surface`
+    Args:
+        radius_cm (float): Radius of the cylinder (in cm).
+        axis (str): Axis of the cylinder, either ``x``, ``y`` or ``z``.
+    
+    Returns:
+        :obj:`SurfaceReduced`
     """
     axis = axis.lower()
     description = 'Cylinder of radius {0:4.2f} cm along {1}-axis'.format(radius_cm, axis)
@@ -301,11 +322,13 @@ def cylinder(radius_cm, axis=AXIS_Z):
 
 def sphere(radius_cm):
     """
-    Returns a surface for a sphere or *radius*
+    Returns a surface for a sphere or *radius*.
+    
+    Args:
+        radius_cm (float): Radius of the sphere (in cm).
 
-    :arg radius_cm: radius of the cylinder (in cm)
-
-    :rtype: :class:`.Surface`
+    Returns:
+        :obj:`SurfaceReduced`
     """
     description = 'Sphere of radius {:4.2f} cm'.format(radius_cm)
     s = SurfaceReduced((1, 1, 1, 0, -1), description)

@@ -8,6 +8,7 @@ import io
 import os
 
 # Third party modules.
+import pyxray
 
 # Local modules.
 from pypenelopetools.penepma.input import PenepmaInput
@@ -15,11 +16,14 @@ from pypenelopetools.material import Material
 from pypenelopetools.pengeom.surface import xplane, zplane, cylinder
 from pypenelopetools.pengeom.module import Module, SidePointer
 from pypenelopetools.pengeom.geometry import Geometry
+from pypenelopetools.penepma.utils import convert_xrayline_to_izs1s200
 
 # Globals and constants variables.
 
 MATERIAL_CU = Material('Cu', {29: 1.0}, 8.9)
 MATERIAL_FE = Material('Fe', {26: 1.0}, 7.874)
+XRAYLINE_CU_KA2 = pyxray.xray_line(29, 'Ka2')
+XRAYLINE_FE_KA2 = pyxray.xray_line(26, 'Ka2')
 
 def create_epma1():
     # Create geometry
@@ -70,14 +74,14 @@ def create_epma1():
     input.GRIDX.set(-4e-5, 4e-5, 60)
     input.GRIDY.set(-4e-5, 4e-5, 60)
     input.GRIDZ.set(-6e-5, 0.0, 60)
-    input.XRLINE.add(29010300)
+    input.XRLINE.add(convert_xrayline_to_izs1s200(XRAYLINE_CU_KA2))
 
     input.RESUME.set('dump1.dat')
     input.DUMPTO.set('dump1.dat')
     input.DUMPP.set(60)
 
     input.RSEED.set(-10, 1)
-    input.REFLIN.set(29010300, 1, 1.25e-3)
+    input.REFLIN.set(convert_xrayline_to_izs1s200(XRAYLINE_CU_KA2), 1, 1.25e-3)
     input.NSIMSH.set(2e9)
     input.TIME.set(2e9)
 
@@ -157,15 +161,15 @@ def create_epma2():
     input.GRIDX.set(-1e-5, 5e-5, 60)
     input.GRIDY.set(-3e-5, 3e-5, 60)
     input.GRIDZ.set(-6e-5, 0.0, 60)
-    input.XRLINE.add(26010300)
-    input.XRLINE.add(29010300)
+    input.XRLINE.add(convert_xrayline_to_izs1s200(XRAYLINE_FE_KA2))
+    input.XRLINE.add(convert_xrayline_to_izs1s200(XRAYLINE_CU_KA2))
 
     input.RESUME.set('dump2.dat')
     input.DUMPTO.set('dump2.dat')
     input.DUMPP.set(60)
 
     input.RSEED.set(-10, 1)
-    input.REFLIN.set(26010300, 1, 1.5e-3)
+    input.REFLIN.set(convert_xrayline_to_izs1s200(XRAYLINE_FE_KA2), 1, 1.5e-3)
     input.NSIMSH.set(2e9)
     input.TIME.set(2e9)
 

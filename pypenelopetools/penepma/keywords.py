@@ -221,6 +221,10 @@ class XRLINE(KeywordSequence):
         """
         Adds a characteristic x ray.
         
+        .. hint::
+           Use :func:`convert_xrayline_to_izs1s200 <pypenelopetools.penepma.utils.convert_xrayline_to_izs1s200>`
+           to convert :class:`XrayLine` to ILB(4) notation.
+        
         Args:
             izs1s200 (int): x ray identification.
                 ILB(4) notation, note the final double zero (IZ*1e6+S1*1e4+S2*1e2).
@@ -237,6 +241,10 @@ class REFLIN(TypeKeyword):
     def set(self, izs1s200, idet, tol):
         """
         Sets termination.
+        
+        .. hint::
+           Use :func:`convert_xrayline_to_izs1s200 <pypenelopetools.penepma.utils.convert_xrayline_to_izs1s200>`
+           to convert :class:`XrayLine` to ILB(4) notation.
         
         Args:
             izs1s200: x ray identification.

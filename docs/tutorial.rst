@@ -201,17 +201,17 @@ This is a copy of the parameters in the PENEPMA example.
    input.IXRSPL.add(index_lookup[module_right], 2)
    input.IXRSPL.add(index_lookup[module_left], 2)
     
-Fifthly, the emerging particle distributions.
+Fifthly, the emerging particle distributions, photon detectors and
+spatial distribution.
 
 .. code-block:: python
-
+   
+   import pyxray
+   from pypenelopetools.penepma.utils import convert_xrayline_to_izs1s200
+   
    input.NBE.set(0, 0, 300)
    input.NBANGL.set(45, 30)
     
-Sixthly, we add photon detectors.
-
-.. code-block:: python
-
    input.photon_detectors.add(0, 90, 0, 360, 0, 0.0, 0.0, 1000)
    input.photon_detectors.add(5, 15, 0, 360, 0, 0.0, 0.0, 1000)
    input.photon_detectors.add(15, 25, 0, 360, 0, 0.0, 0.0, 1000)
@@ -221,6 +221,12 @@ Sixthly, we add photon detectors.
    input.photon_detectors.add(55, 65, 0, 360, 0, 0.0, 0.0, 1000)
    input.photon_detectors.add(65, 75, 0, 360, 0, 0.0, 0.0, 1000)
    input.photon_detectors.add(75, 85, 0, 360, 0, 0.0, 0.0, 1000)
+   
+   input.GRIDX.set(-1e-5, 5e-5, 60)
+   input.GRIDY.set(-3e-5, 3e-5, 60)
+   input.GRIDZ.set(-6e-5, 0.0, 60)
+   input.XRLINE.add(convert_xrayline_to_izs1s200(pyxray.xray_line(26, 'Ka2')))
+   input.XRLINE.add(convert_xrayline_to_izs1s200(pyxray.xray_line(29, 'Ka2')))
 
 .. important::
    The theta angles of a photon detector are defined as angles from the 
@@ -229,17 +235,20 @@ Sixthly, we add photon detectors.
    microanalysis.
    For a take-off angle of 30deg, theta would be 60deg.
    
-Seventhly, the spatial distribution of x-ray emission.
-
-.. code-block:: python
-   
-   input.GRIDX.set(-1e-5, 5e-5, 60)
-   input.GRIDY.set(-3e-5, 3e-5, 60)
-   input.GRIDZ.set(-6e-5, 0.0, 60)
-   input.XRLINE.add(26010300)
-   input.XRLINE.add(29010300)
+.. hint::
+   Use :func:`convert_xrayline_to_izs1s200 <pypenelopetools.penepma.utils.convert_xrayline_to_izs1s200>`
+   to convert :class:`XrayLine` from 
+   `pyxray <https://github.com/openmicroanalysis/pyxray>`_ library to 
+   PENELOPE's ILB(4) notation.
    
 Finally, the job properties.
+The first random seed is negative to force the generation of a random seed
+every time a simulation is started.
+We also use the conversion function from :class:`XrayLine` to ILB(4) notation
+for the relative uncertainty termination :class:`REFLIN`.
+The simulation will terminate if the relative uncertainty (3-sigma) on the
+Fe Ka2 total characteristic intensity detected by the first detector is less 
+than 0.15%.
 
 .. code-block:: python
    
@@ -248,7 +257,7 @@ Finally, the job properties.
    input.DUMPP.set(60)
 
    input.RSEED.set(-10, 1)
-   input.REFLIN.set(26010300, 1, 1.5e-3)
+   input.REFLIN.set(convert_xrayline_to_izs1s200(pyxray.xray_line(26, 'Ka2')), 1, 1.5e-3)
    input.NSIMSH.set(2e9)
    input.TIME.set(2e9)
    
@@ -259,6 +268,79 @@ The last step is to save them as a ``.in`` file.
 
    with open('/simulation/epma2/epma2.in', 'w') as fp:
        input.write(fp)
-       
+
+From the ``/simulation/epma2`` folder, the simulation can be run using the
+PENEPMA main program.
+
+.. code-block:: shell
+
+   penepma < epma2.in
+
 Results
 ^^^^^^^
+
+After the simulation has terminated or even after the first dump, the results
+can be read using **pyPENELOPEtools**.
+Each result has its own class that follows the same interface.
+The next lines describe how to read the backscatter electron coefficient and 
+plot the photon spectrum of the first detector.
+For more information about the results, please refer to the :ref:`API <api>` 
+section.
+
+To read the simulation time, we create a 
+:class:`PenepmaResult <pypenelopetools.penepma.results.PenepmaResult>` object 
+and call its :meth:`read_directory` method.
+
+.. code-block:: python
+
+   from pypenelopetools.penepma.results import PenepmaResult
+   result = PenepmaResult()
+   result.read_directory('/simulation/epma2')
+
+The backscatter electron coefficient is stored in the attribute 
+:attr:`upbound_fraction` which returns a :class:`ufloat` object.
+:class:`ufloat` objects are from the library
+`uncertainties <https://pythonhosted.org/uncertainties>`_ which is designed
+to handle values and their uncertainties.
+Here is how to extract the nominal and standard deviation (1-sigma) of the
+backscatter electron coefficient:
+
+.. code-block:: python
+
+   bse = result.upbound_fraction.nominal_value
+   bse = result.upbound_fraction.n # alternative
+   unc_bse = result.upbound_fraction.std_dev
+   unc_bse = result.upbound_fraction.s # alternative
+
+.. important::
+   All results in **pyPENELOPEtools** are stored for consistency using 
+   :class:`ufloat`, even those where the uncertainty is always 0.0 (e.g.
+   total simulation time).
+
+To plot the photon spectrum, we first create a 
+:class:`PenepmaSpectrumResult <pypenelopetools.penepma.results.PenepmaSpectrumResult>`
+object.
+The class takes one argument, the index of the detector to read.
+The first detector has an index of 1.
+
+.. code-block:: python
+   
+   from pypenelopetools.penepma.results import PenepmaSpectrumResult
+   result = PenepmaSpectrumResult(1)
+   result.read_directory('/simulation/epma2')
+   
+To plot the spectrum, we use the library `matplotlib <http://matplotlib.org>`_.
+The x-axis (energy axis) is stored in the attribute :attr:`energies_eV` whereas
+the intensities in 1/(sr.electron) in the attribute 
+:attr:`intensities_1_per_sr_electron`.
+
+.. code-block:: python
+
+   import matplotlib.pyplot as plt
+   
+   fig, ax = plt.subplots(1, 1)
+   ax.plot(result.energies_eV, result.intensities_1_per_sr_electron, '-')
+   plt.show()
+
+This completes the PENEPMA tutorial.
+

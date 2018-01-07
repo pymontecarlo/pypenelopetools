@@ -448,7 +448,7 @@ class PenepmaSpectrumResult(_PenepmaPhotonDetectorResult):
             self.read(fp)
 
     @property
-    def energy_eV(self):
+    def energies_eV(self):
         """numpy array: Nominal values of the energy axis in eV."""
         return unumpy.nominal_values(self.spectrum[:, 0])
 

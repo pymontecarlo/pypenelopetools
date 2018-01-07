@@ -12,8 +12,6 @@ Most of the code was adapted from `pyPENELOPE <http://pypenelope.sourceforge.net
 with the goal to facilitate the integration with 
 `pyMonteCarlo <https://github.com/pymontecarlo/pymontecarlo>`_.
 
-**pyPENELOPEtools** is currently under development.
-
 What is PENELOPE?
 -----------------
 

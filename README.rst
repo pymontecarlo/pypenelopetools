@@ -50,8 +50,23 @@ Documentation
 The `documentation <http://pypenelopetools.readthedocs.io>`_ contains the
 installation instructions, tutorials and API.
 
+Release notes
+-------------
+
+1.0.0
+^^^^^
+
+* First release
+
 Authors
 -------
 
 - `Philippe T. Pinard <https://github.com/ppinard>`_ (High Wycombe, United Kingdom)
 - `Hendrix Demers <https://github.com/drix00>`_ (McGill University, Montreal, Canada)
+
+License
+-------
+
+License under Apache Software License 2.0.
+
+Copyright (c) 2017-2018 Philippe Pinard

@@ -87,6 +87,8 @@ class TypeKeyword(KeywordBase):
                                     .format(value, type_))
             values.append(value)
 
+        self.validate(*values)
+
         self._values = tuple(values)
 
     def get(self):
@@ -94,6 +96,9 @@ class TypeKeyword(KeywordBase):
 
     def copy(self):
         return self.__class__(self.name, self._types, self.comment)
+
+    def validate(self, *args):
+        pass
 
     def read(self, fileobj):
         line = self._peek_next_line(fileobj)

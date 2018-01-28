@@ -9,7 +9,7 @@ from operator import attrgetter
 
 # Local modules.
 from pypenelopetools.penelope.keyword import \
-    TypeKeyword, KeywordSequence, KeywordGroup
+    TypeKeyword, KeywordSequence, KeywordGroupBase
 
 # Globals and constants variables.
 
@@ -267,7 +267,7 @@ class MSIMPA(TypeKeyword):
         """
         super().set(eabs1, eabs2, eabs3, c1, c2, wcc, wcr)
 
-class MaterialGroup(KeywordGroup):
+class MaterialGroup(KeywordGroupBase):
     """Group to define both material file name and its simulation parameters."""
 
     def __init__(self):

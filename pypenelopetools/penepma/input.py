@@ -7,7 +7,7 @@ Input of PENEPMA simulation.
 # Third party modules.
 
 # Local modules.
-from pypenelopetools.penelope.input import _PenelopeInputBase
+from pypenelopetools.penelope.input import PenelopeInputBase
 import pypenelopetools.penelope.keywords as penelope_keywords
 import pypenelopetools.penelope.separators as penelope_separators
 import pypenelopetools.penepma.keywords as penepma_keywords
@@ -15,7 +15,7 @@ import pypenelopetools.penepma.separators as penepma_separators
 
 # Globals and constants variables.
 
-class PenepmaInput(_PenelopeInputBase):
+class PenepmaInput(PenelopeInputBase):
     """
     Creates an object representing a PENEPMA input file.
     

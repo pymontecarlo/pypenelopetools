@@ -12,12 +12,12 @@ import os
 
 # Local modules.
 from pypenelopetools.pengeom.transformation import Rotation, Shift, Scale
-from pypenelopetools.pengeom.base import _GeometryBase, LINE_EXTRA, LINE_SEPARATOR
+from pypenelopetools.pengeom.base import GeometryBase, LINE_EXTRA, LINE_SEPARATOR
 from pypenelopetools.pengeom.mixin import DescriptionMixin
 
 # Globals and constants variables.
 
-class _SurfaceBase(DescriptionMixin, _GeometryBase):
+class SurfaceBase(DescriptionMixin, GeometryBase):
     """
     Base class for surface definition.
     
@@ -48,7 +48,7 @@ class _SurfaceBase(DescriptionMixin, _GeometryBase):
         """:obj:`Shift <pypenelopetools.pengeom.transformation.Shift>`: Shift/translation of the surface."""
         return self._shift
 
-class SurfaceImplicit(_SurfaceBase):
+class SurfaceImplicit(SurfaceBase):
     """
     Definition of an implicit surface.
     
@@ -167,7 +167,7 @@ class SurfaceImplicit(_SurfaceBase):
                  'x': coefficients[6], 'y': coefficients[7], 'z': coefficients[8],
                  '0': coefficients[9]}
 
-class SurfaceReduced(_SurfaceBase):
+class SurfaceReduced(SurfaceBase):
     """
     Definition of a reduced/explicit surface.
     

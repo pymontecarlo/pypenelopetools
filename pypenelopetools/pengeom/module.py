@@ -11,7 +11,7 @@ import enum
 # Local modules.
 from pypenelopetools.pengeom.transformation import Rotation, Shift
 from pypenelopetools.pengeom.mixin import DescriptionMixin, ModuleMixin
-from pypenelopetools.pengeom.base import _GeometryBase, LINE_EXTRA, LINE_SEPARATOR
+from pypenelopetools.pengeom.base import GeometryBase, LINE_EXTRA, LINE_SEPARATOR
 from pypenelopetools.material import VACUUM
 
 # Globals and constants variables.
@@ -27,7 +27,7 @@ class SidePointer(enum.IntEnum):
     NEGATIVE = -1
     """Negative direction."""
 
-class Module(DescriptionMixin, ModuleMixin, _GeometryBase):
+class Module(DescriptionMixin, ModuleMixin, GeometryBase):
     """
     Definition of a module.
     

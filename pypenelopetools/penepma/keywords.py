@@ -8,7 +8,7 @@ Keywords used specifically for PENEPMA.
 
 # Local modules.
 from pypenelopetools.penelope.keyword import \
-    TypeKeyword, KeywordGroup, KeywordSequence
+    TypeKeyword, KeywordGroupBase, KeywordSequence
 
 # Globals and constants variables.
 
@@ -64,7 +64,7 @@ class SAPERT(TypeKeyword):
         """
         super().set(salpha)
 
-class PhotonDetectorGroup(KeywordGroup):
+class PhotonDetectorGroup(KeywordGroupBase):
     """Definition of photon detector.
     
     Each detector collects photons that leave the sample with directions within 

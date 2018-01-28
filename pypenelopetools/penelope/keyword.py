@@ -9,13 +9,13 @@ import os
 # Third party modules.
 
 # Local modules.
-from pypenelopetools.penelope.base import _InputLineBase
+from pypenelopetools.penelope.base import InputLineBase
 
 # Globals and constants variables.
 
 #--- Abstract classes
 
-class _KeywordBase(_InputLineBase):
+class KeywordBase(InputLineBase):
     """
     Base of all PENELOPE keywords.
     """
@@ -46,7 +46,7 @@ class _KeywordBase(_InputLineBase):
 
 #--- Core classes
 
-class TypeKeyword(_KeywordBase):
+class TypeKeyword(KeywordBase):
     """
     Keyword where the :obj:`type` of the values are checked.
     
@@ -129,7 +129,7 @@ class TypeKeyword(_KeywordBase):
         """str: Comment."""
         return self._comment
 
-class KeywordGroup(_KeywordBase):
+class KeywordGroupBase(KeywordBase):
     """
     Group of keywords, keywords that should always be defined together.
     """
@@ -180,12 +180,12 @@ class KeywordGroup(_KeywordBase):
     def name(self):
         return self.get_keywords()[0].name
 
-class KeywordSequence(_KeywordBase):
+class KeywordSequence(KeywordBase):
     """
     Sequence of keywords, keywords that can be defined multiple times.
     
     Args:
-        keyword (_KeywordBase): Base keyword.
+        keyword (KeywordBase): Base keyword.
         maxlength (int): Maximum number of keywords that can be added.
     """
 

@@ -17,7 +17,7 @@ SKIP_LINE = "       ."
 
 PATTERN_LINE = re.compile(r'([A-Z0-9 ]{6})([\w\.\-\+ ]*)(\[.*\])?')
 
-class _InputLineBase(metaclass=abc.ABCMeta):
+class InputLineBase(metaclass=abc.ABCMeta):
     """
     Base class to parse and read PENELOPE text files.
     """

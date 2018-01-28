@@ -7,12 +7,12 @@ import os
 
 # Local modules.
 from pypenelopetools.penelope.keyword import \
-    TypeKeyword, KeywordGroup, KeywordSequence
+    TypeKeyword, KeywordGroupBase, KeywordSequence
 import pypenelopetools.penelope.keywords as penelope_keywords
 
 # Globals and constants variables.
 
-class GeometryDefinitionGroup(KeywordGroup):
+class GeometryDefinitionGroup(KeywordGroupBase):
     """
     This block of lines defines the geometrical structure. The
     only allowed keywords in the geometry definition list are
@@ -309,7 +309,7 @@ class EMERGP(TypeKeyword):
     def set(self, radm, nbre):
         super().set(radm, nbre)
 
-class EnergyDepositionDetectorGroup(KeywordGroup):
+class EnergyDepositionDetectorGroup(KeywordGroupBase):
     """
     Each energy-deposition detector consists of a set of active bodies,
     which must have been defined as parts of the geometry. The output

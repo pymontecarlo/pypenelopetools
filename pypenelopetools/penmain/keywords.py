@@ -6,7 +6,7 @@
 
 # Local modules.
 from pypenelopetools.penelope.keyword import \
-    TypeKeyword, KeywordSequence, KeywordGroup
+    TypeKeyword, KeywordSequence, KeywordGroupBase
 import pypenelopetools.penelope.keywords as penelope_keywords
 
 # Globals and constants variables.
@@ -175,7 +175,7 @@ class PARINP(KeywordSequence):
     def add(self, ip, parinp):
         return super().add(ip, parinp)
 
-class ImpactDetectorGroup(KeywordGroup):
+class ImpactDetectorGroup(KeywordGroupBase):
     """
     Each impact detector consists of a set of active bodies, which must
     have been defined as parts of the geometry. The output spectrum is
@@ -325,7 +325,7 @@ class ImpactDetectors(KeywordSequence):
                            agel, ageu, nage, age_filename,
                            kb, kpar)
 
-class EnergyDepositionDetectorGroup(KeywordGroup):
+class EnergyDepositionDetectorGroup(KeywordGroupBase):
     """
     Each energy-deposition detector consists of a set of active bodies,
     which must have been defined as parts of the geometry. The output

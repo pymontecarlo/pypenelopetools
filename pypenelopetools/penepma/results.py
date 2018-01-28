@@ -11,11 +11,11 @@ from uncertainties import ufloat, unumpy
 import pyxray
 
 # Local modules.
-from pypenelopetools.penelope.result import _PenelopeResultBase
+from pypenelopetools.penelope.result import PenelopeResultBase
 
 # Globals and constants variables.
 
-class PenepmaResult(_PenelopeResultBase):
+class PenepmaResult(PenelopeResultBase):
     """
     Results from ``penepma-res.dat``.
     
@@ -218,7 +218,7 @@ class PenepmaResult(_PenelopeResultBase):
         with open(filepath, 'r') as fp:
             self.read(fp)
 
-class _PenepmaPhotonDetectorResult(_PenelopeResultBase):
+class PenepmaPhotonDetectorResultBase(PenelopeResultBase):
     """
     Base result associated with a photon detector.
     
@@ -264,7 +264,7 @@ class _PenepmaPhotonDetectorResult(_PenelopeResultBase):
         self.phi1_deg = ufloat(phi1_deg, 0.0)
         self.phi2_deg = ufloat(phi2_deg, 0.0)
 
-class PenepmaIntensityResult(_PenepmaPhotonDetectorResult):
+class PenepmaIntensityResult(PenepmaPhotonDetectorResultBase):
     """
     Results from ``pe-intens-XX.dat``, where ``XX`` is the index of the detector.
     The intensities are given for each characteristic x-ray detected by
@@ -363,7 +363,7 @@ class PenepmaIntensityResult(_PenepmaPhotonDetectorResult):
         with open(filepath, 'r') as fp:
             self.read(fp)
 
-class PenepmaSpectrumResult(_PenepmaPhotonDetectorResult):
+class PenepmaSpectrumResult(PenepmaPhotonDetectorResultBase):
     """
     Results from ``pe-spect-XX.dat``, where ``XX`` is the index of the detector.
     The spectrum is stored as a `numpy <http://numpy.org>`_ array where the

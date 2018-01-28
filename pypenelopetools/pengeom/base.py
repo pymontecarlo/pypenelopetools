@@ -56,7 +56,7 @@ def _toexponent(number):
 
     return number_str
 
-class _GeometryBase(metaclass=abc.ABCMeta):
+class GeometryBase(metaclass=abc.ABCMeta):
     """
     Base class for geometry objects.
     """
@@ -157,7 +157,7 @@ class _GeometryBase(metaclass=abc.ABCMeta):
         Args:
             fileobj (file object): 
                 File object opened with write access.
-            index_lookup (dict(:obj:`_GeometryBase <pypenelopetools.pengeom.base._GeometryBase>`, int)): 
+            index_lookup (dict(:obj:`GeometryBase <pypenelopetools.pengeom.base.GeometryBase>`, int)): 
                 A lookup table for the surfaces, modules and materials of the 
                 associated geometry. 
                 Each component is assigned an index by the method 

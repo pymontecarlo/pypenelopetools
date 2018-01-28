@@ -9,11 +9,11 @@ import math
 # Third party modules.
 
 # Local modules.
-from pypenelopetools.pengeom.base import _GeometryBase, LINE_SEPARATOR
+from pypenelopetools.pengeom.base import GeometryBase, LINE_SEPARATOR
 
 # Globals and constants variables.
 
-class Rotation(_GeometryBase):
+class Rotation(GeometryBase):
     """
     Represents a rotation using 3 Euler angles (YZY).
 
@@ -104,7 +104,7 @@ class Rotation(_GeometryBase):
             raise ValueError("Angle ({0}) must be between [0,360].".format(angle))
         self._phi = angle
 
-class Shift(_GeometryBase):
+class Shift(GeometryBase):
     """
     Represents a translation in space.
     
@@ -178,7 +178,7 @@ class Shift(_GeometryBase):
     def z_cm(self, shift):
         self._z = shift
 
-class Scale(_GeometryBase):
+class Scale(GeometryBase):
     """
     Represents scaling.
     

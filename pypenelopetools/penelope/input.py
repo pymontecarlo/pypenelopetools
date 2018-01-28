@@ -8,11 +8,11 @@ import abc
 # Third party modules.
 
 # Local modules.
-from pypenelopetools.penelope.base import _InputLineBase
+from pypenelopetools.penelope.base import InputLineBase
 
 # Globals and constants variables.
 
-class _PenelopeInputBase(_InputLineBase):
+class PenelopeInputBase(InputLineBase):
     """
     Base input class.
     """

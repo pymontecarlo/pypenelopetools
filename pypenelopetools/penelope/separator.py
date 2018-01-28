@@ -8,11 +8,11 @@ import os
 # Third party modules.
 
 # Local modules.
-from pypenelopetools.penelope.base import _InputLineBase
+from pypenelopetools.penelope.base import InputLineBase
 
 # Globals and constants variables.
 
-class Separator(_InputLineBase):
+class Separator(InputLineBase):
     """
     Base of all PENELOPE separators.
     

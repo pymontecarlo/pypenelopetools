@@ -14,7 +14,7 @@ import re
 
 PATTERN_NUMBER = re.compile(r'\d\.\d*E[\+\-]\d\d')
 
-class _PenelopeResultBase(metaclass=abc.ABCMeta):
+class PenelopeResultBase(metaclass=abc.ABCMeta):
     """
     Base class representing a type of result.
     """

@@ -5,7 +5,7 @@
 # Third party modules.
 
 # Local modules.
-from pypenelopetools.penelope.input import _PenelopeInputBase
+from pypenelopetools.penelope.input import PenelopeInputBase
 import pypenelopetools.penelope.keywords as penelope_keywords
 import pypenelopetools.penelope.separators as penelope_separators
 import pypenelopetools.pencyl.keywords as pencyl_keywords
@@ -13,7 +13,7 @@ import pypenelopetools.pencyl.separators as pencyl_separators
 
 # Globals and constants variables.
 
-class PencylInput(_PenelopeInputBase):
+class PencylInput(PenelopeInputBase):
 
     def __init__(self):
         self.TITLE = penelope_keywords.TITLE()

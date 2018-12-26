@@ -5,6 +5,7 @@
 # Third party modules.
 
 # Local modules.
+from pypenelopetools.penelope.enums import KPAR
 from pypenelopetools.penelope.keyword import \
     TypeKeyword, KeywordSequence, KeywordGroupBase
 import pypenelopetools.penelope.keywords as penelope_keywords
@@ -290,7 +291,7 @@ class ImpactDetectorGroup(KeywordGroupBase):
         keyword = TypeKeyword('IDBODY', (int,), comment='Active body')
         self.IDBODY = KeywordSequence(keyword, maxlength=5000)
 
-        keyword = TypeKeyword('IDKPAR', (int,), comment='Kind of detected particles')
+        keyword = TypeKeyword('IDKPAR', (KPAR,), comment='Kind of detected particles')
         self.IDKPAR = KeywordSequence(keyword, maxlength=3)
 
     def get_keywords(self):

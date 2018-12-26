@@ -11,6 +11,7 @@ import os
 import pyxray
 
 # Local modules.
+from pypenelopetools.penelope.enums import KPAR, ICOL
 from pypenelopetools.penepma.input import PenepmaInput
 from pypenelopetools.material import Material
 from pypenelopetools.pengeom.surface import xplane, zplane, cylinder
@@ -51,10 +52,10 @@ def create_epma1():
     input.GEOMFN.set('epma1.geo')
     input.DSMAX.add(index_lookup[module], 1e-4)
 
-    input.IFORCE.add(index_lookup[module], 1, 4, -5, 0.9, 1.0)
-    input.IFORCE.add(index_lookup[module], 1, 5, -250, 0.9, 1.0)
-    input.IFORCE.add(index_lookup[module], 2, 2, 10, 1e-3, 1.0)
-    input.IFORCE.add(index_lookup[module], 2, 3, 10, 1e-3, 1.0)
+    input.IFORCE.add(index_lookup[module], KPAR.ELECTRON, ICOL.HARD_BREMSSTRAHLUNG_EMISSION, -5, 0.9, 1.0)
+    input.IFORCE.add(index_lookup[module], KPAR.ELECTRON, ICOL.INNER_SHELL_IMPACT_IONISATION, -250, 0.9, 1.0)
+    input.IFORCE.add(index_lookup[module], KPAR.PHOTON, ICOL.INCOHERENT_SCATTERING, 10, 1e-3, 1.0)
+    input.IFORCE.add(index_lookup[module], KPAR.PHOTON, ICOL.PHOTOELECTRIC_ABSORPTION, 10, 1e-3, 1.0)
     input.IBRSPL.add(index_lookup[module], 2)
     input.IXRSPL.add(index_lookup[module], 2)
 
@@ -130,14 +131,14 @@ def create_epma2():
     input.DSMAX.add(index_lookup[module_right], 1e-4)
     input.DSMAX.add(index_lookup[module_left], 1e-4)
 
-    input.IFORCE.add(index_lookup[module_right], 1, 4, -5, 0.9, 1.0)
-    input.IFORCE.add(index_lookup[module_right], 1, 5, -250, 0.9, 1.0)
-    input.IFORCE.add(index_lookup[module_right], 2, 2, 10, 1e-3, 1.0)
-    input.IFORCE.add(index_lookup[module_right], 2, 3, 10, 1e-3, 1.0)
-    input.IFORCE.add(index_lookup[module_left], 1, 4, -5, 0.9, 1.0)
-    input.IFORCE.add(index_lookup[module_left], 1, 5, -7, 0.9, 1.0)
-    input.IFORCE.add(index_lookup[module_left], 2, 2, 10, 1e-3, 1.0)
-    input.IFORCE.add(index_lookup[module_left], 2, 3, 10, 1e-3, 1.0)
+    input.IFORCE.add(index_lookup[module_right], KPAR.ELECTRON, ICOL.HARD_BREMSSTRAHLUNG_EMISSION, -5, 0.9, 1.0)
+    input.IFORCE.add(index_lookup[module_right], KPAR.ELECTRON, ICOL.INNER_SHELL_IMPACT_IONISATION, -250, 0.9, 1.0)
+    input.IFORCE.add(index_lookup[module_right], KPAR.PHOTON, ICOL.INCOHERENT_SCATTERING, 10, 1e-3, 1.0)
+    input.IFORCE.add(index_lookup[module_right], KPAR.PHOTON, ICOL.PHOTOELECTRIC_ABSORPTION, 10, 1e-3, 1.0)
+    input.IFORCE.add(index_lookup[module_left], KPAR.ELECTRON, ICOL.HARD_BREMSSTRAHLUNG_EMISSION, -5, 0.9, 1.0)
+    input.IFORCE.add(index_lookup[module_left], KPAR.ELECTRON, ICOL.INNER_SHELL_IMPACT_IONISATION, -7, 0.9, 1.0)
+    input.IFORCE.add(index_lookup[module_left], KPAR.PHOTON, ICOL.INCOHERENT_SCATTERING, 10, 1e-3, 1.0)
+    input.IFORCE.add(index_lookup[module_left], KPAR.PHOTON, ICOL.PHOTOELECTRIC_ABSORPTION, 10, 1e-3, 1.0)
 
     input.IBRSPL.add(index_lookup[module_right], 2)
     input.IBRSPL.add(index_lookup[module_left], 2)

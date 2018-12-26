@@ -10,6 +10,7 @@ from operator import attrgetter
 # Local modules.
 from pypenelopetools.penelope.keyword import \
     TypeKeyword, KeywordSequence, KeywordGroupBase
+from pypenelopetools.penelope.enums import KPAR, ICOL
 
 # Globals and constants variables.
 
@@ -55,7 +56,7 @@ class SKPAR(TypeKeyword):
     """
 
     def __init__(self):
-        super().__init__('SKPAR', (int,),
+        super().__init__('SKPAR', (KPAR,),
                          comment="Primary particles: 1=electron, 2=photon, 3=positron")
 
     def set(self, kparp):
@@ -63,13 +64,12 @@ class SKPAR(TypeKeyword):
         Sets value.
         
         Args:
-            kparp (int): Type of primary particles.
-                0=user defined, 1=electrons, 2=photons or 3=positrons
+            kparp (:class:`KPAR`): Type of primary particles
         """
         super().set(kparp)
 
     def validate(self, kparp):
-        if kparp not in [0, 1, 2, 3]:
+        if kparp not in KPAR:
             raise ValueError('Invalid particle')
         return super().validate(kparp)
 
@@ -419,12 +419,12 @@ class EABSB(KeywordSequence):
         """
         return super().add(kb, eabs1, eabs2, eabs3)
 
-class IFORCE(KeywordSequence):
+class InteractionForcings(KeywordSequence):
     """Forcing of interactions. 
     
     FORCER is the forcing factor, which must
     be larger than unity. WLOW and WHIG are the lower and upper
-    limits of the weight window where interaction forcing is
+    limits of the pweight window where interaction forcing is
     applied. When several interaction mechanisms are forced in
     the same body, the effective weight window is set equal to
     the intersection of the windows for these mechanisms.
@@ -443,7 +443,7 @@ class IFORCE(KeywordSequence):
     """
 
     def __init__(self, maxlength=120000):
-        keyword = TypeKeyword("IFORCE", (int, int, int, float, float, float),
+        keyword = TypeKeyword("IFORCE", (int, KPAR, ICOL, float, float, float),
                               comment="KB,KPAR,ICOL,FORCER,WLOW,WHIG")
         super().__init__(keyword, maxlength)
 
@@ -453,8 +453,7 @@ class IFORCE(KeywordSequence):
         
         Args:
             kb (int): Index of body.
-            kparp (int): Type of primary particles.
-                0=user defined, 1=electrons, 2=photons or 3=positrons
+            kparp (:class:`KPAR`): Type of primary particles
         """
         return super().add(kb, kpar, icol, forcer, wlow, whig)
 

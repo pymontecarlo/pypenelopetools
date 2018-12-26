@@ -45,7 +45,7 @@ class PenmainInput(PenelopeInputBase):
         self.EABSB = penelope_keywords.EABSB()
 
         # Interaction forcing
-        self.IFORCE = penelope_keywords.IFORCE()
+        self.IFORCE = penelope_keywords.InteractionForcings()
 
         # Bremsstrahlung splitting
         self.IBRSPL = penelope_keywords.IBRSPL()

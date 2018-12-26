@@ -97,7 +97,7 @@ class PenepmaInput(PenelopeInputBase):
         self.DSMAX = penelope_keywords.DSMAX()
 
         # Interaction forcing
-        self.IFORCE = penelope_keywords.IFORCE()
+        self.IFORCE = penelope_keywords.InteractionForcings()
 
         # Bremsstrahlung splitting
         self.IBRSPL = penelope_keywords.IBRSPL()

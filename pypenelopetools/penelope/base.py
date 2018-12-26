@@ -5,6 +5,7 @@ Definition of base classes.
 # Standard library modules.
 import abc
 import re
+import enum
 
 # Third party modules.
 
@@ -75,6 +76,8 @@ class InputLineBase(metaclass=abc.ABCMeta):
         for value in values:
             if isinstance(value, float):
                 strvalues.append('{0:g}'.format(value))
+            elif isinstance(value, enum.IntEnum):
+                strvalues.append(str(value.value))
             else:
                 strvalues.append(str(value))
 

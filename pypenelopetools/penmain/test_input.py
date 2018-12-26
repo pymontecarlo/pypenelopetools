@@ -10,6 +10,7 @@ import os
 # Third party modules.
 
 # Local modules.
+from pypenelopetools.penelope.enums import KPAR, ICOL
 from pypenelopetools.penmain.input import PenmainInput
 from pypenelopetools.material import Material
 from pypenelopetools.pengeom.surface import sphere, zplane, cylinder
@@ -35,7 +36,7 @@ def create_example1_disc():
     input = PenmainInput()
 
     input.TITLE.set('Point source and a homogeneous cylinder.')
-    input.SKPAR.set(1)
+    input.SKPAR.set(KPAR.ELECTRON)
     input.SENERG.set(40e3)
     input.SPOSIT.set(0.0, 0.0, -0.0001)
     input.SCONE.set(0.0, 0.0, 5.0)
@@ -47,8 +48,8 @@ def create_example1_disc():
     input.PARINP.add(2, 0.01)
     input.DSMAX.add(1, 1e-4)
 
-    input.IFORCE.add(1, 1, 4, 2000, 0.1, 2.0)
-    input.IFORCE.add(1, 1, 5, 200, 0.1, 2.0)
+    input.IFORCE.add(1, KPAR.ELECTRON, ICOL.HARD_BREMSSTRAHLUNG_EMISSION, 2000, 0.1, 2.0)
+    input.IFORCE.add(1, KPAR.ELECTRON, ICOL.INNER_SHELL_IMPACT_IONISATION, 200, 0.1, 2.0)
     input.IBRSPL.add(1, 2)
     input.IXRSPL.add(1, 2)
 
@@ -95,7 +96,7 @@ def create_example2_plane():
     input = PenmainInput()
 
     input.TITLE.set('Dose in a water phantom with a spherical impact detector')
-    input.SKPAR.set(2)
+    input.SKPAR.set(KPAR.PHOTON)
     input.SENERG.set(3e7)
     input.SPOSIT.set(0.0, 0.0, -25.0)
     input.SCONE.set(0.0, 0.0, 5.0)
@@ -149,7 +150,7 @@ class TestPenmainInput(unittest.TestCase):
 
     def _test_example1_disc(self, input):
         kparp, = input.SKPAR.get()
-        self.assertEqual(1, kparp)
+        self.assertEqual(KPAR.ELECTRON, kparp)
 
         se0, = input.SENERG.get()
         self.assertAlmostEqual(40e3, se0, 5)
@@ -202,16 +203,16 @@ class TestPenmainInput(unittest.TestCase):
 
         kb, kpar, icol, forcer, wlow, whig = iforces[0]
         self.assertEqual(1, kb)
-        self.assertEqual(1, kpar)
-        self.assertEqual(4, icol)
+        self.assertEqual(KPAR.ELECTRON, kpar)
+        self.assertEqual(ICOL.HARD_BREMSSTRAHLUNG_EMISSION, icol)
         self.assertAlmostEqual(2000, forcer, 5)
         self.assertAlmostEqual(0.1, wlow, 5)
         self.assertAlmostEqual(2.0, whig, 5)
 
         kb, kpar, icol, forcer, wlow, whig = iforces[1]
         self.assertEqual(1, kb)
-        self.assertEqual(1, kpar)
-        self.assertEqual(5, icol)
+        self.assertEqual(KPAR.ELECTRON, kpar)
+        self.assertEqual(ICOL.INNER_SHELL_IMPACT_IONISATION, icol)
         self.assertAlmostEqual(200, forcer, 5)
         self.assertAlmostEqual(0.1, wlow, 5)
         self.assertAlmostEqual(2.0, whig, 5)
@@ -308,7 +309,7 @@ class TestPenmainInput(unittest.TestCase):
 
     def _test_example2_plane(self, input):
         kparp, = input.SKPAR.get()
-        self.assertEqual(2, kparp)
+        self.assertEqual(KPAR.PHOTON, kparp)
 
         se0, = input.SENERG.get()
         self.assertAlmostEqual(3e7, se0, 5)

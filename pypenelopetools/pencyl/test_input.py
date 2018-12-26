@@ -10,6 +10,7 @@ import io
 # Third party modules.
 
 # Local modules.
+from pypenelopetools.penelope.enums import KPAR, ICOL
 from pypenelopetools.pencyl.input import PencylInput
 from pypenelopetools.material import Material
 
@@ -36,8 +37,8 @@ def create_example1_disc():
 
     input.DSMAX.add(1, 1, 1e-4)
 
-    input.IFORCE.add(1, 1, 1, 4, 2000, 0.1, 2.0)
-    input.IFORCE.add(1, 1, 1, 5, 200, 0.1, 2.0)
+    input.IFORCE.add(1, 1, KPAR.ELECTRON, ICOL.HARD_BREMSSTRAHLUNG_EMISSION, 2000, 0.1, 2.0)
+    input.IFORCE.add(1, 1, KPAR.ELECTRON, ICOL.INNER_SHELL_IMPACT_IONISATION, 200, 0.1, 2.0)
 
     input.IBRSPL.add(1, 1, 2)
 

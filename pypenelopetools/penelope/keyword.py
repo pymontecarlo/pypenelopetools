@@ -5,6 +5,7 @@ Definition of base keyword classes.
 # Standard library modules.
 import abc
 import os
+import enum
 
 # Third party modules.
 
@@ -80,11 +81,15 @@ class TypeKeyword(KeywordBase):
         values = []
         for type_, value in zip(self._types, args):
             if value is not None:
+                if issubclass(type_, enum.IntEnum):
+                    value = int(value)
+
                 try:
                     value = type_(value)
                 except ValueError:
-                    raise TypeError("Value {0} must be of type {1}"
+                    raise TypeError("Value {0!r} must be of type {1}"
                                     .format(value, type_))
+
             values.append(value)
 
         self.validate(*values)

@@ -6,6 +6,7 @@ import os
 # Third party modules.
 
 # Local modules.
+from pypenelopetools.penelope.enums import KPAR, ICOL
 from pypenelopetools.penelope.keyword import \
     TypeKeyword, KeywordGroupBase, KeywordSequence
 import pypenelopetools.penelope.keywords as penelope_keywords
@@ -169,7 +170,7 @@ class IFORCE(KeywordSequence):
     """
 
     def __init__(self, maxlength=120000):
-        keyword = TypeKeyword("IFORCE", (int, int, int, int, float, float, float),
+        keyword = TypeKeyword("IFORCE", (int, int, KPAR, ICOL, float, float, float),
                               comment="KL,KC,KPAR,ICOL,FORCER,WLOW,WHIG")
         super().__init__(keyword, maxlength)
 

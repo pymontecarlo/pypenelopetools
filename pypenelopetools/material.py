@@ -64,9 +64,14 @@ class Material(object):
     def __init__(self, name, composition, density_g_per_cm3,
                  mean_excitation_energy_eV=None,
                  oscillator_strength_fcb=None,
-                 plasmon_energy_wcb_eV=None):
+                 plasmon_energy_wcb_eV=None,
+                 filename=None):
         self.name = name
-        self.filename = name[:16] + '.mat'
+
+        if filename is None:
+            filename = name[:16] + '.mat'
+        self.filename = filename
+
         self.composition = composition.copy()
         self.density_g_per_cm3 = float(density_g_per_cm3)
         self.mean_excitation_energy_eV = mean_excitation_energy_eV

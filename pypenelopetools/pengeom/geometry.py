@@ -167,7 +167,9 @@ class Geometry(ModuleMixin, GeometryBase):
         """
         Returns all materials in this geometry.
         """
-        return set(map(attrgetter('material'), self.get_modules()))
+        materials = set(map(attrgetter('material'), self.get_modules()))
+        materials.discard(VACUUM)
+        return materials
 
     def get_surfaces(self):
         """

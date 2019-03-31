@@ -146,7 +146,7 @@ class TestGeometry(unittest.TestCase):
         self.assertEqual('Test Geometry', geometry.title)
         self.assertEqual(3, len(geometry.get_modules()))
         self.assertEqual(4, len(geometry.get_surfaces()))
-        self.assertEqual(3, len(geometry.get_materials()))
+        self.assertEqual(2, len(geometry.get_materials()))
 
     def testskeleton(self):
         self.assertEqual('Test Geometry', self.geo.title)

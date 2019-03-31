@@ -264,7 +264,37 @@ class PenepmaPhotonDetectorResultBase(PenelopeResultBase):
         self.phi1_deg = ufloat(phi1_deg, 0.0)
         self.phi2_deg = ufloat(phi2_deg, 0.0)
 
-class PenepmaIntensityResult(PenepmaPhotonDetectorResultBase):
+class PenepmaIntensityResultMixin:
+    """
+    Parse intensity results structured in a table.
+    """
+
+    def _read_intensity_table(self, fileobj):
+        # Clear dictionaries
+        self.primary_intensities_1_per_sr_electron.clear()
+        self.characteristic_fluorescence_intensities_1_per_sr_electron.clear()
+        self.bremsstrahlung_fluorescence_intensities_1_per_sr_electron.clear()
+        self.total_fluorescence_intensities_1_per_sr_electron.clear()
+        self.total_intensities_1_per_sr_electron.clear()
+
+        # Read intensities
+        self._read_until_line_startswith(fileobj, '# IZ S0 S1  E (eV)')
+
+        for line in fileobj:
+            z = int(line[3:5])
+            dst = pyxray.atomic_subshell(line[6:8].strip())
+            src = pyxray.atomic_subshell(line[9:11].strip())
+            xrayline = pyxray.xray_line(z, (src, dst))
+
+            _e, val_p, unc_p, val_c, unc_c, val_b, unc_b, val_tf, unc_tf, val_t, unc_t = self._read_all_values(line)
+            self.primary_intensities_1_per_sr_electron[xrayline] = ufloat(val_p, unc_p / 3)
+            self.characteristic_fluorescence_intensities_1_per_sr_electron[xrayline] = ufloat(val_c, unc_c / 3)
+            self.bremsstrahlung_fluorescence_intensities_1_per_sr_electron[xrayline] = ufloat(val_b, unc_b / 3)
+            self.total_fluorescence_intensities_1_per_sr_electron[xrayline] = ufloat(val_tf, unc_tf / 3)
+            self.total_intensities_1_per_sr_electron[xrayline] = ufloat(val_t, unc_t / 3)
+
+class PenepmaEmittedIntensityResult(PenepmaIntensityResultMixin,
+                                    PenepmaPhotonDetectorResultBase):
     """
     Results from ``pe-intens-XX.dat``, where ``XX`` is the index of the detector.
     The intensities are given for each characteristic x-ray detected by
@@ -337,26 +367,11 @@ class PenepmaIntensityResult(PenepmaPhotonDetectorResultBase):
         self.total_intensities_1_per_sr_electron = {}
 
     def read(self, fileobj):
+        # Read header
         super().read(fileobj)
 
-        self.primary_intensities_1_per_sr_electron.clear()
-        self.characteristic_fluorescence_intensities_1_per_sr_electron.clear()
-        self.bremsstrahlung_fluorescence_intensities_1_per_sr_electron.clear()
-        self.total_fluorescence_intensities_1_per_sr_electron.clear()
-        self.total_intensities_1_per_sr_electron.clear()
-        self._read_until_line_startswith(fileobj, '# IZ S0 S1  E (eV)')
-        for line in fileobj:
-            z = int(line[3:5])
-            dst = pyxray.atomic_subshell(line[6:8].strip())
-            src = pyxray.atomic_subshell(line[9:11].strip())
-            xrayline = pyxray.xray_line(z, (src, dst))
-
-            _e, val_p, unc_p, val_c, unc_c, val_b, unc_b, val_tf, unc_tf, val_t, unc_t = self._read_all_values(line)
-            self.primary_intensities_1_per_sr_electron[xrayline] = ufloat(val_p, unc_p / 3)
-            self.characteristic_fluorescence_intensities_1_per_sr_electron[xrayline] = ufloat(val_c, unc_c / 3)
-            self.bremsstrahlung_fluorescence_intensities_1_per_sr_electron[xrayline] = ufloat(val_b, unc_b / 3)
-            self.total_fluorescence_intensities_1_per_sr_electron[xrayline] = ufloat(val_tf, unc_tf / 3)
-            self.total_intensities_1_per_sr_electron[xrayline] = ufloat(val_t, unc_t / 3)
+        # Read intensity table
+        super()._read_intensity_table(fileobj)
 
     def read_directory(self, dirpath):
         filepath = os.path.join(dirpath, 'pe-intens-{:02d}.dat'.format(self.detector_index))
@@ -456,3 +471,23 @@ class PenepmaSpectrumResult(PenepmaPhotonDetectorResultBase):
     def intensities_1_per_sr_electron(self):
         """numpy array: Nominal values of the intensity axis in 1/(sr.electron)."""
         return unumpy.nominal_values(self.spectrum[:, 1])
+
+class PenepmaGeneratedIntensityResult(PenepmaIntensityResultMixin,
+                                      PenelopeResultBase):
+
+    def __init__(self):
+        super().__init__()
+
+        self.primary_intensities_1_per_sr_electron = {}
+        self.characteristic_fluorescence_intensities_1_per_sr_electron = {}
+        self.bremsstrahlung_fluorescence_intensities_1_per_sr_electron = {}
+        self.total_fluorescence_intensities_1_per_sr_electron = {}
+        self.total_intensities_1_per_sr_electron = {}
+
+    def read(self, fileobj):
+        super()._read_intensity_table(fileobj)
+
+    def read_directory(self, dirpath):
+        filepath = os.path.join(dirpath, 'pe-gen-ph.dat')
+        with open(filepath, 'r') as fp:
+            self.read(fp)

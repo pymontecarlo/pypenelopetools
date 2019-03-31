@@ -11,7 +11,8 @@ import pyxray
 
 # Local modules.
 from pypenelopetools.penepma.results import \
-    PenepmaResult, PenepmaIntensityResult, PenepmaSpectrumResult
+    (PenepmaResult, PenepmaEmittedIntensityResult, PenepmaSpectrumResult,
+     PenepmaGeneratedIntensityResult)
 
 # Globals and constants variables.
 
@@ -140,13 +141,13 @@ class TestPenepmaResult(unittest.TestCase):
         self.result.read_directory(dirpath)
         self._test_result(self.result)
 
-class TestPenepmaIntensityResult(unittest.TestCase):
+class TestPenepmaEmittedIntensityResult(unittest.TestCase):
 
     def setUp(self):
         super().setUp()
 
         self.testdatadir = os.path.join(os.path.dirname(__file__), '..', 'testdata')
-        self.result = PenepmaIntensityResult(1)
+        self.result = PenepmaEmittedIntensityResult(1)
 
     def _test_result(self, result):
         self.assertEqual(1, result.detector_index)
@@ -217,7 +218,7 @@ class TestPenepmaIntensityResult(unittest.TestCase):
         self._test_result(self.result)
 
     def testread_error(self):
-        result = PenepmaIntensityResult(2)
+        result = PenepmaEmittedIntensityResult(2)
         filepath = os.path.join(self.testdatadir, 'penepma', 'pe-intens-01.dat')
         with open(filepath, 'r') as fp:
             self.assertRaises(IOError, result.read, fp)
@@ -274,6 +275,76 @@ class TestPenepmaSpectrumResult(unittest.TestCase):
 
     def testread(self):
         filepath = os.path.join(self.testdatadir, 'penepma', 'pe-spect-01.dat')
+        with open(filepath, 'r') as fp:
+            self.result.read(fp)
+        self._test_result(self.result)
+
+    def testread_directory(self):
+        dirpath = os.path.join(self.testdatadir, 'penepma')
+        self.result.read_directory(dirpath)
+        self._test_result(self.result)
+
+class TestPenepmaGeneratedIntensityResult(unittest.TestCase):
+
+    def setUp(self):
+        super().setUp()
+
+        self.testdatadir = os.path.join(os.path.dirname(__file__), '..', 'testdata')
+        self.result = PenepmaGeneratedIntensityResult()
+
+    def _test_result(self, result):
+        self.assertEqual(10, len(result.primary_intensities_1_per_sr_electron))
+        self.assertEqual(10, len(result.characteristic_fluorescence_intensities_1_per_sr_electron))
+        self.assertEqual(10, len(result.bremsstrahlung_fluorescence_intensities_1_per_sr_electron))
+        self.assertEqual(10, len(result.total_fluorescence_intensities_1_per_sr_electron))
+        self.assertEqual(10, len(result.total_intensities_1_per_sr_electron))
+
+        cu_l1_m3 = pyxray.xray_line(29, 'L1-M3')
+
+        intensity = result.primary_intensities_1_per_sr_electron[cu_l1_m3]
+        self.assertAlmostEqual(1.039634e-5, intensity.n, 8)
+        self.assertAlmostEqual(3.08e-7, intensity.s * 3, 8)
+
+        intensity = result.characteristic_fluorescence_intensities_1_per_sr_electron[cu_l1_m3]
+        self.assertAlmostEqual(7.415981e-9, intensity.n, 8)
+        self.assertAlmostEqual(5.74e-9, intensity.s * 3, 8)
+
+        intensity = result.bremsstrahlung_fluorescence_intensities_1_per_sr_electron[cu_l1_m3]
+        self.assertAlmostEqual(3.409337e-8, intensity.n, 8)
+        self.assertAlmostEqual(1.14e-8, intensity.s * 3, 8)
+
+        intensity = result.total_fluorescence_intensities_1_per_sr_electron[cu_l1_m3]
+        self.assertAlmostEqual(4.150935e-8, intensity.n, 8)
+        self.assertAlmostEqual(1.71e-8, intensity.s * 3, 8)
+
+        intensity = result.total_intensities_1_per_sr_electron[cu_l1_m3]
+        self.assertAlmostEqual(1.043785e-5, intensity.n, 8)
+        self.assertAlmostEqual(3.08e-7, intensity.s * 3, 8)
+
+        cu_k_l3 = pyxray.xray_line(29, 'K-L3')
+
+        intensity = result.primary_intensities_1_per_sr_electron[cu_k_l3]
+        self.assertAlmostEqual(2.066530e-5, intensity.n, 8)
+        self.assertAlmostEqual(4.47e-7, intensity.s * 3, 8)
+
+        intensity = result.characteristic_fluorescence_intensities_1_per_sr_electron[cu_k_l3]
+        self.assertAlmostEqual(0.0, intensity.n, 8)
+        self.assertAlmostEqual(0.0, intensity.s * 3, 8)
+
+        intensity = result.bremsstrahlung_fluorescence_intensities_1_per_sr_electron[cu_k_l3]
+        self.assertAlmostEqual(1.504317e-6, intensity.n, 8)
+        self.assertAlmostEqual(8.14e-8, intensity.s * 3, 8)
+
+        intensity = result.total_fluorescence_intensities_1_per_sr_electron[cu_k_l3]
+        self.assertAlmostEqual(1.504317e-6, intensity.n, 8)
+        self.assertAlmostEqual(8.14e-8, intensity.s * 3, 8)
+
+        intensity = result.total_intensities_1_per_sr_electron[cu_k_l3]
+        self.assertAlmostEqual(2.216962e-5, intensity.n, 8)
+        self.assertAlmostEqual(4.56e-7, intensity.s * 3, 8)
+
+    def testread(self):
+        filepath = os.path.join(self.testdatadir, 'penepma', 'pe-gen-ph.dat')
         with open(filepath, 'r') as fp:
             self.result.read(fp)
         self._test_result(self.result)

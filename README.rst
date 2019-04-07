@@ -51,7 +51,7 @@ installation instructions, tutorials and API.
 Release notes
 -------------
 
-1.1.0
+1.1.1
 ^^^^^
 
 * Add enums for KPAR and ICOL

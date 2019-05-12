@@ -49,25 +49,22 @@ _SUBSHELL_LOOKUP = \
 
 def convert_xrayline_to_izs1s200(xrayline):
     """
-    Converts a :class:`XrayLine` from 
-    `pyxray <https://github.com/openmicroanalysis/pyxray>`_ package to 
+    Converts a :class:`XrayLine` from
+    `pyxray <https://github.com/openmicroanalysis/pyxray>`_ package to
     PENELOPE's IZS1S200 format.
-    
+
     Args:
         xrayline (:obj:`XrayLine`): X-ray line
-        
+
     Returns:
         int: Corresponding PENELOPE's IZS1S200
-        
+
     Raises:
         ValueError: If the :class:`XrayLine` contains more than one transition.
         ValueError: If source or destination subshell are not supported.
     """
     iz = xrayline.atomic_number
-
-    if len(xrayline.transitions) != 1:
-        raise ValueError('XrayLine should only contain one transition.')
-    transition = xrayline.transitions[0]
+    transition = xrayline.transition
 
     s1 = _SUBSHELL_LOOKUP.get(transition.destination_subshell)
     if s1 is None:

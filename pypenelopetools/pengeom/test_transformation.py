@@ -40,7 +40,7 @@ class TestRotation(unittest.TestCase):
 
         try:
             self.rotation._write(fileobj, {})
-            fileobj.write(LINE_SEPARATOR + os.linesep)
+            fileobj.write(LINE_SEPARATOR + '\n')
 
             lines = fileobj.getvalue().splitlines()
             self.assertListEqual(self.LINES, lines)
@@ -77,7 +77,7 @@ class TestShift(unittest.TestCase):
 
         try:
             self.shift._write(fileobj, {})
-            fileobj.write(LINE_SEPARATOR + os.linesep)
+            fileobj.write(LINE_SEPARATOR + '\n')
 
             lines = fileobj.getvalue().splitlines()
             self.assertListEqual(self.LINES, lines)
@@ -114,7 +114,7 @@ class TestScale(unittest.TestCase):
 
         try:
             self.scale._write(fileobj, {})
-            fileobj.write(LINE_SEPARATOR + os.linesep)
+            fileobj.write(LINE_SEPARATOR + '\n')
 
             lines = fileobj.getvalue().splitlines()
             self.assertListEqual(self.LINES, lines)

@@ -15,11 +15,11 @@ from pypenelopetools.penelope.base import InputLineBase
 class Separator(InputLineBase):
     """
     Base of all PENELOPE separators.
-    
+
     Args:
         text (str): Comment of the separator
         name (str, optional): name of separator keyword (e.g. END)
-        
+
     Attributes:
         text (str): Comment of the separator
         name (str, optional): name of separator keyword (e.g. END)
@@ -49,5 +49,5 @@ class Separator(InputLineBase):
 
     def write(self, fileobj):
         line = self._create_line(self.name, (self.text,))
-        fileobj.write(line + os.linesep)
+        fileobj.write(line + '\n')
 

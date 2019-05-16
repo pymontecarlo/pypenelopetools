@@ -20,7 +20,7 @@ from pypenelopetools.pengeom.mixin import DescriptionMixin
 class SurfaceBase(DescriptionMixin, GeometryBase):
     """
     Base class for surface definition.
-    
+
     Args:
         description (str): Description of the surface
     """
@@ -36,7 +36,7 @@ class SurfaceBase(DescriptionMixin, GeometryBase):
         text = "{:4d}".format(index)
         comment = " " + self.description
         line = self._create_line("SURFACE", text, comment)
-        fileobj.write(line + os.linesep)
+        fileobj.write(line + '\n')
 
     @property
     def rotation(self):
@@ -51,11 +51,11 @@ class SurfaceBase(DescriptionMixin, GeometryBase):
 class SurfaceImplicit(SurfaceBase):
     """
     Definition of an implicit surface.
-    
+
     Args:
         coefficients (dict(str, float) or list(float)):
             Coefficients for the implicit form of the quadratic equation.
-            If the argument is a :obj:`dict`, the keys are the names of 
+            If the argument is a :obj:`dict`, the keys are the names of
             coefficient (e.g. ``xx``) and the values the coefficient values.
             If the argument is a :obj:`list`, the list must contain 10 values,
             one for each coefficient.
@@ -108,34 +108,34 @@ class SurfaceImplicit(SurfaceBase):
         # Indices
         text = "{0:2d},{1:2d},{2:2d},{3:2d},{4:2d}".format(0, 0, 0, 0, 0)
         line = self._create_line('INDICES=', text)
-        fileobj.write(line + os.linesep)
+        fileobj.write(line + '\n')
 
         # Coefficients
-        fileobj.write(self._create_coefficient_line('xx') + os.linesep)
-        fileobj.write(self._create_coefficient_line('xy') + os.linesep)
-        fileobj.write(self._create_coefficient_line('xz') + os.linesep)
-        fileobj.write(self._create_coefficient_line('yy') + os.linesep)
-        fileobj.write(self._create_coefficient_line('yz') + os.linesep)
-        fileobj.write(self._create_coefficient_line('zz') + os.linesep)
-        fileobj.write(self._create_coefficient_line('x') + os.linesep)
-        fileobj.write(self._create_coefficient_line('y') + os.linesep)
-        fileobj.write(self._create_coefficient_line('z') + os.linesep)
-        fileobj.write(self._create_coefficient_line('0') + os.linesep)
-        fileobj.write(LINE_EXTRA + os.linesep)
+        fileobj.write(self._create_coefficient_line('xx') + '\n')
+        fileobj.write(self._create_coefficient_line('xy') + '\n')
+        fileobj.write(self._create_coefficient_line('xz') + '\n')
+        fileobj.write(self._create_coefficient_line('yy') + '\n')
+        fileobj.write(self._create_coefficient_line('yz') + '\n')
+        fileobj.write(self._create_coefficient_line('zz') + '\n')
+        fileobj.write(self._create_coefficient_line('x') + '\n')
+        fileobj.write(self._create_coefficient_line('y') + '\n')
+        fileobj.write(self._create_coefficient_line('z') + '\n')
+        fileobj.write(self._create_coefficient_line('0') + '\n')
+        fileobj.write(LINE_EXTRA + '\n')
 
         self.rotation._write(fileobj, index_lookup)
         self.shift._write(fileobj, index_lookup)
 
-        fileobj.write(LINE_SEPARATOR + os.linesep)
+        fileobj.write(LINE_SEPARATOR + '\n')
 
     @property
     def coefficients(self):
         """(dict(str, float) or list(float)): Coefficients for the implicit form of the quadratic equation.
-        If the value is a :obj:`dict`, the keys are the names of 
+        If the value is a :obj:`dict`, the keys are the names of
         coefficient (e.g. ``xx``) and the values the coefficient values.
         If the argument is a :obj:`list`, the list must contain 10 values,
         one for each coefficient.
-        
+
         Examples:
 
           >>> s = Surface()
@@ -170,7 +170,7 @@ class SurfaceImplicit(SurfaceBase):
 class SurfaceReduced(SurfaceBase):
     """
     Definition of a reduced/explicit surface.
-    
+
     Args:
         indices (tuple(int)):
             Indices for the explicit form of the quadratic equation.
@@ -216,13 +216,13 @@ class SurfaceReduced(SurfaceBase):
         # Indices
         text = "{0:2d},{1:2d},{2:2d},{3:2d},{4:2d}".format(*self.indices)
         line = self._create_line('INDICES=', text)
-        fileobj.write(line + os.linesep)
+        fileobj.write(line + '\n')
 
         self.scale._write(fileobj, index_lookup)
         self.rotation._write(fileobj, index_lookup)
         self.shift._write(fileobj, index_lookup)
 
-        fileobj.write(LINE_SEPARATOR + os.linesep)
+        fileobj.write(LINE_SEPARATOR + '\n')
 
     @property
     def indices(self):
@@ -250,10 +250,10 @@ class SurfaceReduced(SurfaceBase):
 def xplane(x_cm):
     """
     Returns a surface for a plane X=x.
-    
+
     Args:
         x_cm (float): Intercept on the x-axis (in cm).
-    
+
     Returns:
         :obj:`SurfaceReduced`
     """
@@ -265,7 +265,7 @@ def xplane(x_cm):
 def yplane(y_cm):
     """
     Returns a surface for a plane Y=y.
-    
+
     Args:
         y_cm (float): Intercept on the y-axis (in cm).
 
@@ -281,7 +281,7 @@ def yplane(y_cm):
 def zplane(z_cm):
     """
     Returns a surface for a plane Z=z.
-    
+
     Args:
         z_cm (float): Intercept on the z-axis (in cm).
 
@@ -299,7 +299,7 @@ def cylinder(radius_cm, axis='x'):
     Args:
         radius_cm (float): Radius of the cylinder (in cm).
         axis (str): Axis of the cylinder, either ``x``, ``y`` or ``z``.
-    
+
     Returns:
         :obj:`SurfaceReduced`
     """
@@ -323,7 +323,7 @@ def cylinder(radius_cm, axis='x'):
 def sphere(radius_cm):
     """
     Returns a surface for a sphere or *radius*.
-    
+
     Args:
         radius_cm (float): Radius of the sphere (in cm).
 

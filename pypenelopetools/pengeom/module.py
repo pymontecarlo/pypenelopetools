@@ -30,11 +30,11 @@ class SidePointer(enum.IntEnum):
 class Module(DescriptionMixin, ModuleMixin, GeometryBase):
     """
     Definition of a module.
-    
+
     Args:
         material (:obj:`Material <pypenelopetools.material.Material>`, optional):
             Material associated with this module.
-            If ``None``, the material is set to 
+            If ``None``, the material is set to
             :obj:`VACUUM <pypenelopetools.material.VACUUM>`.
         description (str): Description of the module
     """
@@ -102,13 +102,13 @@ class Module(DescriptionMixin, ModuleMixin, GeometryBase):
         text = "{:4d}".format(index)
         termination = " " + self.description
         line = self._create_line('MODULE', text, termination)
-        fileobj.write(line + os.linesep)
+        fileobj.write(line + '\n')
 
         # Material index
         index = index_lookup[self.material]
         text = "{:4d}".format(index)
         line = self._create_line('MATERIAL', text)
-        fileobj.write(line + os.linesep)
+        fileobj.write(line + '\n')
 
         # Surface pointers
         surfaces = sorted((index_lookup[surface], surface, pointer)
@@ -118,7 +118,7 @@ class Module(DescriptionMixin, ModuleMixin, GeometryBase):
             text = "{:4d}".format(index)
             termination = ", SIDE POINTER=({:2d})".format(pointer)
             line = self._create_line('SURFACE', text, termination)
-            fileobj.write(line + os.linesep)
+            fileobj.write(line + '\n')
 
         # Module indexes
         modules = sorted((index_lookup[module], module)
@@ -127,10 +127,10 @@ class Module(DescriptionMixin, ModuleMixin, GeometryBase):
         for index, module in modules:
             text = "{:4d}".format(index)
             line = self._create_line('MODULE', text)
-            fileobj.write(line + os.linesep)
+            fileobj.write(line + '\n')
 
         # Separator
-        fileobj.write(LINE_EXTRA + os.linesep)
+        fileobj.write(LINE_EXTRA + '\n')
 
         # Rotation
         self.rotation._write(fileobj, index_lookup)
@@ -138,17 +138,17 @@ class Module(DescriptionMixin, ModuleMixin, GeometryBase):
         # Shift
         self.shift._write(fileobj, index_lookup)
 
-        fileobj.write(LINE_SEPARATOR + os.linesep)
+        fileobj.write(LINE_SEPARATOR + '\n')
 
     def add_surface(self, surface, pointer):
         """
         Adds a surface.
-        
+
         Args:
             surface (:obj:`SurfaceImplicit <pypenelopetools.pengeom.surface.SurfaceImplicit>` or :obj:`SurfaceReduced <pypenelopetools.pengeom.surface.SurfaceReduced>`):
                 Surface to add.
-            pointer (:obj:`SidePointer`): 
-                Whether the surface is pointing in the positive or negative 
+            pointer (:obj:`SidePointer`):
+                Whether the surface is pointing in the positive or negative
                 direction.
         """
         if isinstance(pointer, int):
@@ -165,7 +165,7 @@ class Module(DescriptionMixin, ModuleMixin, GeometryBase):
     def pop_surface(self, surface):
         """
         Removes a surface.
-        
+
         Args:
             surface (:obj:`SurfaceImplicit <pypenelopetools.pengeom.surface.SurfaceImplicit>` or :obj:`SurfaceReduced <pypenelopetools.pengeom.surface.SurfaceReduced>`):
                 Surface to remove.
@@ -181,11 +181,11 @@ class Module(DescriptionMixin, ModuleMixin, GeometryBase):
     def get_surface_pointer(self, surface):
         """
         Returns the surface pointer for the specified surface.
-        
+
         Args:
             surface (:obj:`SurfaceImplicit <pypenelopetools.pengeom.surface.SurfaceImplicit>` or :obj:`SurfaceReduced <pypenelopetools.pengeom.surface.SurfaceReduced>`):
                 Surface of interest.
-        
+
         Returns:
             :obj:`SidePointer`: Side pointer.
         """

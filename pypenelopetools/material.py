@@ -7,11 +7,11 @@ Example:
         mat = Material('copper', {29: 1.0}, 8.9)
         with open('copper.mat.in', 'w') as fp:
             mat.write_input(fp)
-    
+
     Using the ``material`` program of PENELOPE in the ``pendbase`` folder, run::
-    
+
         material.exe < copper.mat.in
-    
+
     There should now be a ``copper.mat`` in the ``pendbase`` folder.
 """
 
@@ -29,32 +29,32 @@ FILENAME_MAXLENGTH = 20
 class Material(object):
     """
     Creates a new material.
-    
+
     Args:
         name (str): Name of material.
         composition (dict): Composition in weight fraction.
             The composition is specified by a dictionary.
-            The keys are atomic numbers and the values are weight fraction 
+            The keys are atomic numbers and the values are weight fraction
             between ]0.0, 1.0].
         density_g_per_cm3 (float): Material's density in g/cm3.
         mean_excitation_energy_eV (float, optional): mean excitation energy.
             If ``None``, it will be calculated by PENELOPE.
-        oscillator_strength_fcb (float, optional): 
+        oscillator_strength_fcb (float, optional):
             oscillator strength of plasmon excitation.
             If ``None``, it will be estimated by PENELOPE.
         plasmon_energy_wcb_eV (float, optional): energy of plasmon excitation in eV.
             If ``None``, it will be estimated by PENELOPE.
-            
+
     Attributes:
         name (str): Name of material.
         composition (dict): Composition in weight fraction.
             The composition is specified by a dictionary.
-            The keys are atomic numbers and the values are weight fraction 
+            The keys are atomic numbers and the values are weight fraction
             between ]0.0, 1.0].
         density_g_per_cm3 (float): Material's density in g/cm3.
         mean_excitation_energy_eV (float, optional): mean excitation energy.
             If ``None``, it will be calculated by PENELOPE.
-        oscillator_strength_fcb (float, optional): 
+        oscillator_strength_fcb (float, optional):
             oscillator strength of plasmon excitation.
             If ``None``, it will be estimated by PENELOPE.
         plasmon_energy_wcb_eV (float, optional): energy of plasmon excitation in eV.
@@ -84,12 +84,12 @@ class Material(object):
     @classmethod
     def read_input(cls, fileobj):
         """
-        Reads the input file created by this class 
+        Reads the input file created by this class
         (see :meth:`write_input <.Material.write_input>`).
-        
+
         Args:
             fileobj (file object): file object opened with read access.
-            
+
         Returns:
             Material: new material.
         """
@@ -139,10 +139,10 @@ class Material(object):
     def read_material(cls, fileobj):
         """
         Reads a PENELOPE generated material file (.mat).
-        
+
         Args:
             fileobj (file object): file object opened with read access.
-            
+
         Returns:
             Material: new material.
         """
@@ -259,14 +259,14 @@ class Material(object):
         """
         Writes the input file to create this material.
         The material program should be called with this input file as standard input::
-        
+
             material.exe < material.in
-        
+
         Args:
             fileobj (file object): file object opened with write access.
         """
         lines = self._create_lines()
-        fileobj.write(os.linesep.join(lines))
+        fileobj.write('\n'.join(lines))
 
     @property
     def filename(self):

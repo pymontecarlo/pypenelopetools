@@ -50,7 +50,7 @@ class KeywordBase(InputLineBase):
 class TypeKeyword(KeywordBase):
     """
     Keyword where the :obj:`type` of the values are checked.
-    
+
     Args:
         name (str): Name of keyword.
         types (tuple(type)): Type of each value of the keyword.
@@ -65,12 +65,12 @@ class TypeKeyword(KeywordBase):
 
     def set(self, *args):
         """
-        Sets the value(s) of the keyword. 
+        Sets the value(s) of the keyword.
         Each value is checked if it matches the defined type.
-        
+
         Args:
             *args: Value(s).
-            
+
         Raises:
             TypeError: If one value does not match its defined type.
         """
@@ -128,7 +128,7 @@ class TypeKeyword(KeywordBase):
 
         # Write to file
         line = self._create_line(self.name, values, self.comment)
-        fileobj.write(line + os.linesep)
+        fileobj.write(line + '\n')
 
     @property
     def name(self):
@@ -193,7 +193,7 @@ class KeywordGroupBase(KeywordBase):
 class KeywordSequence(KeywordBase):
     """
     Sequence of keywords, keywords that can be defined multiple times.
-    
+
     Args:
         keyword (KeywordBase): Base keyword.
         maxlength (int): Maximum number of keywords that can be added.
@@ -216,7 +216,7 @@ class KeywordSequence(KeywordBase):
         """Adds a new keyword definition.
         This internally creates a new keyword based on the base keyword,
         sets the value(s) and add it to a list.
-        
+
         Args:
             *args: Value(s).
         """
@@ -227,7 +227,7 @@ class KeywordSequence(KeywordBase):
 
     def pop(self, index):
         """Removes a keyword.
-        
+
         Args:
             index (int): Index of the keyword to be removed.
         """

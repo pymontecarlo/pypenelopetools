@@ -26,7 +26,7 @@ class GeometryDefinitionGroup(KeywordGroupBase):
     'CYLIND' lines, which define the various concentric rings in
     the layer; a layer may be void. No blank lines are allowed
     in the geometry definition list.
-    
+
     Layers must be defined in increasing order of heights, from
     bottom to top of the structure. If the 'CENTRE' line is not
     entered, cylinders are assumed to be centred on the Z-axis
@@ -70,7 +70,7 @@ class SEXTND(KeywordSequence):
     body KL,KC (the cylinder KC in layer KL) and its relative
     activity density, RELAC.
       DEFAULT: none.
-    
+
     NOTE: The labels KL,KC that identify each body are defined
     by the ordering in the input geometry list. These labels
     are written in the output geometry report.
@@ -155,12 +155,12 @@ class IFORCE(KeywordSequence):
     window is set equal to the intersection of the windows for
     these mechanisms.
       DEFAULT: no interaction forcing
-    
+
     If the mean free path for real interactions of type ICOL is
     MFP, the program will simulate interactions of this type
     (real or forced) with an effective mean free path equal to
     MFP/FORCER.
-    
+
     TRICK: a negative input value of FORCER, -FN, is assumed to
     mean that a particle with energy E=EPMAX should interact,
     on average, +FN times in the course of its slowing down to
@@ -184,7 +184,7 @@ class IBRSPL(KeywordSequence):
     (WLOW,WHIG) where interaction forcing is applied. The
     integer IBRSPL is the splitting factor.
       DEFAULT: no bremsstrahlung splitting
-    
+
     Note that bremsstrahlung splitting is applied in combination
     with interaction forcing and, consequently, it is activated
     only in those bodies where interaction forcing is active.
@@ -244,7 +244,7 @@ class IWOODC(TypeKeyword):
             return
 
         line = self._create_line(self.name, [], self.comment)
-        fileobj.write(line + os.linesep)
+        fileobj.write(line + '\n')
 
 class NBZ(TypeKeyword):
     """
@@ -293,7 +293,7 @@ class EMERGP(TypeKeyword):
     lower planes of the geometry definition (upbound and downbound
     particles, respectively), and the PDF of the radial distance of the
     intersections, R=SQRT(X*X+Y*Y).
-    
+
     Activates the generation of the distributions of trajectory
     crossings with the upper and lower planes. RADM is the
     radius of the scoring region, and NBRE is the number of
@@ -316,7 +316,7 @@ class EnergyDepositionDetectorGroup(KeywordGroupBase):
     which must have been defined as parts of the geometry. The output
     spectrum is the distribution of absorbed energy (per primary shower)
     in the active bodies.
-    
+
              *** WARNING: The energy-deposition spectrum may be strongly
              biased when interaction forcing is applied, even outside the
              detector bodies.

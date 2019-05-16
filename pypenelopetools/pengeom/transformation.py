@@ -55,13 +55,13 @@ class Rotation(GeometryBase):
 
     def _write(self, fileobj, index_lookup):
         line = self._create_expline('OMEGA=', self.omega_deg, ' DEG          (DEFAULT=0.0)')
-        fileobj.write(line + os.linesep)
+        fileobj.write(line + '\n')
 
         line = self._create_expline('THETA=', self.theta_deg, ' DEG          (DEFAULT=0.0)')
-        fileobj.write(line + os.linesep)
+        fileobj.write(line + '\n')
 
         line = self._create_expline('PHI=', self.phi_deg, ' DEG          (DEFAULT=0.0)')
-        fileobj.write(line + os.linesep)
+        fileobj.write(line + '\n')
 
     @property
     def omega_deg(self):
@@ -107,7 +107,7 @@ class Rotation(GeometryBase):
 class Shift(GeometryBase):
     """
     Represents a translation in space.
-    
+
     Args:
         x_cm (float): Translation along the x direction (cm).
         y_cm (float): Translation along the y direction (cm).
@@ -143,13 +143,13 @@ class Shift(GeometryBase):
 
     def _write(self, fileobj, index_lookup):
         line = self._create_expline('X-SHIFT=', self.x_cm, '              (DEFAULT=0.0)')
-        fileobj.write(line + os.linesep)
+        fileobj.write(line + '\n')
 
         line = self._create_expline('Y-SHIFT=', self.y_cm, '              (DEFAULT=0.0)')
-        fileobj.write(line + os.linesep)
+        fileobj.write(line + '\n')
 
         line = self._create_expline('Z-SHIFT=', self.z_cm, '              (DEFAULT=0.0)')
-        fileobj.write(line + os.linesep)
+        fileobj.write(line + '\n')
 
     @property
     def x_cm(self):
@@ -181,7 +181,7 @@ class Shift(GeometryBase):
 class Scale(GeometryBase):
     """
     Represents scaling.
-    
+
     Args:
         x (float): Scaling along the x direction.
         y (float): Scaling along the y direction.
@@ -216,13 +216,13 @@ class Scale(GeometryBase):
 
     def _write(self, fileobj, index_lookup):
         line = self._create_expline('X-SCALE=', self.x, '              (DEFAULT=1.0)')
-        fileobj.write(line + os.linesep)
+        fileobj.write(line + '\n')
 
         line = self._create_expline('Y-SCALE=', self.y, '              (DEFAULT=1.0)')
-        fileobj.write(line + os.linesep)
+        fileobj.write(line + '\n')
 
         line = self._create_expline('Z-SCALE=', self.z, '              (DEFAULT=1.0)')
-        fileobj.write(line + os.linesep)
+        fileobj.write(line + '\n')
 
     @property
     def x(self):

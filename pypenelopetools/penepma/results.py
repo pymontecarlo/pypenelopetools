@@ -7,51 +7,52 @@ import os
 
 # Third party modules.
 from uncertainties import ufloat, unumpy
-
+import numpy as np
 import pyxray
 
 # Local modules.
 from pypenelopetools.penelope.result import PenelopeResultBase
+from pypenelopetools.penelope.enums import KPAR
 
 # Globals and constants variables.
 
 class PenepmaResult(PenelopeResultBase):
     """
     Results from ``penepma-res.dat``.
-    
+
     .. note::
-       All results are expressed using the 
+       All results are expressed using the
        `uncertainties <https://pythonhosted.org/uncertainties>`_ package.
        The nominal value can be accessed with the property ``nominal_value`` or
-       the abbreviation ``n``, whereas the standard deviation (1-sigma), with 
+       the abbreviation ``n``, whereas the standard deviation (1-sigma), with
        the property ``std_dev`` or ``s``.
        For example::
-       
+
            result.simulation_time_s.n #-> 100.0
            result.simulation_time_s.s #-> 0.0
-    
+
     Attributes:
         simulation_time_s (ufloat):
             Simulation time in seconds.
         simulation_speed_1_per_s (ufloat):
             Simulation speed in simulation per second.
-        simulated_primary_showers (ufloat): 
+        simulated_primary_showers (ufloat):
             Number of primary showers simulated.
-            
+
         upbound_primary_particles (ufloat):
             Number of primary particles that exited the geometry upwards.
         downbound_primary_particles (ufloat):
             Number of primary particles that exited the geometry downwards.
         absorbed_primary_particles (ufloat):
             Number of primary particles that were absorbed within the geometry.
-            
+
         upbound_fraction (ufloat):
             Fraction of primary particles that exited the geometry upwards.
         downbound_fraction (ufloat):
             Fraction of primary particles that exited the geometry downwards.
         absorbed_fraction (ufloat):
             Fraction of primary particles that were absorbed within the geometry.
-            
+
         upbound_secondary_electron_generation_probabilities (ufloat):
             Probability of second generation electrons exited the geometry upwards.
         downbound_secondary_electron_generation_probabilities (ufloat):
@@ -77,7 +78,7 @@ class PenepmaResult(PenelopeResultBase):
             deposited energy in eV.
         average_photon_energy_eV (dict(int, ufloat)):
             Average photon energy in each detector.
-            Dictionary where keys are indexes of detector and values, the 
+            Dictionary where keys are indexes of detector and values, the
             average energy in eV.
 
         last_random_seed1 (ufloat):
@@ -221,20 +222,20 @@ class PenepmaResult(PenelopeResultBase):
 class PenepmaPhotonDetectorResultBase(PenelopeResultBase):
     """
     Base result associated with a photon detector.
-    
+
     Args:
         detector_index (int): Index of the detector to read the results from.
-        
+
     Attributes:
         detector_index (int):
             Index of detector
-        theta1_deg (ufloat): 
+        theta1_deg (ufloat):
             Lower limit polar angle in deg.
-        theta2_deg (ufloat): 
+        theta2_deg (ufloat):
             Upper limit polar angle in deg.
-        phi1_deg (ufloat): 
+        phi1_deg (ufloat):
             Lower limit azimuthal angle in deg.
-        phi2_deg (ufloat): 
+        phi2_deg (ufloat):
             Upper limit azimuthal angle in deg.
     """
 
@@ -299,41 +300,41 @@ class PenepmaEmittedIntensityResult(PenepmaIntensityResultMixin,
     Results from ``pe-intens-XX.dat``, where ``XX`` is the index of the detector.
     The intensities are given for each characteristic x-ray detected by
     the detector.
-     
+
     .. note::
        The characteristic x-rays are expressed using :class:`XrayLine` object
        of the `pyxray <https://github.com/openmicroanalysis/pyxray>`_ package.
-       :class:`XrayLine` objects define the atomic number and x-ray transition 
+       :class:`XrayLine` objects define the atomic number and x-ray transition
        of characteristic x-rays.
-       
-       The intensities are expressed using the 
+
+       The intensities are expressed using the
        `uncertainties <https://pythonhosted.org/uncertainties>`_ package.
        The nominal value can be accessed with the property ``nominal_value`` or
-       the abbreviation ``n``, whereas the standard deviation (1-sigma), with 
+       the abbreviation ``n``, whereas the standard deviation (1-sigma), with
        the property ``std_dev`` or ``s``.
-       
+
        For example::
-       
+
            import pyxray
            x = pyxray.XrayLine(29, 'Ka1')
            result.total_intensities_1_per_sr_electron[x].n #-> 8.56e-10
            result.total_intensities_1_per_sr_electron[x].s #-> 0.15e-10
-    
+
     Args:
         detector_index (int): Index of the detector to read the results from.
-        
+
     Attributes:
         detector_index (int):
             Index of detector
-        theta1_deg (ufloat): 
+        theta1_deg (ufloat):
             Lower limit polar angle in deg.
-        theta2_deg (ufloat): 
+        theta2_deg (ufloat):
             Upper limit polar angle in deg.
-        phi1_deg (ufloat): 
+        phi1_deg (ufloat):
             Lower limit azimuthal angle in deg.
-        phi2_deg (ufloat): 
+        phi2_deg (ufloat):
             Upper limit azimuthal angle in deg.
-            
+
         primary_intensities_1_per_sr_electron (dict(XrayLine, ufloat)):
             Intensities of characteristic x-rays generated by primary electrons
             and measured by the detector.
@@ -346,13 +347,13 @@ class PenepmaEmittedIntensityResult(PenepmaIntensityResultMixin,
         total_fluorescence_intensities_1_per_sr_electron (dict(XrayLine, ufloat)):
             Intensities of characteristic x-rays generated by fluorescence
             (characteristic and Bremsstrahlung) and measured by the detector.
-            Intensities are equal to the sum of 
+            Intensities are equal to the sum of
             *characteristic_fluorescence_intensities_1_per_sr_electron* and
             *bremsstrahlung_fluorescence_intensities_1_per_sr_electron*.
         total_intensities_1_per_sr_electron (dict(XrayLine, ufloat)):
-            Intensities of characteristic x-rays generated and measured by the 
+            Intensities of characteristic x-rays generated and measured by the
             detector.
-            Intensities are equal to the sum of 
+            Intensities are equal to the sum of
             *primary_intensities_1_per_sr_electron* and
             *total_fluorescence_intensities_1_per_sr_electron*.
     """
@@ -384,35 +385,35 @@ class PenepmaSpectrumResult(PenepmaPhotonDetectorResultBase):
     The spectrum is stored as a `numpy <http://numpy.org>`_ array where the
     first column contains the energies in eV and the second the intensities
     in 1/(sr.electron).
-    
+
     .. note::
-       The energies and intensities are expressed using the 
+       The energies and intensities are expressed using the
        `uncertainties <https://pythonhosted.org/uncertainties>`_ package.
        The nominal value can be accessed with the property ``nominal_value`` or
-       the abbreviation ``n``, whereas the standard deviation (1-sigma), with 
+       the abbreviation ``n``, whereas the standard deviation (1-sigma), with
        the property ``std_dev`` or ``s``.
-       
+
        For example::
-           
+
            from uncertainty import unumpy
            energies_eV = unumpy.nominal_values(result.spectrum[:,0])
            intensities = unumpy.nominal_values(result.spectrum[:,1])
-    
+
     Args:
         detector_index (int): Index of the detector to read the results from.
-        
+
     Attributes:
         detector_index (int):
             Index of detector
-        theta1_deg (ufloat): 
+        theta1_deg (ufloat):
             Lower limit polar angle in deg.
-        theta2_deg (ufloat): 
+        theta2_deg (ufloat):
             Upper limit polar angle in deg.
-        phi1_deg (ufloat): 
+        phi1_deg (ufloat):
             Lower limit azimuthal angle in deg.
-        phi2_deg (ufloat): 
+        phi2_deg (ufloat):
             Upper limit azimuthal angle in deg.
-            
+
         energy_window_start_eV (ufloat):
             Energy of first window in eV.
         energy_window_end_eV (ufloat):
@@ -421,8 +422,8 @@ class PenepmaSpectrumResult(PenepmaPhotonDetectorResultBase):
             Width of one channel in eV.
 
         spectrum (unumpy.uarray):
-            Array where the first column contains the energies in eV and 
-            the second the intensities measured by the detector in 
+            Array where the first column contains the energies in eV and
+            the second the intensities measured by the detector in
             1/(sr.electron).
     """
 
@@ -491,3 +492,86 @@ class PenepmaGeneratedIntensityResult(PenepmaIntensityResultMixin,
         filepath = os.path.join(dirpath, 'pe-gen-ph.dat')
         with open(filepath, 'r') as fp:
             self.read(fp)
+
+class PenepmaAngularResult(PenelopeResultBase):
+
+    def __init__(self, kpar=KPAR.ELECTRON):
+        super().__init__()
+        self.kpar = kpar
+        self.distribution = unumpy.uarray([], [])
+
+    def read(self, fileobj):
+        distribution = []
+        distribution_unc = []
+        self._read_until_end_of_comments(fileobj)
+        next(fileobj) # Skip empty line
+        for line in fileobj:
+            angle_deg, val, unc = self._read_all_values(line)
+            distribution.append([np.radians(angle_deg), val])
+            distribution_unc.append([0.0, unc])
+
+        self.distribution = unumpy.uarray(distribution, distribution_unc)
+
+    def read_directory(self, dirpath):
+        if self.kpar == KPAR.ELECTRON:
+            filename = 'pe-anel.dat'
+        elif self.kpar == KPAR.PHOTON:
+            filename = 'pe-anga.dat'
+        else:
+            raise ValueError(f'No distribution for particle {self.kpar}')
+
+        filepath = os.path.join(dirpath, filename)
+        with open(filepath, 'r') as fp:
+            self.read(fp)
+
+    @property
+    def angles_rad(self):
+        """numpy array: Nominal values of the angle axis in radians."""
+        return unumpy.nominal_values(self.distribution[:, 0])
+
+    @property
+    def probability_density_1_per_sr(self):
+        """numpy array: Nominal values of the probability density axis in 1/sr."""
+        return unumpy.nominal_values(self.distribution[:, 1])
+
+class PenepmaEnergyResult(PenelopeResultBase):
+
+    def __init__(self, kpar=KPAR.ELECTRON, direction='up'):
+        super().__init__()
+        self.kpar = kpar
+        self.direction = direction
+        self.distribution = unumpy.uarray([], [])
+
+    def read(self, fileobj):
+        distribution = []
+        distribution_unc = []
+        self._read_until_end_of_comments(fileobj)
+        next(fileobj) # Skip empty line
+        for line in fileobj:
+            energy_eV, val, unc = self._read_all_values(line)
+            distribution.append([energy_eV, val])
+            distribution_unc.append([0.0, unc])
+
+        self.distribution = unumpy.uarray(distribution, distribution_unc)
+
+    def read_directory(self, dirpath):
+        if self.kpar == KPAR.ELECTRON:
+            kpar_suffix = 'el'
+        elif self.kpar == KPAR.PHOTON:
+            kpar_suffix = 'ph'
+        else:
+            raise ValueError(f'No distribution for particle {self.kpar}')
+
+        filepath = os.path.join(dirpath, f'pe-energy-{kpar_suffix}-{self.direction}.dat')
+        with open(filepath, 'r') as fp:
+            self.read(fp)
+
+    @property
+    def energies_eV(self):
+        """numpy array: Nominal values of the energy axis in eV."""
+        return unumpy.nominal_values(self.distribution[:, 0])
+
+    @property
+    def probability_density_1_per_eV_particle(self):
+        """numpy array: Nominal values of the probability density axis in (1/(eV*particle))."""
+        return unumpy.nominal_values(self.distribution[:, 1])

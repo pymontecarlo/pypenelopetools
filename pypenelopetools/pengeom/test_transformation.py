@@ -15,12 +15,15 @@ from pypenelopetools.pengeom.base import LINE_SEPARATOR
 
 # Globals and constants variables.
 
+
 class TestRotation(unittest.TestCase):
 
-    LINES = ['  OMEGA=(+1.000000000000000E+00,   0) DEG          (DEFAULT=0.0)',
-             '  THETA=(+2.000000000000000E+00,   0) DEG          (DEFAULT=0.0)',
-             '    PHI=(+3.000000000000000E+00,   0) DEG          (DEFAULT=0.0)',
-             '0000000000000000000000000000000000000000000000000000000000000000']
+    LINES = [
+        "  OMEGA=(+1.000000000000000E+00,   0) DEG          (DEFAULT=0.0)",
+        "  THETA=(+2.000000000000000E+00,   0) DEG          (DEFAULT=0.0)",
+        "    PHI=(+3.000000000000000E+00,   0) DEG          (DEFAULT=0.0)",
+        "0000000000000000000000000000000000000000000000000000000000000000",
+    ]
 
     def setUp(self):
         super().setUp()
@@ -40,7 +43,7 @@ class TestRotation(unittest.TestCase):
 
         try:
             self.rotation._write(fileobj, {})
-            fileobj.write(LINE_SEPARATOR + '\n')
+            fileobj.write(LINE_SEPARATOR + "\n")
 
             lines = fileobj.getvalue().splitlines()
             self.assertListEqual(self.LINES, lines)
@@ -52,12 +55,15 @@ class TestRotation(unittest.TestCase):
         finally:
             fileobj.close()
 
+
 class TestShift(unittest.TestCase):
 
-    LINES = ['X-SHIFT=(+1.000000000000000E+00,   0)              (DEFAULT=0.0)',
-               'Y-SHIFT=(+2.000000000000000E+00,   0)              (DEFAULT=0.0)',
-               'Z-SHIFT=(+3.000000000000000E+00,   0)              (DEFAULT=0.0)',
-               '0000000000000000000000000000000000000000000000000000000000000000']
+    LINES = [
+        "X-SHIFT=(+1.000000000000000E+00,   0)              (DEFAULT=0.0)",
+        "Y-SHIFT=(+2.000000000000000E+00,   0)              (DEFAULT=0.0)",
+        "Z-SHIFT=(+3.000000000000000E+00,   0)              (DEFAULT=0.0)",
+        "0000000000000000000000000000000000000000000000000000000000000000",
+    ]
 
     def setUp(self):
         super().setUp()
@@ -77,7 +83,7 @@ class TestShift(unittest.TestCase):
 
         try:
             self.shift._write(fileobj, {})
-            fileobj.write(LINE_SEPARATOR + '\n')
+            fileobj.write(LINE_SEPARATOR + "\n")
 
             lines = fileobj.getvalue().splitlines()
             self.assertListEqual(self.LINES, lines)
@@ -89,12 +95,15 @@ class TestShift(unittest.TestCase):
         finally:
             fileobj.close()
 
+
 class TestScale(unittest.TestCase):
 
-    LINES = ['X-SCALE=(+1.000000000000000E+00,   0)              (DEFAULT=1.0)',
-               'Y-SCALE=(+2.000000000000000E+00,   0)              (DEFAULT=1.0)',
-               'Z-SCALE=(+3.000000000000000E+00,   0)              (DEFAULT=1.0)',
-               '0000000000000000000000000000000000000000000000000000000000000000']
+    LINES = [
+        "X-SCALE=(+1.000000000000000E+00,   0)              (DEFAULT=1.0)",
+        "Y-SCALE=(+2.000000000000000E+00,   0)              (DEFAULT=1.0)",
+        "Z-SCALE=(+3.000000000000000E+00,   0)              (DEFAULT=1.0)",
+        "0000000000000000000000000000000000000000000000000000000000000000",
+    ]
 
     def setUp(self):
         super().setUp()
@@ -114,7 +123,7 @@ class TestScale(unittest.TestCase):
 
         try:
             self.scale._write(fileobj, {})
-            fileobj.write(LINE_SEPARATOR + '\n')
+            fileobj.write(LINE_SEPARATOR + "\n")
 
             lines = fileobj.getvalue().splitlines()
             self.assertListEqual(self.LINES, lines)
@@ -126,6 +135,7 @@ class TestScale(unittest.TestCase):
         finally:
             fileobj.close()
 
-if __name__ == '__main__': #pragma: no cover
+
+if __name__ == "__main__":  # pragma: no cover
     logging.getLogger().setLevel(logging.DEBUG)
     unittest.main()

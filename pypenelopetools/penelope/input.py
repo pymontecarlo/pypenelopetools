@@ -12,6 +12,7 @@ from pypenelopetools.penelope.base import InputLineBase
 
 # Globals and constants variables.
 
+
 class PenelopeInputBase(InputLineBase):
     """
     Base input class.
@@ -20,7 +21,7 @@ class PenelopeInputBase(InputLineBase):
     def read(self, fileobj):
         """
         Reads an input file (i.e. ``.in``).
-        
+
         Args:
             fileobj (file object): File object opened with read access.
         """
@@ -30,7 +31,7 @@ class PenelopeInputBase(InputLineBase):
     def write(self, fileobj):
         """
         Writes to an input file (i.e. ``.in``).
-        
+
         Args:
             fileobj (file object): File object opened with write access.
         """

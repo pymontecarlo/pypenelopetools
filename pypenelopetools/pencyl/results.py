@@ -244,4 +244,3 @@ class PencylResult(PenelopeResultBase):
         filepath = os.path.join(dirpath, "pencyl-res.dat")
         with open(filepath, "r") as fp:
             self.read(fp)
-

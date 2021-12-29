@@ -13,10 +13,17 @@ from operator import methodcaller, attrgetter
 from pypenelopetools.pengeom.mixin import ModuleMixin
 from pypenelopetools.pengeom.module import Module
 from pypenelopetools.pengeom.surface import SurfaceImplicit, SurfaceReduced
-from pypenelopetools.pengeom.base import GeometryBase, LINE_SIZE, LINE_START, LINE_SEPARATOR, LINE_END
+from pypenelopetools.pengeom.base import (
+    GeometryBase,
+    LINE_SIZE,
+    LINE_START,
+    LINE_SEPARATOR,
+    LINE_END,
+)
 from pypenelopetools.material import VACUUM
 
 # Globals and constants variables.
+
 
 def _topological_sort(d, k):
     """
@@ -26,6 +33,7 @@ def _topological_sort(d, k):
     for ii in d.get(k, []):
         yield from _topological_sort(d, ii)
     yield k
+
 
 class Geometry(ModuleMixin, GeometryBase):
     """
@@ -49,12 +57,12 @@ class Geometry(ModuleMixin, GeometryBase):
     def _read(self, fileobj, material_lookup, surface_lookup, module_lookup):
         line = self._read_next_line(fileobj)
         if line != LINE_START:
-            raise IOError('Expected start line')
+            raise IOError("Expected start line")
 
         line = self._read_next_line(fileobj)
-        self.title = ''
+        self.title = ""
         while line != LINE_SEPARATOR:
-            line = line.lstrip('C').strip()
+            line = line.lstrip("C").strip()
             self.title += line
             line = self._read_next_line(fileobj)
 
@@ -65,13 +73,13 @@ class Geometry(ModuleMixin, GeometryBase):
             index = int(index)
 
             # Parse surface or module
-            if section_name == 'SURFACE':
+            if section_name == "SURFACE":
                 # Read 2 lines down the INDICES line
                 offset = fileobj.tell()
                 self._read_next_line(fileobj)
                 indices_line = self._read_next_line(fileobj)
                 _, indices, _ = self._parse_line(indices_line)
-                indices = map(int, indices.split(','))
+                indices = map(int, indices.split(","))
                 fileobj.seek(offset)
 
                 if sum(indices) == 0:
@@ -82,14 +90,14 @@ class Geometry(ModuleMixin, GeometryBase):
                 surface._read(fileobj, material_lookup, surface_lookup, module_lookup)
                 surface_lookup[index] = surface
 
-            elif section_name == 'MODULE':
+            elif section_name == "MODULE":
                 module = Module()
                 module._read(fileobj, material_lookup, surface_lookup, module_lookup)
                 self.add_module(module)
                 module_lookup[index] = module
 
             else:
-                raise IOError('Cannot read {} section'.format(section_name))
+                raise IOError("Cannot read {} section".format(section_name))
 
             # Next line
             line = self._peek_next_line(fileobj).rstrip()
@@ -114,20 +122,22 @@ class Geometry(ModuleMixin, GeometryBase):
         self._read(fileobj, material_lookup, surface_lookup, module_lookup)
 
     def _write(self, fileobj, index_lookup):
-        fileobj.write(LINE_START + '\n')
-        fileobj.write('       ' + self.title + '\n')
-        fileobj.write(LINE_SEPARATOR + '\n')
+        fileobj.write(LINE_START + "\n")
+        fileobj.write("       " + self.title + "\n")
+        fileobj.write(LINE_SEPARATOR + "\n")
 
         # Surfaces
-        surfaces = sorted((index_lookup[surface], surface)
-                          for surface in self.get_surfaces())
+        surfaces = sorted(
+            (index_lookup[surface], surface) for surface in self.get_surfaces()
+        )
 
         for _index, surface in surfaces:
             surface._write(fileobj, index_lookup)
 
         # Modules
-        modules = sorted((index_lookup[module], module)
-                          for module in self.get_modules())
+        modules = sorted(
+            (index_lookup[module], module) for module in self.get_modules()
+        )
 
         for _index, module in modules:
             module._write(fileobj, index_lookup)
@@ -140,7 +150,7 @@ class Geometry(ModuleMixin, GeometryBase):
             extra._write(fileobj, index_lookup)
 
         # End of line
-        fileobj.write(LINE_END + '\n')
+        fileobj.write(LINE_END + "\n")
 
     def write(self, fileobj, index_lookup=None):
         """
@@ -167,7 +177,7 @@ class Geometry(ModuleMixin, GeometryBase):
         """
         Returns all materials in this geometry.
         """
-        materials = set(map(attrgetter('material'), self.get_modules()))
+        materials = set(map(attrgetter("material"), self.get_modules()))
         materials.discard(VACUUM)
         return materials
 
@@ -175,7 +185,7 @@ class Geometry(ModuleMixin, GeometryBase):
         """
         Returns all surfaces in this geometry.
         """
-        return set(chain(*map(methodcaller('get_surfaces'), self.get_modules())))
+        return set(chain(*map(methodcaller("get_surfaces"), self.get_modules())))
 
     def indexify(self):
         """
@@ -196,7 +206,7 @@ class Geometry(ModuleMixin, GeometryBase):
             index_lookup[surface] = i
 
         # Modules
-        modules_dep = {} # module dependencies
+        modules_dep = {}  # module dependencies
         for module in self.get_modules():
             modules_dep.setdefault(module, [])
             for submodule in module.get_modules():
@@ -214,11 +224,11 @@ class Geometry(ModuleMixin, GeometryBase):
         return index_lookup
 
     def _create_extra_module(self):
-        extra = Module(VACUUM, description='Extra module for rotation and tilt')
+        extra = Module(VACUUM, description="Extra module for rotation and tilt")
 
         ## Find all unlinked modules
         all_modules = set(self.get_modules())
-        linked_modules = set(chain(*map(methodcaller('get_modules'), all_modules)))
+        linked_modules = set(chain(*map(methodcaller("get_modules"), all_modules)))
         unlinked_modules = all_modules - linked_modules
         for module in unlinked_modules:
             extra.add_module(module)
@@ -241,8 +251,11 @@ class Geometry(ModuleMixin, GeometryBase):
     @title.setter
     def title(self, title):
         if len(title) > LINE_SIZE - 3:
-            raise ValueError("The length of the title ({0:d}) must be less than {1:d}."
-                             .format(len(title), LINE_SIZE - 3))
+            raise ValueError(
+                "The length of the title ({0:d}) must be less than {1:d}.".format(
+                    len(title), LINE_SIZE - 3
+                )
+            )
         self._title = title
 
     @property

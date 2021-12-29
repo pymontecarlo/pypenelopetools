@@ -14,7 +14,8 @@ from pypenelopetools.penelope.base import InputLineBase
 
 # Globals and constants variables.
 
-#--- Abstract classes
+# --- Abstract classes
+
 
 class KeywordBase(InputLineBase):
     """
@@ -45,7 +46,9 @@ class KeywordBase(InputLineBase):
         """str: Name of keyword."""
         raise NotImplementedError
 
-#--- Core classes
+
+# --- Core classes
+
 
 class TypeKeyword(KeywordBase):
     """
@@ -74,9 +77,14 @@ class TypeKeyword(KeywordBase):
         Raises:
             TypeError: If one value does not match its defined type.
         """
-        if len(args) < len(self._types): # Less than to account for additional, not parsed values
-            raise ValueError("Keyword {0} requires {1} values, {2} given"
-                             .format(self.name, len(self._types), len(args)))
+        if len(args) < len(
+            self._types
+        ):  # Less than to account for additional, not parsed values
+            raise ValueError(
+                "Keyword {0} requires {1} values, {2} given".format(
+                    self.name, len(self._types), len(args)
+                )
+            )
 
         values = []
         for type_, value in zip(self._types, args):
@@ -87,8 +95,9 @@ class TypeKeyword(KeywordBase):
                 try:
                     value = type_(value)
                 except ValueError:
-                    raise TypeError("Value {0!r} must be of type {1}"
-                                    .format(value, type_))
+                    raise TypeError(
+                        "Value {0!r} must be of type {1}".format(value, type_)
+                    )
 
             values.append(value)
 
@@ -128,7 +137,7 @@ class TypeKeyword(KeywordBase):
 
         # Write to file
         line = self._create_line(self.name, values, self.comment)
-        fileobj.write(line + '\n')
+        fileobj.write(line + "\n")
 
     @property
     def name(self):
@@ -138,6 +147,7 @@ class TypeKeyword(KeywordBase):
     def comment(self):
         """str: Comment."""
         return self._comment
+
 
 class KeywordGroupBase(KeywordBase):
     """
@@ -190,6 +200,7 @@ class KeywordGroupBase(KeywordBase):
     def name(self):
         return self.get_keywords()[0].name
 
+
 class KeywordSequence(KeywordBase):
     """
     Sequence of keywords, keywords that can be defined multiple times.
@@ -209,7 +220,7 @@ class KeywordSequence(KeywordBase):
 
     def _add_keyword(self, keyword):
         if len(self._keywords) >= self._maxlength:
-            raise ValueError('Exceeded maximum number of keywords.')
+            raise ValueError("Exceeded maximum number of keywords.")
         self._keywords.append(keyword)
 
     def add(self, *args):
@@ -271,4 +282,3 @@ class KeywordSequence(KeywordBase):
     @property
     def name(self):
         return self._base_keyword.name
-

@@ -13,6 +13,7 @@ from pypenelopetools.pengeom.base import GeometryBase, LINE_SEPARATOR
 
 # Globals and constants variables.
 
+
 class Rotation(GeometryBase):
     """
     Represents a rotation using 3 Euler angles (YZY).
@@ -29,39 +30,45 @@ class Rotation(GeometryBase):
         self.phi_deg = phi_deg
 
     def __repr__(self):
-        return "<Rotation(omega={0:g} deg, theta={1:g} deg, phi={2:g} deg)>" \
-                .format(self.omega_deg, self.theta_deg, self.phi_deg)
+        return "<Rotation(omega={0:g} deg, theta={1:g} deg, phi={2:g} deg)>".format(
+            self.omega_deg, self.theta_deg, self.phi_deg
+        )
 
     def __str__(self):
-        return '(omega={0:g} deg, theta={1:g} deg, phi={2:g} deg)' \
-                .format(self.omega_deg, self.theta_deg, self.phi_deg)
+        return "(omega={0:g} deg, theta={1:g} deg, phi={2:g} deg)".format(
+            self.omega_deg, self.theta_deg, self.phi_deg
+        )
 
     def _read(self, fileobj, material_lookup, surface_lookup, module_lookup):
         line = self._peek_next_line(fileobj)
         while line != LINE_SEPARATOR:
             keyword, value, termination = self._parse_expline(line)
 
-            if termination.startswith('RAD'):
+            if termination.startswith("RAD"):
                 value = math.degrees(value)
 
-            if keyword == 'OMEGA=':
+            if keyword == "OMEGA=":
                 self.omega_deg = value
-            elif keyword == 'THETA=':
+            elif keyword == "THETA=":
                 self.theta_deg = value
-            elif keyword == 'PHI=':
+            elif keyword == "PHI=":
                 self.phi_deg = value
 
             line = self._read_next_line(fileobj)
 
     def _write(self, fileobj, index_lookup):
-        line = self._create_expline('OMEGA=', self.omega_deg, ' DEG          (DEFAULT=0.0)')
-        fileobj.write(line + '\n')
+        line = self._create_expline(
+            "OMEGA=", self.omega_deg, " DEG          (DEFAULT=0.0)"
+        )
+        fileobj.write(line + "\n")
 
-        line = self._create_expline('THETA=', self.theta_deg, ' DEG          (DEFAULT=0.0)')
-        fileobj.write(line + '\n')
+        line = self._create_expline(
+            "THETA=", self.theta_deg, " DEG          (DEFAULT=0.0)"
+        )
+        fileobj.write(line + "\n")
 
-        line = self._create_expline('PHI=', self.phi_deg, ' DEG          (DEFAULT=0.0)')
-        fileobj.write(line + '\n')
+        line = self._create_expline("PHI=", self.phi_deg, " DEG          (DEFAULT=0.0)")
+        fileobj.write(line + "\n")
 
     @property
     def omega_deg(self):
@@ -104,6 +111,7 @@ class Rotation(GeometryBase):
             raise ValueError("Angle ({0}) must be between [0,360].".format(angle))
         self._phi = angle
 
+
 class Shift(GeometryBase):
     """
     Represents a translation in space.
@@ -120,36 +128,44 @@ class Shift(GeometryBase):
         self.z_cm = z_cm
 
     def __repr__(self):
-        return "<Shift(x={0:g} cm, y={1:g} cm, z={2:g} cm)>" \
-            .format(self.x_cm, self.y_cm, self.z_cm)
+        return "<Shift(x={0:g} cm, y={1:g} cm, z={2:g} cm)>".format(
+            self.x_cm, self.y_cm, self.z_cm
+        )
 
     def __str__(self):
-        return "(x={0:g} cm, y={1:g} cm, z={2:g} cm)" \
-            .format(self.x_cm, self.y_cm, self.z_cm)
+        return "(x={0:g} cm, y={1:g} cm, z={2:g} cm)".format(
+            self.x_cm, self.y_cm, self.z_cm
+        )
 
     def _read(self, fileobj, material_lookup, surface_lookup, module_lookup):
         line = self._peek_next_line(fileobj)
         while line != LINE_SEPARATOR:
             keyword, value, _ = self._parse_expline(line)
 
-            if keyword == 'X-SHIFT=':
+            if keyword == "X-SHIFT=":
                 self.x_cm = value
-            elif keyword == 'Y-SHIFT=':
+            elif keyword == "Y-SHIFT=":
                 self.y_cm = value
-            elif keyword == 'Z-SHIFT=':
+            elif keyword == "Z-SHIFT=":
                 self.z_cm = value
 
             line = self._read_next_line(fileobj)
 
     def _write(self, fileobj, index_lookup):
-        line = self._create_expline('X-SHIFT=', self.x_cm, '              (DEFAULT=0.0)')
-        fileobj.write(line + '\n')
+        line = self._create_expline(
+            "X-SHIFT=", self.x_cm, "              (DEFAULT=0.0)"
+        )
+        fileobj.write(line + "\n")
 
-        line = self._create_expline('Y-SHIFT=', self.y_cm, '              (DEFAULT=0.0)')
-        fileobj.write(line + '\n')
+        line = self._create_expline(
+            "Y-SHIFT=", self.y_cm, "              (DEFAULT=0.0)"
+        )
+        fileobj.write(line + "\n")
 
-        line = self._create_expline('Z-SHIFT=', self.z_cm, '              (DEFAULT=0.0)')
-        fileobj.write(line + '\n')
+        line = self._create_expline(
+            "Z-SHIFT=", self.z_cm, "              (DEFAULT=0.0)"
+        )
+        fileobj.write(line + "\n")
 
     @property
     def x_cm(self):
@@ -178,6 +194,7 @@ class Shift(GeometryBase):
     def z_cm(self, shift):
         self._z = shift
 
+
 class Scale(GeometryBase):
     """
     Represents scaling.
@@ -194,8 +211,7 @@ class Scale(GeometryBase):
         self.z = z
 
     def __repr__(self):
-        return "<Shift(x={0:g}, y={1:g}, z={2:g})>" \
-            .format(self.x, self.y, self.z)
+        return "<Shift(x={0:g}, y={1:g}, z={2:g})>".format(self.x, self.y, self.z)
 
     def __str__(self):
         return "(x={0:g}, y={1:g}, z={2:g})".format(self.x, self.y, self.z)
@@ -205,24 +221,24 @@ class Scale(GeometryBase):
         while line != LINE_SEPARATOR:
             keyword, value, _ = self._parse_expline(line)
 
-            if keyword == 'X-SCALE=':
+            if keyword == "X-SCALE=":
                 self.x = value
-            elif keyword == 'Y-SCALE=':
+            elif keyword == "Y-SCALE=":
                 self.y = value
-            elif keyword == 'Z-SCALE=':
+            elif keyword == "Z-SCALE=":
                 self.z = value
 
             line = self._read_next_line(fileobj)
 
     def _write(self, fileobj, index_lookup):
-        line = self._create_expline('X-SCALE=', self.x, '              (DEFAULT=1.0)')
-        fileobj.write(line + '\n')
+        line = self._create_expline("X-SCALE=", self.x, "              (DEFAULT=1.0)")
+        fileobj.write(line + "\n")
 
-        line = self._create_expline('Y-SCALE=', self.y, '              (DEFAULT=1.0)')
-        fileobj.write(line + '\n')
+        line = self._create_expline("Y-SCALE=", self.y, "              (DEFAULT=1.0)")
+        fileobj.write(line + "\n")
 
-        line = self._create_expline('Z-SCALE=', self.z, '              (DEFAULT=1.0)')
-        fileobj.write(line + '\n')
+        line = self._create_expline("Z-SCALE=", self.z, "              (DEFAULT=1.0)")
+        fileobj.write(line + "\n")
 
     @property
     def x(self):

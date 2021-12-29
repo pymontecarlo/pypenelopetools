@@ -16,14 +16,15 @@ from pypenelopetools.material import Material
 
 # Globals and constants variables.
 
+
 def create_example1_disc():
     # Create materials
-    material_cu = Material('Cu', {29: 1.0}, 8.9)
+    material_cu = Material("Cu", {29: 1.0}, 8.9)
 
     # Create input
     input = PencylInput()
 
-    input.TITLE.set('Point source and a homogeneous cylinder.')
+    input.TITLE.set("Point source and a homogeneous cylinder.")
 
     definition = input.geometry_definitions.add(0.0, 0.005)
     definition.CYLIND.add(1, 0, 0.01)
@@ -37,8 +38,12 @@ def create_example1_disc():
 
     input.DSMAX.add(1, 1, 1e-4)
 
-    input.IFORCE.add(1, 1, KPAR.ELECTRON, ICOL.HARD_BREMSSTRAHLUNG_EMISSION, 2000, 0.1, 2.0)
-    input.IFORCE.add(1, 1, KPAR.ELECTRON, ICOL.INNER_SHELL_IMPACT_IONISATION, 200, 0.1, 2.0)
+    input.IFORCE.add(
+        1, 1, KPAR.ELECTRON, ICOL.HARD_BREMSSTRAHLUNG_EMISSION, 2000, 0.1, 2.0
+    )
+    input.IFORCE.add(
+        1, 1, KPAR.ELECTRON, ICOL.INNER_SHELL_IMPACT_IONISATION, 200, 0.1, 2.0
+    )
 
     input.IBRSPL.add(1, 1, 2)
 
@@ -54,8 +59,8 @@ def create_example1_disc():
 
     input.DOSE2D.add(1, 1, 100, 50)
 
-    input.RESUME.set('dump.dat')
-    input.DUMPTO.set('dump.dat')
+    input.RESUME.set("dump.dat")
+    input.DUMPTO.set("dump.dat")
     input.DUMPP.set(60)
 
     input.RSEED.set(1, 1)
@@ -64,17 +69,18 @@ def create_example1_disc():
 
     return input
 
+
 def create_example3_detector():
     # Create materials
-    material_nai = Material('NaI', {11: 0.1534, 53: 0.8466}, 3.667)
-    material_al2o3 = Material('Al2O3', {8: 0.4707, 13: 0.5293}, 3.97)
-    material_al = Material('Al', {13: 1.0}, 2.7)
+    material_nai = Material("NaI", {11: 0.1534, 53: 0.8466}, 3.667)
+    material_al2o3 = Material("Al2O3", {8: 0.4707, 13: 0.5293}, 3.97)
+    material_al = Material("Al", {13: 1.0}, 2.7)
     materials = (material_nai, material_al2o3, material_al)
 
     # Create input
     input = PencylInput()
 
-    input.TITLE.set('NaI detector with Al cover and Al2O3 reflecting foil')
+    input.TITLE.set("NaI detector with Al cover and Al2O3 reflecting foil")
 
     layer1 = input.geometry_definitions.add(-0.24, -0.16, 0.0, 0.0)
     layer1.CYLIND.add(3, 0.00, 4.05)
@@ -96,17 +102,23 @@ def create_example3_detector():
     input.SPOSIT.set(0, 0, -10.0)
     input.SCONE.set(0, 0, 0)
 
-    input.materials.add(1, material_nai.filename, 5.0e4, 5.0e3, 5.0e4, 0.1, 0.1, 2e3, 2e3)
-    input.materials.add(2, material_al2o3.filename, 5.0e4, 5.0e3, 5.0e4, 0.1, 0.1, 2e3, 2e3)
-    input.materials.add(3, material_al.filename, 5.0e4, 5.0e3, 5.0e4, 0.1, 0.1, 2e3, 2e3)
+    input.materials.add(
+        1, material_nai.filename, 5.0e4, 5.0e3, 5.0e4, 0.1, 0.1, 2e3, 2e3
+    )
+    input.materials.add(
+        2, material_al2o3.filename, 5.0e4, 5.0e3, 5.0e4, 0.1, 0.1, 2e3, 2e3
+    )
+    input.materials.add(
+        3, material_al.filename, 5.0e4, 5.0e3, 5.0e4, 0.1, 0.1, 2e3, 2e3
+    )
 
     detector = input.energy_deposition_detectors.add(0, 1e7, 1000)
     detector.EDBODY.add(3, 1)
 
     input.DOSE2D.add(3, 1, 50, 50)
 
-    input.RESUME.set('dump.dat')
-    input.DUMPTO.set('dump.dat')
+    input.RESUME.set("dump.dat")
+    input.DUMPTO.set("dump.dat")
     input.DUMPP.set(60)
 
     input.NSIMSH.set(1e8)
@@ -114,13 +126,14 @@ def create_example3_detector():
 
     return input, materials
 
-class TestPencylInput(unittest.TestCase):
 
+class TestPencylInput(unittest.TestCase):
     def setUp(self):
         super().setUp()
 
-        self.testdatadir = os.path.join(os.path.dirname(__file__),
-                                        '..', 'testdata', 'pencyl')
+        self.testdatadir = os.path.join(
+            os.path.dirname(__file__), "..", "testdata", "pencyl"
+        )
 
     def _write_read_input(self, input):
         fileobj = io.StringIO()
@@ -137,7 +150,7 @@ class TestPencylInput(unittest.TestCase):
         return outinput
 
     def _test_example1_disc(self, input):
-        geometry_definitions, = input.geometry_definitions.get()
+        (geometry_definitions,) = input.geometry_definitions.get()
         self.assertEqual(1, len(geometry_definitions))
 
         zlow, zhigh, xcen, ycen, cylinders = geometry_definitions[0]
@@ -152,10 +165,10 @@ class TestPencylInput(unittest.TestCase):
         self.assertAlmostEqual(0.0, rin, 5)
         self.assertAlmostEqual(0.01, rout, 5)
 
-        kparp, = input.SKPAR.get()
+        (kparp,) = input.SKPAR.get()
         self.assertEqual(1, kparp)
 
-        se0, = input.SENERG.get()
+        (se0,) = input.SENERG.get()
         self.assertAlmostEqual(40e3, se0, 5)
 
         sx0, sy0, sz0 = input.SPOSIT.get()
@@ -168,11 +181,11 @@ class TestPencylInput(unittest.TestCase):
         self.assertAlmostEqual(0.0, phi, 5)
         self.assertAlmostEqual(5.0, alpha, 5)
 
-        materials, = input.materials.get()
+        (materials,) = input.materials.get()
         self.assertEqual(1, len(materials))
 
         filename, eabs1, eabs2, eabs3, c1, c2, wcc, wcr = materials[0]
-        self.assertEqual('Cu.mat', filename)
+        self.assertEqual("Cu.mat", filename)
         self.assertAlmostEqual(1e3, eabs1, 5)
         self.assertAlmostEqual(1e3, eabs2, 5)
         self.assertAlmostEqual(1e3, eabs3, 5)
@@ -181,7 +194,7 @@ class TestPencylInput(unittest.TestCase):
         self.assertAlmostEqual(1e3, wcc, 5)
         self.assertAlmostEqual(1e3, wcr, 5)
 
-        dsmaxs, = input.DSMAX.get()
+        (dsmaxs,) = input.DSMAX.get()
         self.assertEqual(1, len(dsmaxs))
 
         kl, kc, dsmax = dsmaxs[0]
@@ -189,7 +202,7 @@ class TestPencylInput(unittest.TestCase):
         self.assertEqual(1, kc)
         self.assertAlmostEqual(1e-4, dsmax, 5)
 
-        iforces, = input.IFORCE.get()
+        (iforces,) = input.IFORCE.get()
         self.assertEqual(2, len(iforces))
 
         kl, kc, kpar, icol, forcer, wlow, whig = iforces[0]
@@ -210,7 +223,7 @@ class TestPencylInput(unittest.TestCase):
         self.assertAlmostEqual(0.1, wlow, 5)
         self.assertAlmostEqual(2.0, whig, 5)
 
-        ibrspls, = input.IBRSPL.get()
+        (ibrspls,) = input.IBRSPL.get()
         self.assertEqual(1, len(ibrspls))
 
         kl, kc, factor = ibrspls[0]
@@ -218,7 +231,7 @@ class TestPencylInput(unittest.TestCase):
         self.assertEqual(1, kc)
         self.assertAlmostEqual(2.0, factor, 5)
 
-        ixrspls, = input.IXRSPL.get()
+        (ixrspls,) = input.IXRSPL.get()
         self.assertEqual(1, len(ixrspls))
 
         kl, kc, factor = ibrspls[0]
@@ -239,7 +252,7 @@ class TestPencylInput(unittest.TestCase):
         self.assertAlmostEqual(0.005, radm, 5)
         self.assertEqual(100, nbre)
 
-        energy_deposition_detectors, = input.energy_deposition_detectors.get()
+        (energy_deposition_detectors,) = input.energy_deposition_detectors.get()
         self.assertEqual(1, len(energy_deposition_detectors))
 
         el, eu, nbe, spectrum_filename, cylinders = energy_deposition_detectors[0]
@@ -253,7 +266,7 @@ class TestPencylInput(unittest.TestCase):
         self.assertEqual(1, kl)
         self.assertEqual(1, kc)
 
-        dose2d, = input.DOSE2D.get()
+        (dose2d,) = input.DOSE2D.get()
         self.assertEqual(1, len(dose2d))
 
         kl, kc, nz, nr = dose2d[0]
@@ -262,23 +275,23 @@ class TestPencylInput(unittest.TestCase):
         self.assertEqual(nz, 100)
         self.assertEqual(nr, 50)
 
-        filename, = input.RESUME.get()
-        self.assertEqual('dump.dat', filename)
+        (filename,) = input.RESUME.get()
+        self.assertEqual("dump.dat", filename)
 
-        filename, = input.DUMPTO.get()
-        self.assertEqual('dump.dat', filename)
+        (filename,) = input.DUMPTO.get()
+        self.assertEqual("dump.dat", filename)
 
-        dumpp, = input.DUMPP.get()
+        (dumpp,) = input.DUMPP.get()
         self.assertAlmostEqual(60.0, dumpp, 5)
 
         seed1, seed2 = input.RSEED.get()
         self.assertEqual(1, seed1)
         self.assertEqual(1, seed2)
 
-        dshn, = input.NSIMSH.get()
+        (dshn,) = input.NSIMSH.get()
         self.assertAlmostEqual(1e9, dshn, 5)
 
-        timea, = input.TIME.get()
+        (timea,) = input.TIME.get()
         self.assertAlmostEqual(600.0, timea, 5)
 
     def test_example1_disc_write(self):
@@ -287,14 +300,14 @@ class TestPencylInput(unittest.TestCase):
         self._test_example1_disc(input)
 
     def test_example1_disc_read(self):
-        filepath = os.path.join(self.testdatadir, '1-disc', 'disc.in')
+        filepath = os.path.join(self.testdatadir, "1-disc", "disc.in")
         input = PencylInput()
-        with open(filepath, 'r') as fp:
+        with open(filepath, "r") as fp:
             input.read(fp)
         self._test_example1_disc(input)
 
     def _test_example3_detector(self, input):
-        geometry_definitions, = input.geometry_definitions.get()
+        (geometry_definitions,) = input.geometry_definitions.get()
         self.assertEqual(4, len(geometry_definitions))
 
         zlow, zhigh, xcen, ycen, cylinders = geometry_definitions[0]
@@ -360,10 +373,10 @@ class TestPencylInput(unittest.TestCase):
         self.assertAlmostEqual(0.0, rin, 5)
         self.assertAlmostEqual(4.05, rout, 5)
 
-        kparp, = input.SKPAR.get()
+        (kparp,) = input.SKPAR.get()
         self.assertEqual(2, kparp)
 
-        se0, = input.SENERG.get()
+        (se0,) = input.SENERG.get()
         self.assertAlmostEqual(9.5e6, se0, 5)
 
         sx0, sy0, sz0 = input.SPOSIT.get()
@@ -375,12 +388,12 @@ class TestPencylInput(unittest.TestCase):
         self.assertAlmostEqual(0.0, theta, 5)
         self.assertAlmostEqual(0.0, phi, 5)
         self.assertAlmostEqual(0.0, alpha, 5)
-#
-        materials, = input.materials.get()
+        #
+        (materials,) = input.materials.get()
         self.assertEqual(3, len(materials))
 
         filename, eabs1, eabs2, eabs3, c1, c2, wcc, wcr = materials[0]
-        self.assertEqual('NaI.mat', filename)
+        self.assertEqual("NaI.mat", filename)
         self.assertAlmostEqual(5e4, eabs1, 5)
         self.assertAlmostEqual(5e3, eabs2, 5)
         self.assertAlmostEqual(5e4, eabs3, 5)
@@ -390,7 +403,7 @@ class TestPencylInput(unittest.TestCase):
         self.assertAlmostEqual(2e3, wcr, 5)
 
         filename, eabs1, eabs2, eabs3, c1, c2, wcc, wcr = materials[1]
-        self.assertEqual('Al2O3.mat', filename)
+        self.assertEqual("Al2O3.mat", filename)
         self.assertAlmostEqual(5e4, eabs1, 5)
         self.assertAlmostEqual(5e3, eabs2, 5)
         self.assertAlmostEqual(5e4, eabs3, 5)
@@ -400,7 +413,7 @@ class TestPencylInput(unittest.TestCase):
         self.assertAlmostEqual(2e3, wcr, 5)
 
         filename, eabs1, eabs2, eabs3, c1, c2, wcc, wcr = materials[2]
-        self.assertEqual('Al.mat', filename)
+        self.assertEqual("Al.mat", filename)
         self.assertAlmostEqual(5e4, eabs1, 5)
         self.assertAlmostEqual(5e3, eabs2, 5)
         self.assertAlmostEqual(5e4, eabs3, 5)
@@ -408,8 +421,8 @@ class TestPencylInput(unittest.TestCase):
         self.assertAlmostEqual(0.1, c2, 5)
         self.assertAlmostEqual(2e3, wcc, 5)
         self.assertAlmostEqual(2e3, wcr, 5)
-#
-        energy_deposition_detectors, = input.energy_deposition_detectors.get()
+        #
+        (energy_deposition_detectors,) = input.energy_deposition_detectors.get()
         self.assertEqual(1, len(energy_deposition_detectors))
 
         el, eu, nbe, spectrum_filename, cylinders = energy_deposition_detectors[0]
@@ -423,7 +436,7 @@ class TestPencylInput(unittest.TestCase):
         self.assertEqual(3, kl)
         self.assertEqual(1, kc)
 
-        dose2d, = input.DOSE2D.get()
+        (dose2d,) = input.DOSE2D.get()
         self.assertEqual(1, len(dose2d))
 
         kl, kc, nz, nr = dose2d[0]
@@ -432,19 +445,19 @@ class TestPencylInput(unittest.TestCase):
         self.assertEqual(nz, 50)
         self.assertEqual(nr, 50)
 
-        filename, = input.RESUME.get()
-        self.assertEqual('dump.dat', filename)
+        (filename,) = input.RESUME.get()
+        self.assertEqual("dump.dat", filename)
 
-        filename, = input.DUMPTO.get()
-        self.assertEqual('dump.dat', filename)
+        (filename,) = input.DUMPTO.get()
+        self.assertEqual("dump.dat", filename)
 
-        dumpp, = input.DUMPP.get()
+        (dumpp,) = input.DUMPP.get()
         self.assertAlmostEqual(60.0, dumpp, 5)
 
-        dshn, = input.NSIMSH.get()
+        (dshn,) = input.NSIMSH.get()
         self.assertAlmostEqual(1e8, dshn, 5)
 
-        timea, = input.TIME.get()
+        (timea,) = input.TIME.get()
         self.assertAlmostEqual(2e9, timea, 5)
 
     def test_example3_detector_write(self):
@@ -453,13 +466,14 @@ class TestPencylInput(unittest.TestCase):
         self._test_example3_detector(input)
 
     def test_example3_detector_read(self):
-        filepath = os.path.join(self.testdatadir, '3-detector', 'cyld.in')
+        filepath = os.path.join(self.testdatadir, "3-detector", "cyld.in")
         input = PencylInput()
-        with open(filepath, 'r') as fp:
+        with open(filepath, "r") as fp:
             input.read(fp)
         self._test_example3_detector(input)
 
-if __name__ == '__main__': #pragma: no cover
+
+if __name__ == "__main__":  # pragma: no cover
     logging.basicConfig()
     logging.getLogger().setLevel(logging.DEBUG)
     unittest.main()

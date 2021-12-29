@@ -13,17 +13,17 @@ from pypenelopetools.material import Material
 
 # Globals and constants variables.
 
-class TestMaterial(unittest.TestCase):
 
+class TestMaterial(unittest.TestCase):
     def setUp(self):
         super().setUp()
 
-        self.mat = Material('mat1', {29: 0.4, 30: 0.6}, 8.9, 326.787, 2.686, 13.496)
+        self.mat = Material("mat1", {29: 0.4, 30: 0.6}, 8.9, 326.787, 2.686, 13.496)
 
-        self.testdatadir = os.path.join(os.path.dirname(__file__), 'testdata')
+        self.testdatadir = os.path.join(os.path.dirname(__file__), "testdata")
 
     def _test_material(self, mat):
-        self.assertEqual('mat1', mat.name)
+        self.assertEqual("mat1", mat.name)
         self.assertAlmostEqual(0.4, mat.composition[29], 4)
         self.assertAlmostEqual(0.6, mat.composition[30], 4)
         self.assertAlmostEqual(8.9, mat.density_g_per_cm3, 4)
@@ -48,13 +48,14 @@ class TestMaterial(unittest.TestCase):
             fileobj.close()
 
     def testread_material(self):
-        filepath = os.path.join(self.testdatadir, 'material', 'mat1.mat')
-        with open(filepath, 'r') as fp:
+        filepath = os.path.join(self.testdatadir, "material", "mat1.mat")
+        with open(filepath, "r") as fp:
             mat = Material.read_material(fp)
 
         self._test_material(mat)
 
-if __name__ == '__main__': #pragma: no cover
+
+if __name__ == "__main__":  # pragma: no cover
     logging.basicConfig()
     logging.getLogger().setLevel(logging.DEBUG)
     unittest.main()

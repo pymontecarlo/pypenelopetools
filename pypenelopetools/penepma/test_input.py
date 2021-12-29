@@ -21,19 +21,20 @@ from pypenelopetools.penepma.utils import convert_xrayline_to_izs1s200
 
 # Globals and constants variables.
 
-MATERIAL_CU = Material('Cu', {29: 1.0}, 8.9)
-MATERIAL_FE = Material('Fe', {26: 1.0}, 7.874)
-XRAYLINE_CU_KA2 = pyxray.xray_line(29, 'Ka2')
-XRAYLINE_FE_KA2 = pyxray.xray_line(26, 'Ka2')
+MATERIAL_CU = Material("Cu", {29: 1.0}, 8.9)
+MATERIAL_FE = Material("Fe", {26: 1.0}, 7.874)
+XRAYLINE_CU_KA2 = pyxray.xray_line(29, "Ka2")
+XRAYLINE_FE_KA2 = pyxray.xray_line(26, "Ka2")
+
 
 def create_epma1():
     # Create geometry
-    module = Module(MATERIAL_CU, 'Sample')
+    module = Module(MATERIAL_CU, "Sample")
     module.add_surface(zplane(0.0), SidePointer.NEGATIVE)
     module.add_surface(zplane(-0.1), SidePointer.POSITIVE)
     module.add_surface(cylinder(1.0), SidePointer.NEGATIVE)
 
-    geometry = Geometry('Cylindrical homogeneous foil')
+    geometry = Geometry("Cylindrical homogeneous foil")
     geometry.add_module(module)
 
     index_lookup = geometry.indexify()
@@ -41,21 +42,49 @@ def create_epma1():
     # Create input
     input = PenepmaInput()
 
-    input.TITLE.set('A Cu slab')
+    input.TITLE.set("A Cu slab")
     input.SENERG.set(15e3)
     input.SPOSIT.set(0.0, 0.0, 1.0)
     input.SDIREC.set(180, 0.0)
     input.SAPERT.set(0.0)
 
-    input.materials.add(index_lookup[MATERIAL_CU], MATERIAL_CU.filename, 1e3, 1e3, 1e3, 0.2, 0.2, 1e3, 1e3)
+    input.materials.add(
+        index_lookup[MATERIAL_CU],
+        MATERIAL_CU.filename,
+        1e3,
+        1e3,
+        1e3,
+        0.2,
+        0.2,
+        1e3,
+        1e3,
+    )
 
-    input.GEOMFN.set('epma1.geo')
+    input.GEOMFN.set("epma1.geo")
     input.DSMAX.add(index_lookup[module], 1e-4)
 
-    input.IFORCE.add(index_lookup[module], KPAR.ELECTRON, ICOL.HARD_BREMSSTRAHLUNG_EMISSION, -5, 0.9, 1.0)
-    input.IFORCE.add(index_lookup[module], KPAR.ELECTRON, ICOL.INNER_SHELL_IMPACT_IONISATION, -250, 0.9, 1.0)
-    input.IFORCE.add(index_lookup[module], KPAR.PHOTON, ICOL.INCOHERENT_SCATTERING, 10, 1e-3, 1.0)
-    input.IFORCE.add(index_lookup[module], KPAR.PHOTON, ICOL.PHOTOELECTRIC_ABSORPTION, 10, 1e-3, 1.0)
+    input.IFORCE.add(
+        index_lookup[module],
+        KPAR.ELECTRON,
+        ICOL.HARD_BREMSSTRAHLUNG_EMISSION,
+        -5,
+        0.9,
+        1.0,
+    )
+    input.IFORCE.add(
+        index_lookup[module],
+        KPAR.ELECTRON,
+        ICOL.INNER_SHELL_IMPACT_IONISATION,
+        -250,
+        0.9,
+        1.0,
+    )
+    input.IFORCE.add(
+        index_lookup[module], KPAR.PHOTON, ICOL.INCOHERENT_SCATTERING, 10, 1e-3, 1.0
+    )
+    input.IFORCE.add(
+        index_lookup[module], KPAR.PHOTON, ICOL.PHOTOELECTRIC_ABSORPTION, 10, 1e-3, 1.0
+    )
     input.IBRSPL.add(index_lookup[module], 2)
     input.IXRSPL.add(index_lookup[module], 2)
 
@@ -77,8 +106,8 @@ def create_epma1():
     input.GRIDZ.set(-6e-5, 0.0, 60)
     input.XRLINE.add(convert_xrayline_to_izs1s200(XRAYLINE_CU_KA2))
 
-    input.RESUME.set('dump1.dat')
-    input.DUMPTO.set('dump1.dat')
+    input.RESUME.set("dump1.dat")
+    input.DUMPTO.set("dump1.dat")
     input.DUMPP.set(60)
 
     input.RSEED.set(-10, 1)
@@ -88,6 +117,7 @@ def create_epma1():
 
     return input
 
+
 def create_epma2():
     # Create geometry
     surface_top = zplane(0.0)
@@ -95,19 +125,19 @@ def create_epma2():
     surface_cylinder = cylinder(1.0)
     surface_divider = xplane(0.0)
 
-    module_right = Module(MATERIAL_CU, 'Right half of the sample')
+    module_right = Module(MATERIAL_CU, "Right half of the sample")
     module_right.add_surface(surface_top, SidePointer.NEGATIVE)
     module_right.add_surface(surface_bottom, SidePointer.POSITIVE)
     module_right.add_surface(surface_cylinder, SidePointer.NEGATIVE)
     module_right.add_surface(surface_divider, SidePointer.POSITIVE)
 
-    module_left = Module(MATERIAL_FE, 'Left half of the sample')
+    module_left = Module(MATERIAL_FE, "Left half of the sample")
     module_left.add_surface(surface_top, SidePointer.NEGATIVE)
     module_left.add_surface(surface_bottom, SidePointer.POSITIVE)
     module_left.add_surface(surface_cylinder, SidePointer.NEGATIVE)
     module_left.add_module(module_right)
 
-    geometry = Geometry('Cylindrical homogeneous foil')
+    geometry = Geometry("Cylindrical homogeneous foil")
     geometry.add_module(module_right)
     geometry.add_module(module_left)
 
@@ -118,27 +148,103 @@ def create_epma2():
     # Create input
     input = PenepmaInput()
 
-    input.TITLE.set('A CU-Fe couple')
+    input.TITLE.set("A CU-Fe couple")
     input.SENERG.set(15e3)
     input.SPOSIT.set(2e-5, 0.0, 1.0)
     input.SDIREC.set(180, 0.0)
     input.SAPERT.set(0.0)
 
-    input.materials.add(index_lookup[MATERIAL_FE], MATERIAL_FE.filename, 1e3, 1e3, 1e3, 0.2, 0.2, 1e3, 1e3) # Note inversion
-    input.materials.add(index_lookup[MATERIAL_CU], MATERIAL_CU.filename, 1e3, 1e3, 1e3, 0.2, 0.2, 1e3, 1e3)
+    input.materials.add(
+        index_lookup[MATERIAL_FE],
+        MATERIAL_FE.filename,
+        1e3,
+        1e3,
+        1e3,
+        0.2,
+        0.2,
+        1e3,
+        1e3,
+    )  # Note inversion
+    input.materials.add(
+        index_lookup[MATERIAL_CU],
+        MATERIAL_CU.filename,
+        1e3,
+        1e3,
+        1e3,
+        0.2,
+        0.2,
+        1e3,
+        1e3,
+    )
 
-    input.GEOMFN.set('epma2.geo')
+    input.GEOMFN.set("epma2.geo")
     input.DSMAX.add(index_lookup[module_right], 1e-4)
     input.DSMAX.add(index_lookup[module_left], 1e-4)
 
-    input.IFORCE.add(index_lookup[module_right], KPAR.ELECTRON, ICOL.HARD_BREMSSTRAHLUNG_EMISSION, -5, 0.9, 1.0)
-    input.IFORCE.add(index_lookup[module_right], KPAR.ELECTRON, ICOL.INNER_SHELL_IMPACT_IONISATION, -250, 0.9, 1.0)
-    input.IFORCE.add(index_lookup[module_right], KPAR.PHOTON, ICOL.INCOHERENT_SCATTERING, 10, 1e-3, 1.0)
-    input.IFORCE.add(index_lookup[module_right], KPAR.PHOTON, ICOL.PHOTOELECTRIC_ABSORPTION, 10, 1e-3, 1.0)
-    input.IFORCE.add(index_lookup[module_left], KPAR.ELECTRON, ICOL.HARD_BREMSSTRAHLUNG_EMISSION, -5, 0.9, 1.0)
-    input.IFORCE.add(index_lookup[module_left], KPAR.ELECTRON, ICOL.INNER_SHELL_IMPACT_IONISATION, -7, 0.9, 1.0)
-    input.IFORCE.add(index_lookup[module_left], KPAR.PHOTON, ICOL.INCOHERENT_SCATTERING, 10, 1e-3, 1.0)
-    input.IFORCE.add(index_lookup[module_left], KPAR.PHOTON, ICOL.PHOTOELECTRIC_ABSORPTION, 10, 1e-3, 1.0)
+    input.IFORCE.add(
+        index_lookup[module_right],
+        KPAR.ELECTRON,
+        ICOL.HARD_BREMSSTRAHLUNG_EMISSION,
+        -5,
+        0.9,
+        1.0,
+    )
+    input.IFORCE.add(
+        index_lookup[module_right],
+        KPAR.ELECTRON,
+        ICOL.INNER_SHELL_IMPACT_IONISATION,
+        -250,
+        0.9,
+        1.0,
+    )
+    input.IFORCE.add(
+        index_lookup[module_right],
+        KPAR.PHOTON,
+        ICOL.INCOHERENT_SCATTERING,
+        10,
+        1e-3,
+        1.0,
+    )
+    input.IFORCE.add(
+        index_lookup[module_right],
+        KPAR.PHOTON,
+        ICOL.PHOTOELECTRIC_ABSORPTION,
+        10,
+        1e-3,
+        1.0,
+    )
+    input.IFORCE.add(
+        index_lookup[module_left],
+        KPAR.ELECTRON,
+        ICOL.HARD_BREMSSTRAHLUNG_EMISSION,
+        -5,
+        0.9,
+        1.0,
+    )
+    input.IFORCE.add(
+        index_lookup[module_left],
+        KPAR.ELECTRON,
+        ICOL.INNER_SHELL_IMPACT_IONISATION,
+        -7,
+        0.9,
+        1.0,
+    )
+    input.IFORCE.add(
+        index_lookup[module_left],
+        KPAR.PHOTON,
+        ICOL.INCOHERENT_SCATTERING,
+        10,
+        1e-3,
+        1.0,
+    )
+    input.IFORCE.add(
+        index_lookup[module_left],
+        KPAR.PHOTON,
+        ICOL.PHOTOELECTRIC_ABSORPTION,
+        10,
+        1e-3,
+        1.0,
+    )
 
     input.IBRSPL.add(index_lookup[module_right], 2)
     input.IBRSPL.add(index_lookup[module_left], 2)
@@ -165,8 +271,8 @@ def create_epma2():
     input.XRLINE.add(convert_xrayline_to_izs1s200(XRAYLINE_FE_KA2))
     input.XRLINE.add(convert_xrayline_to_izs1s200(XRAYLINE_CU_KA2))
 
-    input.RESUME.set('dump2.dat')
-    input.DUMPTO.set('dump2.dat')
+    input.RESUME.set("dump2.dat")
+    input.DUMPTO.set("dump2.dat")
     input.DUMPP.set(60)
 
     input.RSEED.set(-10, 1)
@@ -176,13 +282,14 @@ def create_epma2():
 
     return input
 
-class TestPenmainInput(unittest.TestCase):
 
+class TestPenmainInput(unittest.TestCase):
     def setUp(self):
         super().setUp()
 
-        self.testdatadir = os.path.join(os.path.dirname(__file__),
-                                        '..', 'testdata', 'penepma')
+        self.testdatadir = os.path.join(
+            os.path.dirname(__file__), "..", "testdata", "penepma"
+        )
 
     def _write_read_input(self, input):
         fileobj = io.StringIO()
@@ -199,7 +306,7 @@ class TestPenmainInput(unittest.TestCase):
         return outinput
 
     def _test_epma1(self, input):
-        se0, = input.SENERG.get()
+        (se0,) = input.SENERG.get()
         self.assertAlmostEqual(15e3, se0, 5)
 
         sx0, sy0, sz0 = input.SPOSIT.get()
@@ -211,14 +318,14 @@ class TestPenmainInput(unittest.TestCase):
         self.assertAlmostEqual(180.0, theta, 5)
         self.assertAlmostEqual(0.0, phi, 5)
 
-        alpha, = input.SAPERT.get()
+        (alpha,) = input.SAPERT.get()
         self.assertAlmostEqual(0.0, alpha, 5)
 
-        materials, = input.materials.get()
+        (materials,) = input.materials.get()
         self.assertEqual(1, len(materials))
 
         filename, eabs1, eabs2, eabs3, c1, c2, wcc, wcr = materials[0]
-        self.assertEqual('Cu.mat', filename)
+        self.assertEqual("Cu.mat", filename)
         self.assertAlmostEqual(1e3, eabs1, 5)
         self.assertAlmostEqual(1e3, eabs2, 5)
         self.assertAlmostEqual(1e3, eabs3, 5)
@@ -227,16 +334,16 @@ class TestPenmainInput(unittest.TestCase):
         self.assertAlmostEqual(1e3, wcc, 5)
         self.assertAlmostEqual(1e3, wcr, 5)
 
-        self.assertEqual('epma1.geo', input.GEOMFN.get()[0])
+        self.assertEqual("epma1.geo", input.GEOMFN.get()[0])
 
-        dsmaxs, = input.DSMAX.get()
+        (dsmaxs,) = input.DSMAX.get()
         self.assertEqual(1, len(dsmaxs))
 
         kb, dsmax = dsmaxs[0]
         self.assertEqual(1, kb)
         self.assertAlmostEqual(1e-4, dsmax, 5)
 
-        iforces, = input.IFORCE.get()
+        (iforces,) = input.IFORCE.get()
         self.assertEqual(4, len(iforces))
 
         kb, kpar, icol, forcer, wlow, whig = iforces[0]
@@ -271,14 +378,14 @@ class TestPenmainInput(unittest.TestCase):
         self.assertAlmostEqual(1e-3, wlow, 5)
         self.assertAlmostEqual(1.0, whig, 5)
 
-        ibrspls, = input.IBRSPL.get()
+        (ibrspls,) = input.IBRSPL.get()
         self.assertEqual(1, len(ibrspls))
 
         kb, factor = ibrspls[0]
         self.assertEqual(1, kb)
         self.assertAlmostEqual(2.0, factor, 5)
 
-        ixrspls, = input.IXRSPL.get()
+        (ixrspls,) = input.IXRSPL.get()
         self.assertEqual(1, len(ixrspls))
 
         kb, factor = ixrspls[0]
@@ -294,11 +401,20 @@ class TestPenmainInput(unittest.TestCase):
         self.assertEqual(45, nbth)
         self.assertEqual(30, nbph)
 
-        photon_detectors, = input.photon_detectors.get()
+        (photon_detectors,) = input.photon_detectors.get()
         self.assertEqual(9, len(photon_detectors))
 
-        (theta1, theta2, phi1, phi2, ipsf,
-         edel, edeu, nche, emission_filename) = photon_detectors[0]
+        (
+            theta1,
+            theta2,
+            phi1,
+            phi2,
+            ipsf,
+            edel,
+            edeu,
+            nche,
+            emission_filename,
+        ) = photon_detectors[0]
         self.assertAlmostEqual(0.0, theta1, 5)
         self.assertAlmostEqual(90.0, theta2, 5)
         self.assertAlmostEqual(0.0, phi1, 5)
@@ -309,8 +425,17 @@ class TestPenmainInput(unittest.TestCase):
         self.assertEqual(1000, nche)
         self.assertIsNone(emission_filename)
 
-        (theta1, theta2, phi1, phi2, ipsf,
-         edel, edeu, nche, emission_filename) = photon_detectors[1]
+        (
+            theta1,
+            theta2,
+            phi1,
+            phi2,
+            ipsf,
+            edel,
+            edeu,
+            nche,
+            emission_filename,
+        ) = photon_detectors[1]
         self.assertAlmostEqual(5.0, theta1, 5)
         self.assertAlmostEqual(15.0, theta2, 5)
         self.assertAlmostEqual(0.0, phi1, 5)
@@ -321,8 +446,17 @@ class TestPenmainInput(unittest.TestCase):
         self.assertEqual(1000, nche)
         self.assertIsNone(emission_filename)
 
-        (theta1, theta2, phi1, phi2, ipsf,
-         edel, edeu, nche, emission_filename) = photon_detectors[2]
+        (
+            theta1,
+            theta2,
+            phi1,
+            phi2,
+            ipsf,
+            edel,
+            edeu,
+            nche,
+            emission_filename,
+        ) = photon_detectors[2]
         self.assertAlmostEqual(15.0, theta1, 5)
         self.assertAlmostEqual(25.0, theta2, 5)
         self.assertAlmostEqual(0.0, phi1, 5)
@@ -333,8 +467,17 @@ class TestPenmainInput(unittest.TestCase):
         self.assertEqual(1000, nche)
         self.assertIsNone(emission_filename)
 
-        (theta1, theta2, phi1, phi2, ipsf,
-         edel, edeu, nche, emission_filename) = photon_detectors[3]
+        (
+            theta1,
+            theta2,
+            phi1,
+            phi2,
+            ipsf,
+            edel,
+            edeu,
+            nche,
+            emission_filename,
+        ) = photon_detectors[3]
         self.assertAlmostEqual(25.0, theta1, 5)
         self.assertAlmostEqual(35.0, theta2, 5)
         self.assertAlmostEqual(0.0, phi1, 5)
@@ -345,8 +488,17 @@ class TestPenmainInput(unittest.TestCase):
         self.assertEqual(1000, nche)
         self.assertIsNone(emission_filename)
 
-        (theta1, theta2, phi1, phi2, ipsf,
-         edel, edeu, nche, emission_filename) = photon_detectors[4]
+        (
+            theta1,
+            theta2,
+            phi1,
+            phi2,
+            ipsf,
+            edel,
+            edeu,
+            nche,
+            emission_filename,
+        ) = photon_detectors[4]
         self.assertAlmostEqual(35.0, theta1, 5)
         self.assertAlmostEqual(45.0, theta2, 5)
         self.assertAlmostEqual(0.0, phi1, 5)
@@ -357,8 +509,17 @@ class TestPenmainInput(unittest.TestCase):
         self.assertEqual(1000, nche)
         self.assertIsNone(emission_filename)
 
-        (theta1, theta2, phi1, phi2, ipsf,
-         edel, edeu, nche, emission_filename) = photon_detectors[5]
+        (
+            theta1,
+            theta2,
+            phi1,
+            phi2,
+            ipsf,
+            edel,
+            edeu,
+            nche,
+            emission_filename,
+        ) = photon_detectors[5]
         self.assertAlmostEqual(45.0, theta1, 5)
         self.assertAlmostEqual(55.0, theta2, 5)
         self.assertAlmostEqual(0.0, phi1, 5)
@@ -369,8 +530,17 @@ class TestPenmainInput(unittest.TestCase):
         self.assertEqual(1000, nche)
         self.assertIsNone(emission_filename)
 
-        (theta1, theta2, phi1, phi2, ipsf,
-         edel, edeu, nche, emission_filename) = photon_detectors[6]
+        (
+            theta1,
+            theta2,
+            phi1,
+            phi2,
+            ipsf,
+            edel,
+            edeu,
+            nche,
+            emission_filename,
+        ) = photon_detectors[6]
         self.assertAlmostEqual(55.0, theta1, 5)
         self.assertAlmostEqual(65.0, theta2, 5)
         self.assertAlmostEqual(0.0, phi1, 5)
@@ -381,8 +551,17 @@ class TestPenmainInput(unittest.TestCase):
         self.assertEqual(1000, nche)
         self.assertIsNone(emission_filename)
 
-        (theta1, theta2, phi1, phi2, ipsf,
-         edel, edeu, nche, emission_filename) = photon_detectors[7]
+        (
+            theta1,
+            theta2,
+            phi1,
+            phi2,
+            ipsf,
+            edel,
+            edeu,
+            nche,
+            emission_filename,
+        ) = photon_detectors[7]
         self.assertAlmostEqual(65.0, theta1, 5)
         self.assertAlmostEqual(75.0, theta2, 5)
         self.assertAlmostEqual(0.0, phi1, 5)
@@ -393,8 +572,17 @@ class TestPenmainInput(unittest.TestCase):
         self.assertEqual(1000, nche)
         self.assertIsNone(emission_filename)
 
-        (theta1, theta2, phi1, phi2, ipsf,
-         edel, edeu, nche, emission_filename) = photon_detectors[8]
+        (
+            theta1,
+            theta2,
+            phi1,
+            phi2,
+            ipsf,
+            edel,
+            edeu,
+            nche,
+            emission_filename,
+        ) = photon_detectors[8]
         self.assertAlmostEqual(75.0, theta1, 5)
         self.assertAlmostEqual(85.0, theta2, 5)
         self.assertAlmostEqual(0.0, phi1, 5)
@@ -420,19 +608,19 @@ class TestPenmainInput(unittest.TestCase):
         self.assertAlmostEqual(0.0, zu, 5)
         self.assertEqual(60, ndbz)
 
-        xrlines, = input.XRLINE.get()
+        (xrlines,) = input.XRLINE.get()
         self.assertEqual(1, len(xrlines))
 
-        izs1s200, = xrlines[0]
+        (izs1s200,) = xrlines[0]
         self.assertEqual(29010300, izs1s200)
 
-        filename, = input.RESUME.get()
-        self.assertEqual('dump1.dat', filename)
+        (filename,) = input.RESUME.get()
+        self.assertEqual("dump1.dat", filename)
 
-        filename, = input.DUMPTO.get()
-        self.assertEqual('dump1.dat', filename)
+        (filename,) = input.DUMPTO.get()
+        self.assertEqual("dump1.dat", filename)
 
-        dumpp, = input.DUMPP.get()
+        (dumpp,) = input.DUMPP.get()
         self.assertAlmostEqual(60.0, dumpp, 5)
 
         seed1, seed2 = input.RSEED.get()
@@ -444,10 +632,10 @@ class TestPenmainInput(unittest.TestCase):
         self.assertEqual(1, idet)
         self.assertAlmostEqual(1.25e-3, tol, 5)
 
-        dshn, = input.NSIMSH.get()
+        (dshn,) = input.NSIMSH.get()
         self.assertAlmostEqual(2e9, dshn, 5)
 
-        timea, = input.TIME.get()
+        (timea,) = input.TIME.get()
         self.assertAlmostEqual(2e9, timea, 5)
 
     def test_epma1_skeleton(self):
@@ -460,14 +648,14 @@ class TestPenmainInput(unittest.TestCase):
         self._test_epma1(input)
 
     def test_epma1_read(self):
-        filepath = os.path.join(self.testdatadir, 'epma1.in')
+        filepath = os.path.join(self.testdatadir, "epma1.in")
         input = PenepmaInput()
-        with open(filepath, 'r') as fp:
+        with open(filepath, "r") as fp:
             input.read(fp)
         self._test_epma1(input)
 
     def _test_epma2(self, input):
-        se0, = input.SENERG.get()
+        (se0,) = input.SENERG.get()
         self.assertAlmostEqual(15e3, se0, 5)
 
         sx0, sy0, sz0 = input.SPOSIT.get()
@@ -479,14 +667,14 @@ class TestPenmainInput(unittest.TestCase):
         self.assertAlmostEqual(180.0, theta, 5)
         self.assertAlmostEqual(0.0, phi, 5)
 
-        alpha, = input.SAPERT.get()
+        (alpha,) = input.SAPERT.get()
         self.assertAlmostEqual(0.0, alpha, 5)
 
-        materials, = input.materials.get()
+        (materials,) = input.materials.get()
         self.assertEqual(2, len(materials))
 
         filename, eabs1, eabs2, eabs3, c1, c2, wcc, wcr = materials[0]
-        self.assertEqual('Cu.mat', filename)
+        self.assertEqual("Cu.mat", filename)
         self.assertAlmostEqual(1e3, eabs1, 5)
         self.assertAlmostEqual(1e3, eabs2, 5)
         self.assertAlmostEqual(1e3, eabs3, 5)
@@ -496,7 +684,7 @@ class TestPenmainInput(unittest.TestCase):
         self.assertAlmostEqual(1e3, wcr, 5)
 
         filename, eabs1, eabs2, eabs3, c1, c2, wcc, wcr = materials[1]
-        self.assertEqual('Fe.mat', filename)
+        self.assertEqual("Fe.mat", filename)
         self.assertAlmostEqual(1e3, eabs1, 5)
         self.assertAlmostEqual(1e3, eabs2, 5)
         self.assertAlmostEqual(1e3, eabs3, 5)
@@ -505,9 +693,9 @@ class TestPenmainInput(unittest.TestCase):
         self.assertAlmostEqual(1e3, wcc, 5)
         self.assertAlmostEqual(1e3, wcr, 5)
 
-        self.assertEqual('epma2.geo', input.GEOMFN.get()[0])
+        self.assertEqual("epma2.geo", input.GEOMFN.get()[0])
 
-        dsmaxs, = input.DSMAX.get()
+        (dsmaxs,) = input.DSMAX.get()
         self.assertEqual(2, len(dsmaxs))
 
         kb, dsmax = dsmaxs[0]
@@ -518,7 +706,7 @@ class TestPenmainInput(unittest.TestCase):
         self.assertEqual(2, kb)
         self.assertAlmostEqual(1e-4, dsmax, 5)
 
-        iforces, = input.IFORCE.get()
+        (iforces,) = input.IFORCE.get()
         self.assertEqual(8, len(iforces))
 
         kb, kpar, icol, forcer, wlow, whig = iforces[0]
@@ -585,7 +773,7 @@ class TestPenmainInput(unittest.TestCase):
         self.assertAlmostEqual(1e-3, wlow, 5)
         self.assertAlmostEqual(1.0, whig, 5)
 
-        ibrspls, = input.IBRSPL.get()
+        (ibrspls,) = input.IBRSPL.get()
         self.assertEqual(2, len(ibrspls))
 
         kb, factor = ibrspls[0]
@@ -596,7 +784,7 @@ class TestPenmainInput(unittest.TestCase):
         self.assertEqual(2, kb)
         self.assertAlmostEqual(2.0, factor, 5)
 
-        ixrspls, = input.IXRSPL.get()
+        (ixrspls,) = input.IXRSPL.get()
         self.assertEqual(2, len(ixrspls))
 
         kb, factor = ixrspls[0]
@@ -616,11 +804,20 @@ class TestPenmainInput(unittest.TestCase):
         self.assertEqual(45, nbth)
         self.assertEqual(30, nbph)
 
-        photon_detectors, = input.photon_detectors.get()
+        (photon_detectors,) = input.photon_detectors.get()
         self.assertEqual(9, len(photon_detectors))
 
-        (theta1, theta2, phi1, phi2, ipsf,
-         edel, edeu, nche, emission_filename) = photon_detectors[0]
+        (
+            theta1,
+            theta2,
+            phi1,
+            phi2,
+            ipsf,
+            edel,
+            edeu,
+            nche,
+            emission_filename,
+        ) = photon_detectors[0]
         self.assertAlmostEqual(0.0, theta1, 5)
         self.assertAlmostEqual(90.0, theta2, 5)
         self.assertAlmostEqual(0.0, phi1, 5)
@@ -631,8 +828,17 @@ class TestPenmainInput(unittest.TestCase):
         self.assertEqual(1000, nche)
         self.assertIsNone(emission_filename)
 
-        (theta1, theta2, phi1, phi2, ipsf,
-         edel, edeu, nche, emission_filename) = photon_detectors[1]
+        (
+            theta1,
+            theta2,
+            phi1,
+            phi2,
+            ipsf,
+            edel,
+            edeu,
+            nche,
+            emission_filename,
+        ) = photon_detectors[1]
         self.assertAlmostEqual(5.0, theta1, 5)
         self.assertAlmostEqual(15.0, theta2, 5)
         self.assertAlmostEqual(0.0, phi1, 5)
@@ -643,8 +849,17 @@ class TestPenmainInput(unittest.TestCase):
         self.assertEqual(1000, nche)
         self.assertIsNone(emission_filename)
 
-        (theta1, theta2, phi1, phi2, ipsf,
-         edel, edeu, nche, emission_filename) = photon_detectors[2]
+        (
+            theta1,
+            theta2,
+            phi1,
+            phi2,
+            ipsf,
+            edel,
+            edeu,
+            nche,
+            emission_filename,
+        ) = photon_detectors[2]
         self.assertAlmostEqual(15.0, theta1, 5)
         self.assertAlmostEqual(25.0, theta2, 5)
         self.assertAlmostEqual(0.0, phi1, 5)
@@ -655,8 +870,17 @@ class TestPenmainInput(unittest.TestCase):
         self.assertEqual(1000, nche)
         self.assertIsNone(emission_filename)
 
-        (theta1, theta2, phi1, phi2, ipsf,
-         edel, edeu, nche, emission_filename) = photon_detectors[3]
+        (
+            theta1,
+            theta2,
+            phi1,
+            phi2,
+            ipsf,
+            edel,
+            edeu,
+            nche,
+            emission_filename,
+        ) = photon_detectors[3]
         self.assertAlmostEqual(25.0, theta1, 5)
         self.assertAlmostEqual(35.0, theta2, 5)
         self.assertAlmostEqual(0.0, phi1, 5)
@@ -667,8 +891,17 @@ class TestPenmainInput(unittest.TestCase):
         self.assertEqual(1000, nche)
         self.assertIsNone(emission_filename)
 
-        (theta1, theta2, phi1, phi2, ipsf,
-         edel, edeu, nche, emission_filename) = photon_detectors[4]
+        (
+            theta1,
+            theta2,
+            phi1,
+            phi2,
+            ipsf,
+            edel,
+            edeu,
+            nche,
+            emission_filename,
+        ) = photon_detectors[4]
         self.assertAlmostEqual(35.0, theta1, 5)
         self.assertAlmostEqual(45.0, theta2, 5)
         self.assertAlmostEqual(0.0, phi1, 5)
@@ -679,8 +912,17 @@ class TestPenmainInput(unittest.TestCase):
         self.assertEqual(1000, nche)
         self.assertIsNone(emission_filename)
 
-        (theta1, theta2, phi1, phi2, ipsf,
-         edel, edeu, nche, emission_filename) = photon_detectors[5]
+        (
+            theta1,
+            theta2,
+            phi1,
+            phi2,
+            ipsf,
+            edel,
+            edeu,
+            nche,
+            emission_filename,
+        ) = photon_detectors[5]
         self.assertAlmostEqual(45.0, theta1, 5)
         self.assertAlmostEqual(55.0, theta2, 5)
         self.assertAlmostEqual(0.0, phi1, 5)
@@ -691,8 +933,17 @@ class TestPenmainInput(unittest.TestCase):
         self.assertEqual(1000, nche)
         self.assertIsNone(emission_filename)
 
-        (theta1, theta2, phi1, phi2, ipsf,
-         edel, edeu, nche, emission_filename) = photon_detectors[6]
+        (
+            theta1,
+            theta2,
+            phi1,
+            phi2,
+            ipsf,
+            edel,
+            edeu,
+            nche,
+            emission_filename,
+        ) = photon_detectors[6]
         self.assertAlmostEqual(55.0, theta1, 5)
         self.assertAlmostEqual(65.0, theta2, 5)
         self.assertAlmostEqual(0.0, phi1, 5)
@@ -703,8 +954,17 @@ class TestPenmainInput(unittest.TestCase):
         self.assertEqual(1000, nche)
         self.assertIsNone(emission_filename)
 
-        (theta1, theta2, phi1, phi2, ipsf,
-         edel, edeu, nche, emission_filename) = photon_detectors[7]
+        (
+            theta1,
+            theta2,
+            phi1,
+            phi2,
+            ipsf,
+            edel,
+            edeu,
+            nche,
+            emission_filename,
+        ) = photon_detectors[7]
         self.assertAlmostEqual(65.0, theta1, 5)
         self.assertAlmostEqual(75.0, theta2, 5)
         self.assertAlmostEqual(0.0, phi1, 5)
@@ -715,8 +975,17 @@ class TestPenmainInput(unittest.TestCase):
         self.assertEqual(1000, nche)
         self.assertIsNone(emission_filename)
 
-        (theta1, theta2, phi1, phi2, ipsf,
-         edel, edeu, nche, emission_filename) = photon_detectors[8]
+        (
+            theta1,
+            theta2,
+            phi1,
+            phi2,
+            ipsf,
+            edel,
+            edeu,
+            nche,
+            emission_filename,
+        ) = photon_detectors[8]
         self.assertAlmostEqual(75.0, theta1, 5)
         self.assertAlmostEqual(85.0, theta2, 5)
         self.assertAlmostEqual(0.0, phi1, 5)
@@ -742,22 +1011,22 @@ class TestPenmainInput(unittest.TestCase):
         self.assertAlmostEqual(0.0, zu, 5)
         self.assertEqual(60, ndbz)
 
-        xrlines, = input.XRLINE.get()
+        (xrlines,) = input.XRLINE.get()
         self.assertEqual(2, len(xrlines))
 
-        izs1s200, = xrlines[0]
+        (izs1s200,) = xrlines[0]
         self.assertEqual(26010300, izs1s200)
 
-        izs1s200, = xrlines[1]
+        (izs1s200,) = xrlines[1]
         self.assertEqual(29010300, izs1s200)
 
-        filename, = input.RESUME.get()
-        self.assertEqual('dump2.dat', filename)
+        (filename,) = input.RESUME.get()
+        self.assertEqual("dump2.dat", filename)
 
-        filename, = input.DUMPTO.get()
-        self.assertEqual('dump2.dat', filename)
+        (filename,) = input.DUMPTO.get()
+        self.assertEqual("dump2.dat", filename)
 
-        dumpp, = input.DUMPP.get()
+        (dumpp,) = input.DUMPP.get()
         self.assertAlmostEqual(60.0, dumpp, 5)
 
         seed1, seed2 = input.RSEED.get()
@@ -769,10 +1038,10 @@ class TestPenmainInput(unittest.TestCase):
         self.assertEqual(1, idet)
         self.assertAlmostEqual(1.5e-3, tol, 5)
 
-        dshn, = input.NSIMSH.get()
+        (dshn,) = input.NSIMSH.get()
         self.assertAlmostEqual(2e9, dshn, 5)
 
-        timea, = input.TIME.get()
+        (timea,) = input.TIME.get()
         self.assertAlmostEqual(2e9, timea, 5)
 
     def test_epma2_skeleton(self):
@@ -785,13 +1054,14 @@ class TestPenmainInput(unittest.TestCase):
         self._test_epma2(input)
 
     def test_epma2_read(self):
-        filepath = os.path.join(self.testdatadir, 'epma2.in')
+        filepath = os.path.join(self.testdatadir, "epma2.in")
         input = PenepmaInput()
-        with open(filepath, 'r') as fp:
+        with open(filepath, "r") as fp:
             input.read(fp)
         self._test_epma2(input)
 
-if __name__ == '__main__': #pragma: no cover
+
+if __name__ == "__main__":  # pragma: no cover
     logging.basicConfig()
     logging.getLogger().setLevel(logging.DEBUG)
     unittest.main()

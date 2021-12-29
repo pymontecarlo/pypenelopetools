@@ -13,8 +13,8 @@ import pypenelopetools.pencyl.separators as pencyl_separators
 
 # Globals and constants variables.
 
-class PencylInput(PenelopeInputBase):
 
+class PencylInput(PenelopeInputBase):
     def __init__(self):
         self.TITLE = penelope_keywords.TITLE()
 
@@ -77,64 +77,67 @@ class PencylInput(PenelopeInputBase):
         self.TIME = penelope_keywords.TIME()
 
     def get_keywords(self):
-        return [self.TITLE,
-
-                penelope_separators.DOT,
-                pencyl_separators.GEOMETRY_LIST_START,
-                self.geometry_definitions,
-                pencyl_separators.GEOMETRY_LIST_END,
-
-                penelope_separators.DOT,
-                penelope_separators.SOURCE_DEFINITION,
-                self.SKPAR, self.SENERG, self.SPECTR, self.SGPOL,
-                self.SEXTND, self.STHICK, self.SRADII,
-                self.SPOSIT, self.SCONE, self.SRECTA,
-
-                penelope_separators.DOT,
-                penelope_separators.MATERIAL,
-                self.materials,
-
-                penelope_separators.DOT,
-                pencyl_separators.DSMAX_EABSB,
-                self.DSMAX, self.EABSB,
-
-                penelope_separators.DOT,
-                penelope_separators.INTERACTION_FORCING,
-                self.IFORCE,
-
-                penelope_separators.DOT,
-                penelope_separators.BREMSSTRAHLUNG_SPLITTING,
-                self.IBRSPL,
-
-                penelope_separators.DOT,
-                penelope_separators.XRAY_SPLITTING,
-                self.IXRSPL,
-
-                penelope_separators.DOT,
-                pencyl_separators.WOODCOCK,
-                self.IWOODC,
-
-                penelope_separators.DOT,
-                pencyl_separators.COUNTER_ARRAY,
-                self.NBE, self.NBANGL, self.NBZ, self.NBR, self.NBTL,
-
-                penelope_separators.DOT,
-                pencyl_separators.PARTICLE_POSITIONS,
-                self.EMERGP,
-
-                penelope_separators.DOT,
-                penelope_separators.ENERGY_DEPOSITON_DETECTORS,
-                self.energy_deposition_detectors,
-
-                penelope_separators.DOT,
-                pencyl_separators.DOSE_CHARGE_DISTRIBUTION,
-                self.DOSE2D,
-
-                penelope_separators.DOT,
-                penelope_separators.JOB_PROPERTIES,
-                self.RESUME, self.DUMPTO, self.DUMPP,
-
-                penelope_separators.DOT,
-                self.RSEED, self.NSIMSH, self.TIME,
-
-                penelope_separators.END]
+        return [
+            self.TITLE,
+            penelope_separators.DOT,
+            pencyl_separators.GEOMETRY_LIST_START,
+            self.geometry_definitions,
+            pencyl_separators.GEOMETRY_LIST_END,
+            penelope_separators.DOT,
+            penelope_separators.SOURCE_DEFINITION,
+            self.SKPAR,
+            self.SENERG,
+            self.SPECTR,
+            self.SGPOL,
+            self.SEXTND,
+            self.STHICK,
+            self.SRADII,
+            self.SPOSIT,
+            self.SCONE,
+            self.SRECTA,
+            penelope_separators.DOT,
+            penelope_separators.MATERIAL,
+            self.materials,
+            penelope_separators.DOT,
+            pencyl_separators.DSMAX_EABSB,
+            self.DSMAX,
+            self.EABSB,
+            penelope_separators.DOT,
+            penelope_separators.INTERACTION_FORCING,
+            self.IFORCE,
+            penelope_separators.DOT,
+            penelope_separators.BREMSSTRAHLUNG_SPLITTING,
+            self.IBRSPL,
+            penelope_separators.DOT,
+            penelope_separators.XRAY_SPLITTING,
+            self.IXRSPL,
+            penelope_separators.DOT,
+            pencyl_separators.WOODCOCK,
+            self.IWOODC,
+            penelope_separators.DOT,
+            pencyl_separators.COUNTER_ARRAY,
+            self.NBE,
+            self.NBANGL,
+            self.NBZ,
+            self.NBR,
+            self.NBTL,
+            penelope_separators.DOT,
+            pencyl_separators.PARTICLE_POSITIONS,
+            self.EMERGP,
+            penelope_separators.DOT,
+            penelope_separators.ENERGY_DEPOSITON_DETECTORS,
+            self.energy_deposition_detectors,
+            penelope_separators.DOT,
+            pencyl_separators.DOSE_CHARGE_DISTRIBUTION,
+            self.DOSE2D,
+            penelope_separators.DOT,
+            penelope_separators.JOB_PROPERTIES,
+            self.RESUME,
+            self.DUMPTO,
+            self.DUMPP,
+            penelope_separators.DOT,
+            self.RSEED,
+            self.NSIMSH,
+            self.TIME,
+            penelope_separators.END,
+        ]

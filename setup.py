@@ -46,8 +46,6 @@ setup(
         "Topic :: Scientific/Engineering :: Physics",
     ],
     packages=PACKAGES,
-    cmdclass=CMDCLASS,
-    ackages=PACKAGES,
     install_requires=INSTALL_REQUIRES,
     extras_require=EXTRAS_REQUIRE,
     cmdclass=CMDCLASS,

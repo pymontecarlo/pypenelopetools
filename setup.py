@@ -16,9 +16,15 @@ with open(os.path.join(BASEDIR, "README.rst"), "r") as fp:
     LONG_DESCRIPTION = fp.read()
 
 PACKAGES = find_packages()
-INSTALL_REQUIRES = ["pyxray", "uncertainties", "numpy"]
+
+with open(os.path.join(BASEDIR, "requirements.txt"), "r") as fp:
+    INSTALL_REQUIRES = fp.read().splitlines()
+
+EXTRAS_REQUIRE = {}
 
 CMDCLASS = versioneer.get_cmdclass()
+
+ENTRY_POINTS = {}
 
 setup(
     name="pyPENELOPEtools",
@@ -26,7 +32,7 @@ setup(
     url="https://github.com/pymontecarlo/pypenelopetools",
     description="Python interface to facilitate the use of the Monte Carlo code PENELOPE and its main programs",
     long_description=LONG_DESCRIPTION,
-    long_description_content_type="text/x-rst",
+    long_description_content_type="text/markdown",
     author="Philippe T. Pinard",
     author_email="philippe.pinard@gmail.com",
     license="Apache License, Version 2.0",
@@ -41,7 +47,9 @@ setup(
     ],
     packages=PACKAGES,
     cmdclass=CMDCLASS,
-    setup_requires=["nose"],
+    ackages=PACKAGES,
     install_requires=INSTALL_REQUIRES,
-    test_suite="nose.collector",
+    extras_require=EXTRAS_REQUIRE,
+    cmdclass=CMDCLASS,
+    entry_points=ENTRY_POINTS,
 )

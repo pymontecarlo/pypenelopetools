@@ -1,13 +1,10 @@
-#!/usr/bin/env python
 """ """
 
 # Standard library modules.
-import unittest
-import logging
-import os
 import io
 
 # Third party modules.
+import pytest
 
 # Local modules.
 from pypenelopetools.penelope.enums import KPAR, ICOL
@@ -127,353 +124,345 @@ def create_example3_detector():
     return input, materials
 
 
-class TestPencylInput(unittest.TestCase):
-    def setUp(self):
-        super().setUp()
-
-        self.testdatadir = os.path.join(
-            os.path.dirname(__file__), "..", "testdata", "pencyl"
-        )
-
-    def _write_read_input(self, input):
-        fileobj = io.StringIO()
-
-        try:
-            input.write(fileobj)
-
-            fileobj.seek(0)
-            outinput = PencylInput()
-            outinput.read(fileobj)
-        finally:
-            fileobj.close()
-
-        return outinput
-
-    def _test_example1_disc(self, input):
-        (geometry_definitions,) = input.geometry_definitions.get()
-        self.assertEqual(1, len(geometry_definitions))
-
-        zlow, zhigh, xcen, ycen, cylinders = geometry_definitions[0]
-        self.assertAlmostEqual(0.0, zlow, 5)
-        self.assertAlmostEqual(0.005, zhigh, 5)
-        self.assertIsNone(xcen)
-        self.assertIsNone(ycen)
-        self.assertEqual(1, len(cylinders))
-
-        material, rin, rout = cylinders[0]
-        self.assertEqual(1, material)
-        self.assertAlmostEqual(0.0, rin, 5)
-        self.assertAlmostEqual(0.01, rout, 5)
-
-        (kparp,) = input.SKPAR.get()
-        self.assertEqual(1, kparp)
-
-        (se0,) = input.SENERG.get()
-        self.assertAlmostEqual(40e3, se0, 5)
-
-        sx0, sy0, sz0 = input.SPOSIT.get()
-        self.assertAlmostEqual(0.0, sx0, 5)
-        self.assertAlmostEqual(0.0, sy0, 5)
-        self.assertAlmostEqual(-0.0001, sz0, 5)
-
-        theta, phi, alpha = input.SCONE.get()
-        self.assertAlmostEqual(0.0, theta, 5)
-        self.assertAlmostEqual(0.0, phi, 5)
-        self.assertAlmostEqual(5.0, alpha, 5)
-
-        (materials,) = input.materials.get()
-        self.assertEqual(1, len(materials))
-
-        filename, eabs1, eabs2, eabs3, c1, c2, wcc, wcr = materials[0]
-        self.assertEqual("Cu.mat", filename)
-        self.assertAlmostEqual(1e3, eabs1, 5)
-        self.assertAlmostEqual(1e3, eabs2, 5)
-        self.assertAlmostEqual(1e3, eabs3, 5)
-        self.assertAlmostEqual(0.05, c1, 5)
-        self.assertAlmostEqual(0.05, c2, 5)
-        self.assertAlmostEqual(1e3, wcc, 5)
-        self.assertAlmostEqual(1e3, wcr, 5)
-
-        (dsmaxs,) = input.DSMAX.get()
-        self.assertEqual(1, len(dsmaxs))
-
-        kl, kc, dsmax = dsmaxs[0]
-        self.assertEqual(1, kl)
-        self.assertEqual(1, kc)
-        self.assertAlmostEqual(1e-4, dsmax, 5)
-
-        (iforces,) = input.IFORCE.get()
-        self.assertEqual(2, len(iforces))
-
-        kl, kc, kpar, icol, forcer, wlow, whig = iforces[0]
-        self.assertEqual(1, kl)
-        self.assertEqual(1, kc)
-        self.assertEqual(1, kpar)
-        self.assertEqual(4, icol)
-        self.assertAlmostEqual(2000, forcer, 5)
-        self.assertAlmostEqual(0.1, wlow, 5)
-        self.assertAlmostEqual(2.0, whig, 5)
-
-        kl, kc, kpar, icol, forcer, wlow, whig = iforces[1]
-        self.assertEqual(1, kl)
-        self.assertEqual(1, kc)
-        self.assertEqual(1, kpar)
-        self.assertEqual(5, icol)
-        self.assertAlmostEqual(200, forcer, 5)
-        self.assertAlmostEqual(0.1, wlow, 5)
-        self.assertAlmostEqual(2.0, whig, 5)
-
-        (ibrspls,) = input.IBRSPL.get()
-        self.assertEqual(1, len(ibrspls))
-
-        kl, kc, factor = ibrspls[0]
-        self.assertEqual(1, kl)
-        self.assertEqual(1, kc)
-        self.assertAlmostEqual(2.0, factor, 5)
-
-        (ixrspls,) = input.IXRSPL.get()
-        self.assertEqual(1, len(ixrspls))
-
-        kl, kc, factor = ibrspls[0]
-        self.assertEqual(1, kl)
-        self.assertEqual(1, kc)
-        self.assertAlmostEqual(2.0, factor, 5)
-
-        el, eu, nbe = input.NBE.get()
-        self.assertAlmostEqual(0.0, el, 5)
-        self.assertAlmostEqual(0.0, eu, 5)
-        self.assertEqual(100, nbe)
-
-        nbth, nbph = input.NBANGL.get()
-        self.assertEqual(45, nbth)
-        self.assertEqual(18, nbph)
-
-        radm, nbre = input.EMERGP.get()
-        self.assertAlmostEqual(0.005, radm, 5)
-        self.assertEqual(100, nbre)
-
-        (energy_deposition_detectors,) = input.energy_deposition_detectors.get()
-        self.assertEqual(1, len(energy_deposition_detectors))
-
-        el, eu, nbe, spectrum_filename, cylinders = energy_deposition_detectors[0]
-        self.assertAlmostEqual(0.0, el, 5)
-        self.assertAlmostEqual(0.0, eu, 5)
-        self.assertEqual(100, nbe)
-        self.assertIsNone(spectrum_filename)
-        self.assertEqual(1, len(cylinders))
-
-        kl, kc = cylinders[0]
-        self.assertEqual(1, kl)
-        self.assertEqual(1, kc)
-
-        (dose2d,) = input.DOSE2D.get()
-        self.assertEqual(1, len(dose2d))
-
-        kl, kc, nz, nr = dose2d[0]
-        self.assertEqual(1, kl)
-        self.assertEqual(1, kc)
-        self.assertEqual(nz, 100)
-        self.assertEqual(nr, 50)
-
-        (filename,) = input.RESUME.get()
-        self.assertEqual("dump.dat", filename)
-
-        (filename,) = input.DUMPTO.get()
-        self.assertEqual("dump.dat", filename)
-
-        (dumpp,) = input.DUMPP.get()
-        self.assertAlmostEqual(60.0, dumpp, 5)
-
-        seed1, seed2 = input.RSEED.get()
-        self.assertEqual(1, seed1)
-        self.assertEqual(1, seed2)
-
-        (dshn,) = input.NSIMSH.get()
-        self.assertAlmostEqual(1e9, dshn, 5)
-
-        (timea,) = input.TIME.get()
-        self.assertAlmostEqual(600.0, timea, 5)
-
-    def test_example1_disc_write(self):
-        input = create_example1_disc()
-        input = self._write_read_input(input)
-        self._test_example1_disc(input)
-
-    def test_example1_disc_read(self):
-        filepath = os.path.join(self.testdatadir, "1-disc", "disc.in")
-        input = PencylInput()
-        with open(filepath, "r") as fp:
-            input.read(fp)
-        self._test_example1_disc(input)
-
-    def _test_example3_detector(self, input):
-        (geometry_definitions,) = input.geometry_definitions.get()
-        self.assertEqual(4, len(geometry_definitions))
-
-        zlow, zhigh, xcen, ycen, cylinders = geometry_definitions[0]
-        self.assertAlmostEqual(-0.24, zlow, 5)
-        self.assertAlmostEqual(-0.16, zhigh, 5)
-        self.assertAlmostEqual(0.0, xcen, 5)
-        self.assertAlmostEqual(0.0, ycen, 5)
-        self.assertEqual(1, len(cylinders))
-
-        material, rin, rout = cylinders[0]
-        self.assertEqual(3, material)
-        self.assertAlmostEqual(0.0, rin, 5)
-        self.assertAlmostEqual(4.05, rout, 5)
-
-        zlow, zhigh, xcen, ycen, cylinders = geometry_definitions[1]
-        self.assertAlmostEqual(-0.16, zlow, 5)
-        self.assertAlmostEqual(0.0, zhigh, 5)
-        self.assertIsNone(xcen)
-        self.assertIsNone(ycen)
-        self.assertEqual(2, len(cylinders))
-
-        material, rin, rout = cylinders[0]
-        self.assertEqual(2, material)
-        self.assertAlmostEqual(0.0, rin, 5)
-        self.assertAlmostEqual(3.97, rout, 5)
-
-        material, rin, rout = cylinders[1]
-        self.assertEqual(3, material)
-        self.assertAlmostEqual(3.97, rin, 5)
-        self.assertAlmostEqual(4.05, rout, 5)
-
-        zlow, zhigh, xcen, ycen, cylinders = geometry_definitions[2]
-        self.assertAlmostEqual(0.0, zlow, 5)
-        self.assertAlmostEqual(7.72, zhigh, 5)
-        self.assertIsNone(xcen)
-        self.assertIsNone(ycen)
-        self.assertEqual(3, len(cylinders))
-
-        material, rin, rout = cylinders[0]
-        self.assertEqual(1, material)
-        self.assertAlmostEqual(0.0, rin, 5)
-        self.assertAlmostEqual(3.81, rout, 5)
-
-        material, rin, rout = cylinders[1]
-        self.assertEqual(2, material)
-        self.assertAlmostEqual(3.81, rin, 5)
-        self.assertAlmostEqual(3.97, rout, 5)
-
-        material, rin, rout = cylinders[2]
-        self.assertEqual(3, material)
-        self.assertAlmostEqual(3.97, rin, 5)
-        self.assertAlmostEqual(4.05, rout, 5)
-
-        zlow, zhigh, xcen, ycen, cylinders = geometry_definitions[3]
-        self.assertAlmostEqual(7.72, zlow, 5)
-        self.assertAlmostEqual(9.72, zhigh, 5)
-        self.assertIsNone(xcen)
-        self.assertIsNone(ycen)
-        self.assertEqual(1, len(cylinders))
-
-        material, rin, rout = cylinders[0]
-        self.assertEqual(3, material)
-        self.assertAlmostEqual(0.0, rin, 5)
-        self.assertAlmostEqual(4.05, rout, 5)
-
-        (kparp,) = input.SKPAR.get()
-        self.assertEqual(2, kparp)
-
-        (se0,) = input.SENERG.get()
-        self.assertAlmostEqual(9.5e6, se0, 5)
-
-        sx0, sy0, sz0 = input.SPOSIT.get()
-        self.assertAlmostEqual(0.0, sx0, 5)
-        self.assertAlmostEqual(0.0, sy0, 5)
-        self.assertAlmostEqual(-10.0, sz0, 5)
-
-        theta, phi, alpha = input.SCONE.get()
-        self.assertAlmostEqual(0.0, theta, 5)
-        self.assertAlmostEqual(0.0, phi, 5)
-        self.assertAlmostEqual(0.0, alpha, 5)
-        #
-        (materials,) = input.materials.get()
-        self.assertEqual(3, len(materials))
-
-        filename, eabs1, eabs2, eabs3, c1, c2, wcc, wcr = materials[0]
-        self.assertEqual("NaI.mat", filename)
-        self.assertAlmostEqual(5e4, eabs1, 5)
-        self.assertAlmostEqual(5e3, eabs2, 5)
-        self.assertAlmostEqual(5e4, eabs3, 5)
-        self.assertAlmostEqual(0.1, c1, 5)
-        self.assertAlmostEqual(0.1, c2, 5)
-        self.assertAlmostEqual(2e3, wcc, 5)
-        self.assertAlmostEqual(2e3, wcr, 5)
-
-        filename, eabs1, eabs2, eabs3, c1, c2, wcc, wcr = materials[1]
-        self.assertEqual("Al2O3.mat", filename)
-        self.assertAlmostEqual(5e4, eabs1, 5)
-        self.assertAlmostEqual(5e3, eabs2, 5)
-        self.assertAlmostEqual(5e4, eabs3, 5)
-        self.assertAlmostEqual(0.1, c1, 5)
-        self.assertAlmostEqual(0.1, c2, 5)
-        self.assertAlmostEqual(2e3, wcc, 5)
-        self.assertAlmostEqual(2e3, wcr, 5)
-
-        filename, eabs1, eabs2, eabs3, c1, c2, wcc, wcr = materials[2]
-        self.assertEqual("Al.mat", filename)
-        self.assertAlmostEqual(5e4, eabs1, 5)
-        self.assertAlmostEqual(5e3, eabs2, 5)
-        self.assertAlmostEqual(5e4, eabs3, 5)
-        self.assertAlmostEqual(0.1, c1, 5)
-        self.assertAlmostEqual(0.1, c2, 5)
-        self.assertAlmostEqual(2e3, wcc, 5)
-        self.assertAlmostEqual(2e3, wcr, 5)
-        #
-        (energy_deposition_detectors,) = input.energy_deposition_detectors.get()
-        self.assertEqual(1, len(energy_deposition_detectors))
-
-        el, eu, nbe, spectrum_filename, cylinders = energy_deposition_detectors[0]
-        self.assertAlmostEqual(0.0, el, 5)
-        self.assertAlmostEqual(1e7, eu, 5)
-        self.assertEqual(1000, nbe)
-        self.assertIsNone(spectrum_filename)
-        self.assertEqual(1, len(cylinders))
-
-        kl, kc = cylinders[0]
-        self.assertEqual(3, kl)
-        self.assertEqual(1, kc)
-
-        (dose2d,) = input.DOSE2D.get()
-        self.assertEqual(1, len(dose2d))
-
-        kl, kc, nz, nr = dose2d[0]
-        self.assertEqual(3, kl)
-        self.assertEqual(1, kc)
-        self.assertEqual(nz, 50)
-        self.assertEqual(nr, 50)
-
-        (filename,) = input.RESUME.get()
-        self.assertEqual("dump.dat", filename)
-
-        (filename,) = input.DUMPTO.get()
-        self.assertEqual("dump.dat", filename)
-
-        (dumpp,) = input.DUMPP.get()
-        self.assertAlmostEqual(60.0, dumpp, 5)
-
-        (dshn,) = input.NSIMSH.get()
-        self.assertAlmostEqual(1e8, dshn, 5)
-
-        (timea,) = input.TIME.get()
-        self.assertAlmostEqual(2e9, timea, 5)
-
-    def test_example3_detector_write(self):
-        input, _materials = create_example3_detector()
-        input = self._write_read_input(input)
-        self._test_example3_detector(input)
-
-    def test_example3_detector_read(self):
-        filepath = os.path.join(self.testdatadir, "3-detector", "cyld.in")
-        input = PencylInput()
-        with open(filepath, "r") as fp:
-            input.read(fp)
-        self._test_example3_detector(input)
-
-
-if __name__ == "__main__":  # pragma: no cover
-    logging.basicConfig()
-    logging.getLogger().setLevel(logging.DEBUG)
-    unittest.main()
+def _test_example1_disc(input):
+    (geometry_definitions,) = input.geometry_definitions.get()
+    assert len(geometry_definitions) == 1
+
+    zlow, zhigh, xcen, ycen, cylinders = geometry_definitions[0]
+    assert zlow == pytest.approx(0.0, abs=1e-5)
+    assert zhigh == pytest.approx(0.005, abs=1e-5)
+    assert xcen is None
+    assert ycen is None
+    assert len(cylinders) == 1
+
+    material, rin, rout = cylinders[0]
+    assert material == 1
+    assert rin == pytest.approx(0.0, abs=1e-5)
+    assert rout == pytest.approx(0.01, abs=1e-5)
+
+    (kparp,) = input.SKPAR.get()
+    assert kparp == 1
+
+    (se0,) = input.SENERG.get()
+    assert se0 == pytest.approx(40e3, abs=1e-5)
+
+    sx0, sy0, sz0 = input.SPOSIT.get()
+    assert sx0 == pytest.approx(0.0, abs=1e-5)
+    assert sy0 == pytest.approx(0.0, abs=1e-5)
+    assert sz0 == pytest.approx(-0.0001, abs=1e-5)
+
+    theta, phi, alpha = input.SCONE.get()
+    assert theta == pytest.approx(0.0, abs=1e-5)
+    assert phi == pytest.approx(0.0, abs=1e-5)
+    assert alpha == pytest.approx(5.0, abs=1e-5)
+
+    (materials,) = input.materials.get()
+    assert len(materials) == 1
+
+    filename, eabs1, eabs2, eabs3, c1, c2, wcc, wcr = materials[0]
+    assert filename == "Cu.mat"
+    assert eabs1 == pytest.approx(1e3, abs=1e-5)
+    assert eabs2 == pytest.approx(1e3, abs=1e-5)
+    assert eabs3 == pytest.approx(1e3, abs=1e-5)
+    assert c1 == pytest.approx(0.05, abs=1e-5)
+    assert c2 == pytest.approx(0.05, abs=1e-5)
+    assert wcc == pytest.approx(1e3, abs=1e-5)
+    assert wcr == pytest.approx(1e3, abs=1e-5)
+
+    (dsmaxs,) = input.DSMAX.get()
+    assert len(dsmaxs) == 1
+
+    kl, kc, dsmax = dsmaxs[0]
+    assert kl == 1
+    assert kc == 1
+    assert dsmax == pytest.approx(1e-4, abs=1e-5)
+
+    (iforces,) = input.IFORCE.get()
+    assert len(iforces) == 2
+
+    kl, kc, kpar, icol, forcer, wlow, whig = iforces[0]
+    assert kl == 1
+    assert kc == 1
+    assert kpar == 1
+    assert icol == 4
+    assert forcer == pytest.approx(2000, abs=1e-5)
+    assert wlow == pytest.approx(0.1, abs=1e-5)
+    assert whig == pytest.approx(2.0, abs=1e-5)
+
+    kl, kc, kpar, icol, forcer, wlow, whig = iforces[1]
+    assert kl == 1
+    assert kc == 1
+    assert kpar == 1
+    assert icol == 5
+    assert forcer == pytest.approx(200, abs=1e-5)
+    assert wlow == pytest.approx(0.1, abs=1e-5)
+    assert whig == pytest.approx(2.0, abs=1e-5)
+
+    (ibrspls,) = input.IBRSPL.get()
+    assert len(ibrspls) == 1
+
+    kl, kc, factor = ibrspls[0]
+    assert kl == 1
+    assert kc == 1
+    assert factor == pytest.approx(2.0, abs=1e-5)
+
+    (ixrspls,) = input.IXRSPL.get()
+    assert len(ixrspls) == 1
+
+    kl, kc, factor = ibrspls[0]
+    assert kl == 1
+    assert kc == 1
+    assert factor == pytest.approx(2.0, abs=1e-5)
+
+    el, eu, nbe = input.NBE.get()
+    assert el == pytest.approx(0.0, abs=1e-5)
+    assert eu == pytest.approx(0.0, abs=1e-5)
+    assert nbe == 100
+
+    nbth, nbph = input.NBANGL.get()
+    assert nbth == 45
+    assert nbph == 18
+
+    radm, nbre = input.EMERGP.get()
+    assert radm == pytest.approx(0.005, abs=1e-5)
+    assert nbre == 100
+
+    (energy_deposition_detectors,) = input.energy_deposition_detectors.get()
+    assert len(energy_deposition_detectors) == 1
+
+    el, eu, nbe, spectrum_filename, cylinders = energy_deposition_detectors[0]
+    assert el == pytest.approx(0.0, abs=1e-5)
+    assert eu == pytest.approx(0.0, abs=1e-5)
+    assert nbe == 100
+    assert spectrum_filename is None
+    assert len(cylinders) == 1
+
+    kl, kc = cylinders[0]
+    assert kl == 1
+    assert kc == 1
+
+    (dose2d,) = input.DOSE2D.get()
+    assert len(dose2d) == 1
+
+    kl, kc, nz, nr = dose2d[0]
+    assert kl == 1
+    assert kc == 1
+    assert 100 == nz
+    assert 50 == nr
+
+    (filename,) = input.RESUME.get()
+    assert filename == "dump.dat"
+
+    (filename,) = input.DUMPTO.get()
+    assert filename == "dump.dat"
+
+    (dumpp,) = input.DUMPP.get()
+    assert dumpp == pytest.approx(60.0, abs=1e-5)
+
+    seed1, seed2 = input.RSEED.get()
+    assert seed1 == 1
+    assert seed2 == 1
+
+    (dshn,) = input.NSIMSH.get()
+    assert dshn == pytest.approx(1e9, abs=1e-5)
+
+    (timea,) = input.TIME.get()
+    assert timea == pytest.approx(600.0, abs=1e-5)
+
+
+def _test_example3_detector(input):
+    (geometry_definitions,) = input.geometry_definitions.get()
+    assert len(geometry_definitions) == 4
+
+    zlow, zhigh, xcen, ycen, cylinders = geometry_definitions[0]
+    assert zlow == pytest.approx(-0.24, abs=1e-5)
+    assert zhigh == pytest.approx(-0.16, abs=1e-5)
+    assert xcen == pytest.approx(0.0, abs=1e-5)
+    assert ycen == pytest.approx(0.0, abs=1e-5)
+    assert len(cylinders) == 1
+
+    material, rin, rout = cylinders[0]
+    assert material == 3
+    assert rin == pytest.approx(0.0, abs=1e-5)
+    assert rout == pytest.approx(4.05, abs=1e-5)
+
+    zlow, zhigh, xcen, ycen, cylinders = geometry_definitions[1]
+    assert zlow == pytest.approx(-0.16, abs=1e-5)
+    assert zhigh == pytest.approx(0.0, abs=1e-5)
+    assert xcen is None
+    assert ycen is None
+    assert len(cylinders) == 2
+
+    material, rin, rout = cylinders[0]
+    assert material == 2
+    assert rin == pytest.approx(0.0, abs=1e-5)
+    assert rout == pytest.approx(3.97, abs=1e-5)
+
+    material, rin, rout = cylinders[1]
+    assert material == 3
+    assert rin == pytest.approx(3.97, abs=1e-5)
+    assert rout == pytest.approx(4.05, abs=1e-5)
+
+    zlow, zhigh, xcen, ycen, cylinders = geometry_definitions[2]
+    assert zlow == pytest.approx(0.0, abs=1e-5)
+    assert zhigh == pytest.approx(7.72, abs=1e-5)
+    assert xcen is None
+    assert ycen is None
+    assert len(cylinders) == 3
+
+    material, rin, rout = cylinders[0]
+    assert material == 1
+    assert rin == pytest.approx(0.0, abs=1e-5)
+    assert rout == pytest.approx(3.81, abs=1e-5)
+
+    material, rin, rout = cylinders[1]
+    assert material == 2
+    assert rin == pytest.approx(3.81, abs=1e-5)
+    assert rout == pytest.approx(3.97, abs=1e-5)
+
+    material, rin, rout = cylinders[2]
+    assert material == 3
+    assert rin == pytest.approx(3.97, abs=1e-5)
+    assert rout == pytest.approx(4.05, abs=1e-5)
+
+    zlow, zhigh, xcen, ycen, cylinders = geometry_definitions[3]
+    assert zlow == pytest.approx(7.72, abs=1e-5)
+    assert zhigh == pytest.approx(9.72, abs=1e-5)
+    assert xcen is None
+    assert ycen is None
+    assert len(cylinders) == 1
+
+    material, rin, rout = cylinders[0]
+    assert material == 3
+    assert rin == pytest.approx(0.0, abs=1e-5)
+    assert rout == pytest.approx(4.05, abs=1e-5)
+
+    (kparp,) = input.SKPAR.get()
+    assert kparp == 2
+
+    (se0,) = input.SENERG.get()
+    assert se0 == pytest.approx(9.5e6, abs=1e-5)
+
+    sx0, sy0, sz0 = input.SPOSIT.get()
+    assert sx0 == pytest.approx(0.0, abs=1e-5)
+    assert sy0 == pytest.approx(0.0, abs=1e-5)
+    assert sz0 == pytest.approx(-10.0, abs=1e-5)
+
+    theta, phi, alpha = input.SCONE.get()
+    assert theta == pytest.approx(0.0, abs=1e-5)
+    assert phi == pytest.approx(0.0, abs=1e-5)
+    assert alpha == pytest.approx(0.0, abs=1e-5)
+    #
+    (materials,) = input.materials.get()
+    assert len(materials) == 3
+
+    filename, eabs1, eabs2, eabs3, c1, c2, wcc, wcr = materials[0]
+    assert filename == "NaI.mat"
+    assert eabs1 == pytest.approx(5e4, abs=1e-5)
+    assert eabs2 == pytest.approx(5e3, abs=1e-5)
+    assert eabs3 == pytest.approx(5e4, abs=1e-5)
+    assert c1 == pytest.approx(0.1, abs=1e-5)
+    assert c2 == pytest.approx(0.1, abs=1e-5)
+    assert wcc == pytest.approx(2e3, abs=1e-5)
+    assert wcr == pytest.approx(2e3, abs=1e-5)
+
+    filename, eabs1, eabs2, eabs3, c1, c2, wcc, wcr = materials[1]
+    assert filename == "Al2O3.mat"
+    assert eabs1 == pytest.approx(5e4, abs=1e-5)
+    assert eabs2 == pytest.approx(5e3, abs=1e-5)
+    assert eabs3 == pytest.approx(5e4, abs=1e-5)
+    assert c1 == pytest.approx(0.1, abs=1e-5)
+    assert c2 == pytest.approx(0.1, abs=1e-5)
+    assert wcc == pytest.approx(2e3, abs=1e-5)
+    assert wcr == pytest.approx(2e3, abs=1e-5)
+
+    filename, eabs1, eabs2, eabs3, c1, c2, wcc, wcr = materials[2]
+    assert filename == "Al.mat"
+    assert eabs1 == pytest.approx(5e4, abs=1e-5)
+    assert eabs2 == pytest.approx(5e3, abs=1e-5)
+    assert eabs3 == pytest.approx(5e4, abs=1e-5)
+    assert c1 == pytest.approx(0.1, abs=1e-5)
+    assert c2 == pytest.approx(0.1, abs=1e-5)
+    assert wcc == pytest.approx(2e3, abs=1e-5)
+    assert wcr == pytest.approx(2e3, abs=1e-5)
+    #
+    (energy_deposition_detectors,) = input.energy_deposition_detectors.get()
+    assert len(energy_deposition_detectors) == 1
+
+    el, eu, nbe, spectrum_filename, cylinders = energy_deposition_detectors[0]
+    assert el == pytest.approx(0.0, abs=1e-5)
+    assert eu == pytest.approx(1e7, abs=1e-5)
+    assert nbe == 1000
+    assert spectrum_filename is None
+    assert len(cylinders) == 1
+
+    kl, kc = cylinders[0]
+    assert kl == 3
+    assert kc == 1
+
+    (dose2d,) = input.DOSE2D.get()
+    assert len(dose2d) == 1
+
+    kl, kc, nz, nr = dose2d[0]
+    assert kl == 3
+    assert kc == 1
+    assert 50 == nz
+    assert 50 == nr
+
+    (filename,) = input.RESUME.get()
+    assert filename == "dump.dat"
+
+    (filename,) = input.DUMPTO.get()
+    assert filename == "dump.dat"
+
+    (dumpp,) = input.DUMPP.get()
+    assert dumpp == pytest.approx(60.0, abs=1e-5)
+
+    (dshn,) = input.NSIMSH.get()
+    assert dshn == pytest.approx(1e8, abs=1e-5)
+
+    (timea,) = input.TIME.get()
+    assert timea == pytest.approx(2e9, abs=1e-5)
+
+
+def _write_read_input(input):
+    fileobj = io.StringIO()
+
+    try:
+        input.write(fileobj)
+
+        fileobj.seek(0)
+        outinput = PencylInput()
+        outinput.read(fileobj)
+    finally:
+        fileobj.close()
+
+    return outinput
+
+
+def test_example1_disc_write():
+    input = create_example1_disc()
+    input = _write_read_input(input)
+    _test_example1_disc(input)
+
+
+def test_example1_disc_read(testdatadir):
+    filepath = testdatadir.joinpath("pencyl", "1-disc", "disc.in")
+    input = PencylInput()
+    with open(filepath, "r") as fp:
+        input.read(fp)
+    _test_example1_disc(input)
+
+
+def test_example3_detector_write():
+    input, _materials = create_example3_detector()
+    input = _write_read_input(input)
+    _test_example3_detector(input)
+
+
+def test_example3_detector_read(testdatadir):
+    filepath = testdatadir.joinpath("pencyl", "3-detector", "cyld.in")
+    input = PencylInput()
+    with open(filepath, "r") as fp:
+        input.read(fp)
+    _test_example3_detector(input)

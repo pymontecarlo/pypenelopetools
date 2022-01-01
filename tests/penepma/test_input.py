@@ -1,14 +1,11 @@
-#!/usr/bin/env python
 """ """
 
 # Standard library modules.
-import unittest
-import logging
 import io
-import os
 
 # Third party modules.
 import pyxray
+import pytest
 
 # Local modules.
 from pypenelopetools.penelope.enums import KPAR, ICOL
@@ -283,785 +280,779 @@ def create_epma2():
     return input
 
 
-class TestPenmainInput(unittest.TestCase):
-    def setUp(self):
-        super().setUp()
-
-        self.testdatadir = os.path.join(
-            os.path.dirname(__file__), "..", "testdata", "penepma"
-        )
-
-    def _write_read_input(self, input):
-        fileobj = io.StringIO()
-
-        try:
-            input.write(fileobj)
-
-            fileobj.seek(0)
-            outinput = PenepmaInput()
-            outinput.read(fileobj)
-        finally:
-            fileobj.close()
-
-        return outinput
-
-    def _test_epma1(self, input):
-        (se0,) = input.SENERG.get()
-        self.assertAlmostEqual(15e3, se0, 5)
-
-        sx0, sy0, sz0 = input.SPOSIT.get()
-        self.assertAlmostEqual(0.0, sx0, 5)
-        self.assertAlmostEqual(0.0, sy0, 5)
-        self.assertAlmostEqual(1.0, sz0, 5)
-
-        theta, phi = input.SDIREC.get()
-        self.assertAlmostEqual(180.0, theta, 5)
-        self.assertAlmostEqual(0.0, phi, 5)
-
-        (alpha,) = input.SAPERT.get()
-        self.assertAlmostEqual(0.0, alpha, 5)
-
-        (materials,) = input.materials.get()
-        self.assertEqual(1, len(materials))
-
-        filename, eabs1, eabs2, eabs3, c1, c2, wcc, wcr = materials[0]
-        self.assertEqual("Cu.mat", filename)
-        self.assertAlmostEqual(1e3, eabs1, 5)
-        self.assertAlmostEqual(1e3, eabs2, 5)
-        self.assertAlmostEqual(1e3, eabs3, 5)
-        self.assertAlmostEqual(0.2, c1, 5)
-        self.assertAlmostEqual(0.2, c2, 5)
-        self.assertAlmostEqual(1e3, wcc, 5)
-        self.assertAlmostEqual(1e3, wcr, 5)
-
-        self.assertEqual("epma1.geo", input.GEOMFN.get()[0])
-
-        (dsmaxs,) = input.DSMAX.get()
-        self.assertEqual(1, len(dsmaxs))
-
-        kb, dsmax = dsmaxs[0]
-        self.assertEqual(1, kb)
-        self.assertAlmostEqual(1e-4, dsmax, 5)
-
-        (iforces,) = input.IFORCE.get()
-        self.assertEqual(4, len(iforces))
-
-        kb, kpar, icol, forcer, wlow, whig = iforces[0]
-        self.assertEqual(1, kb)
-        self.assertEqual(1, kpar)
-        self.assertEqual(4, icol)
-        self.assertAlmostEqual(-5, forcer, 5)
-        self.assertAlmostEqual(0.9, wlow, 5)
-        self.assertAlmostEqual(1.0, whig, 5)
-
-        kb, kpar, icol, forcer, wlow, whig = iforces[1]
-        self.assertEqual(1, kb)
-        self.assertEqual(1, kpar)
-        self.assertEqual(5, icol)
-        self.assertAlmostEqual(-250, forcer, 5)
-        self.assertAlmostEqual(0.9, wlow, 5)
-        self.assertAlmostEqual(1.0, whig, 5)
-
-        kb, kpar, icol, forcer, wlow, whig = iforces[2]
-        self.assertEqual(1, kb)
-        self.assertEqual(2, kpar)
-        self.assertEqual(2, icol)
-        self.assertAlmostEqual(10, forcer, 5)
-        self.assertAlmostEqual(1e-3, wlow, 5)
-        self.assertAlmostEqual(1.0, whig, 5)
-
-        kb, kpar, icol, forcer, wlow, whig = iforces[3]
-        self.assertEqual(1, kb)
-        self.assertEqual(2, kpar)
-        self.assertEqual(3, icol)
-        self.assertAlmostEqual(10, forcer, 5)
-        self.assertAlmostEqual(1e-3, wlow, 5)
-        self.assertAlmostEqual(1.0, whig, 5)
-
-        (ibrspls,) = input.IBRSPL.get()
-        self.assertEqual(1, len(ibrspls))
-
-        kb, factor = ibrspls[0]
-        self.assertEqual(1, kb)
-        self.assertAlmostEqual(2.0, factor, 5)
-
-        (ixrspls,) = input.IXRSPL.get()
-        self.assertEqual(1, len(ixrspls))
-
-        kb, factor = ixrspls[0]
-        self.assertEqual(1, kb)
-        self.assertAlmostEqual(2.0, factor, 5)
-
-        el, eu, nbe = input.NBE.get()
-        self.assertAlmostEqual(0.0, el, 5)
-        self.assertAlmostEqual(0.0, eu, 5)
-        self.assertEqual(300, nbe)
-
-        nbth, nbph = input.NBANGL.get()
-        self.assertEqual(45, nbth)
-        self.assertEqual(30, nbph)
-
-        (photon_detectors,) = input.photon_detectors.get()
-        self.assertEqual(9, len(photon_detectors))
-
-        (
-            theta1,
-            theta2,
-            phi1,
-            phi2,
-            ipsf,
-            edel,
-            edeu,
-            nche,
-            emission_filename,
-        ) = photon_detectors[0]
-        self.assertAlmostEqual(0.0, theta1, 5)
-        self.assertAlmostEqual(90.0, theta2, 5)
-        self.assertAlmostEqual(0.0, phi1, 5)
-        self.assertAlmostEqual(360.0, phi2, 5)
-        self.assertEqual(0, ipsf)
-        self.assertAlmostEqual(0.0, edel, 5)
-        self.assertAlmostEqual(0.0, edeu, 5)
-        self.assertEqual(1000, nche)
-        self.assertIsNone(emission_filename)
-
-        (
-            theta1,
-            theta2,
-            phi1,
-            phi2,
-            ipsf,
-            edel,
-            edeu,
-            nche,
-            emission_filename,
-        ) = photon_detectors[1]
-        self.assertAlmostEqual(5.0, theta1, 5)
-        self.assertAlmostEqual(15.0, theta2, 5)
-        self.assertAlmostEqual(0.0, phi1, 5)
-        self.assertAlmostEqual(360.0, phi2, 5)
-        self.assertEqual(0, ipsf)
-        self.assertAlmostEqual(0.0, edel, 5)
-        self.assertAlmostEqual(0.0, edeu, 5)
-        self.assertEqual(1000, nche)
-        self.assertIsNone(emission_filename)
-
-        (
-            theta1,
-            theta2,
-            phi1,
-            phi2,
-            ipsf,
-            edel,
-            edeu,
-            nche,
-            emission_filename,
-        ) = photon_detectors[2]
-        self.assertAlmostEqual(15.0, theta1, 5)
-        self.assertAlmostEqual(25.0, theta2, 5)
-        self.assertAlmostEqual(0.0, phi1, 5)
-        self.assertAlmostEqual(360.0, phi2, 5)
-        self.assertEqual(0, ipsf)
-        self.assertAlmostEqual(0.0, edel, 5)
-        self.assertAlmostEqual(0.0, edeu, 5)
-        self.assertEqual(1000, nche)
-        self.assertIsNone(emission_filename)
-
-        (
-            theta1,
-            theta2,
-            phi1,
-            phi2,
-            ipsf,
-            edel,
-            edeu,
-            nche,
-            emission_filename,
-        ) = photon_detectors[3]
-        self.assertAlmostEqual(25.0, theta1, 5)
-        self.assertAlmostEqual(35.0, theta2, 5)
-        self.assertAlmostEqual(0.0, phi1, 5)
-        self.assertAlmostEqual(360.0, phi2, 5)
-        self.assertEqual(0, ipsf)
-        self.assertAlmostEqual(0.0, edel, 5)
-        self.assertAlmostEqual(0.0, edeu, 5)
-        self.assertEqual(1000, nche)
-        self.assertIsNone(emission_filename)
-
-        (
-            theta1,
-            theta2,
-            phi1,
-            phi2,
-            ipsf,
-            edel,
-            edeu,
-            nche,
-            emission_filename,
-        ) = photon_detectors[4]
-        self.assertAlmostEqual(35.0, theta1, 5)
-        self.assertAlmostEqual(45.0, theta2, 5)
-        self.assertAlmostEqual(0.0, phi1, 5)
-        self.assertAlmostEqual(360.0, phi2, 5)
-        self.assertEqual(0, ipsf)
-        self.assertAlmostEqual(0.0, edel, 5)
-        self.assertAlmostEqual(0.0, edeu, 5)
-        self.assertEqual(1000, nche)
-        self.assertIsNone(emission_filename)
-
-        (
-            theta1,
-            theta2,
-            phi1,
-            phi2,
-            ipsf,
-            edel,
-            edeu,
-            nche,
-            emission_filename,
-        ) = photon_detectors[5]
-        self.assertAlmostEqual(45.0, theta1, 5)
-        self.assertAlmostEqual(55.0, theta2, 5)
-        self.assertAlmostEqual(0.0, phi1, 5)
-        self.assertAlmostEqual(360.0, phi2, 5)
-        self.assertEqual(0, ipsf)
-        self.assertAlmostEqual(0.0, edel, 5)
-        self.assertAlmostEqual(0.0, edeu, 5)
-        self.assertEqual(1000, nche)
-        self.assertIsNone(emission_filename)
-
-        (
-            theta1,
-            theta2,
-            phi1,
-            phi2,
-            ipsf,
-            edel,
-            edeu,
-            nche,
-            emission_filename,
-        ) = photon_detectors[6]
-        self.assertAlmostEqual(55.0, theta1, 5)
-        self.assertAlmostEqual(65.0, theta2, 5)
-        self.assertAlmostEqual(0.0, phi1, 5)
-        self.assertAlmostEqual(360.0, phi2, 5)
-        self.assertEqual(0, ipsf)
-        self.assertAlmostEqual(0.0, edel, 5)
-        self.assertAlmostEqual(0.0, edeu, 5)
-        self.assertEqual(1000, nche)
-        self.assertIsNone(emission_filename)
-
-        (
-            theta1,
-            theta2,
-            phi1,
-            phi2,
-            ipsf,
-            edel,
-            edeu,
-            nche,
-            emission_filename,
-        ) = photon_detectors[7]
-        self.assertAlmostEqual(65.0, theta1, 5)
-        self.assertAlmostEqual(75.0, theta2, 5)
-        self.assertAlmostEqual(0.0, phi1, 5)
-        self.assertAlmostEqual(360.0, phi2, 5)
-        self.assertEqual(0, ipsf)
-        self.assertAlmostEqual(0.0, edel, 5)
-        self.assertAlmostEqual(0.0, edeu, 5)
-        self.assertEqual(1000, nche)
-        self.assertIsNone(emission_filename)
-
-        (
-            theta1,
-            theta2,
-            phi1,
-            phi2,
-            ipsf,
-            edel,
-            edeu,
-            nche,
-            emission_filename,
-        ) = photon_detectors[8]
-        self.assertAlmostEqual(75.0, theta1, 5)
-        self.assertAlmostEqual(85.0, theta2, 5)
-        self.assertAlmostEqual(0.0, phi1, 5)
-        self.assertAlmostEqual(360.0, phi2, 5)
-        self.assertEqual(0, ipsf)
-        self.assertAlmostEqual(0.0, edel, 5)
-        self.assertAlmostEqual(0.0, edeu, 5)
-        self.assertEqual(1000, nche)
-        self.assertIsNone(emission_filename)
-
-        xl, xu, ndbx = input.GRIDX.get()
-        self.assertAlmostEqual(-4e-5, xl, 5)
-        self.assertAlmostEqual(4e-5, xu, 5)
-        self.assertEqual(60, ndbx)
-
-        yl, yu, ndby = input.GRIDY.get()
-        self.assertAlmostEqual(-4e-5, yl, 5)
-        self.assertAlmostEqual(4e-5, yu, 5)
-        self.assertEqual(60, ndby)
-
-        zl, zu, ndbz = input.GRIDZ.get()
-        self.assertAlmostEqual(-6e-5, zl, 5)
-        self.assertAlmostEqual(0.0, zu, 5)
-        self.assertEqual(60, ndbz)
-
-        (xrlines,) = input.XRLINE.get()
-        self.assertEqual(1, len(xrlines))
-
-        (izs1s200,) = xrlines[0]
-        self.assertEqual(29010300, izs1s200)
-
-        (filename,) = input.RESUME.get()
-        self.assertEqual("dump1.dat", filename)
-
-        (filename,) = input.DUMPTO.get()
-        self.assertEqual("dump1.dat", filename)
-
-        (dumpp,) = input.DUMPP.get()
-        self.assertAlmostEqual(60.0, dumpp, 5)
-
-        seed1, seed2 = input.RSEED.get()
-        self.assertEqual(-10, seed1)
-        self.assertEqual(1, seed2)
-
-        izs1s200, idet, tol = input.REFLIN.get()
-        self.assertEqual(29010300, izs1s200)
-        self.assertEqual(1, idet)
-        self.assertAlmostEqual(1.25e-3, tol, 5)
-
-        (dshn,) = input.NSIMSH.get()
-        self.assertAlmostEqual(2e9, dshn, 5)
-
-        (timea,) = input.TIME.get()
-        self.assertAlmostEqual(2e9, timea, 5)
-
-    def test_epma1_skeleton(self):
-        input = create_epma1()
-        self._test_epma1(input)
-
-    def test_epma1_write(self):
-        input = create_epma1()
-        input = self._write_read_input(input)
-        self._test_epma1(input)
-
-    def test_epma1_read(self):
-        filepath = os.path.join(self.testdatadir, "epma1.in")
-        input = PenepmaInput()
-        with open(filepath, "r") as fp:
-            input.read(fp)
-        self._test_epma1(input)
-
-    def _test_epma2(self, input):
-        (se0,) = input.SENERG.get()
-        self.assertAlmostEqual(15e3, se0, 5)
-
-        sx0, sy0, sz0 = input.SPOSIT.get()
-        self.assertAlmostEqual(2e-5, sx0, 8)
-        self.assertAlmostEqual(0.0, sy0, 5)
-        self.assertAlmostEqual(1.0, sz0, 5)
-
-        theta, phi = input.SDIREC.get()
-        self.assertAlmostEqual(180.0, theta, 5)
-        self.assertAlmostEqual(0.0, phi, 5)
-
-        (alpha,) = input.SAPERT.get()
-        self.assertAlmostEqual(0.0, alpha, 5)
-
-        (materials,) = input.materials.get()
-        self.assertEqual(2, len(materials))
-
-        filename, eabs1, eabs2, eabs3, c1, c2, wcc, wcr = materials[0]
-        self.assertEqual("Cu.mat", filename)
-        self.assertAlmostEqual(1e3, eabs1, 5)
-        self.assertAlmostEqual(1e3, eabs2, 5)
-        self.assertAlmostEqual(1e3, eabs3, 5)
-        self.assertAlmostEqual(0.2, c1, 5)
-        self.assertAlmostEqual(0.2, c2, 5)
-        self.assertAlmostEqual(1e3, wcc, 5)
-        self.assertAlmostEqual(1e3, wcr, 5)
-
-        filename, eabs1, eabs2, eabs3, c1, c2, wcc, wcr = materials[1]
-        self.assertEqual("Fe.mat", filename)
-        self.assertAlmostEqual(1e3, eabs1, 5)
-        self.assertAlmostEqual(1e3, eabs2, 5)
-        self.assertAlmostEqual(1e3, eabs3, 5)
-        self.assertAlmostEqual(0.2, c1, 5)
-        self.assertAlmostEqual(0.2, c2, 5)
-        self.assertAlmostEqual(1e3, wcc, 5)
-        self.assertAlmostEqual(1e3, wcr, 5)
-
-        self.assertEqual("epma2.geo", input.GEOMFN.get()[0])
-
-        (dsmaxs,) = input.DSMAX.get()
-        self.assertEqual(2, len(dsmaxs))
-
-        kb, dsmax = dsmaxs[0]
-        self.assertEqual(1, kb)
-        self.assertAlmostEqual(1e-4, dsmax, 5)
-
-        kb, dsmax = dsmaxs[1]
-        self.assertEqual(2, kb)
-        self.assertAlmostEqual(1e-4, dsmax, 5)
-
-        (iforces,) = input.IFORCE.get()
-        self.assertEqual(8, len(iforces))
-
-        kb, kpar, icol, forcer, wlow, whig = iforces[0]
-        self.assertEqual(1, kb)
-        self.assertEqual(1, kpar)
-        self.assertEqual(4, icol)
-        self.assertAlmostEqual(-5, forcer, 5)
-        self.assertAlmostEqual(0.9, wlow, 5)
-        self.assertAlmostEqual(1.0, whig, 5)
-
-        kb, kpar, icol, forcer, wlow, whig = iforces[1]
-        self.assertEqual(1, kb)
-        self.assertEqual(1, kpar)
-        self.assertEqual(5, icol)
-        self.assertAlmostEqual(-250, forcer, 5)
-        self.assertAlmostEqual(0.9, wlow, 5)
-        self.assertAlmostEqual(1.0, whig, 5)
-
-        kb, kpar, icol, forcer, wlow, whig = iforces[2]
-        self.assertEqual(1, kb)
-        self.assertEqual(2, kpar)
-        self.assertEqual(2, icol)
-        self.assertAlmostEqual(10, forcer, 5)
-        self.assertAlmostEqual(1e-3, wlow, 5)
-        self.assertAlmostEqual(1.0, whig, 5)
-
-        kb, kpar, icol, forcer, wlow, whig = iforces[3]
-        self.assertEqual(1, kb)
-        self.assertEqual(2, kpar)
-        self.assertEqual(3, icol)
-        self.assertAlmostEqual(10, forcer, 5)
-        self.assertAlmostEqual(1e-3, wlow, 5)
-        self.assertAlmostEqual(1.0, whig, 5)
-
-        kb, kpar, icol, forcer, wlow, whig = iforces[4]
-        self.assertEqual(2, kb)
-        self.assertEqual(1, kpar)
-        self.assertEqual(4, icol)
-        self.assertAlmostEqual(-5, forcer, 5)
-        self.assertAlmostEqual(0.9, wlow, 5)
-        self.assertAlmostEqual(1.0, whig, 5)
-
-        kb, kpar, icol, forcer, wlow, whig = iforces[5]
-        self.assertEqual(2, kb)
-        self.assertEqual(1, kpar)
-        self.assertEqual(5, icol)
-        self.assertAlmostEqual(-7, forcer, 5)
-        self.assertAlmostEqual(0.9, wlow, 5)
-        self.assertAlmostEqual(1.0, whig, 5)
-
-        kb, kpar, icol, forcer, wlow, whig = iforces[6]
-        self.assertEqual(2, kb)
-        self.assertEqual(2, kpar)
-        self.assertEqual(2, icol)
-        self.assertAlmostEqual(10, forcer, 5)
-        self.assertAlmostEqual(1e-3, wlow, 5)
-        self.assertAlmostEqual(1.0, whig, 5)
-
-        kb, kpar, icol, forcer, wlow, whig = iforces[7]
-        self.assertEqual(2, kb)
-        self.assertEqual(2, kpar)
-        self.assertEqual(3, icol)
-        self.assertAlmostEqual(10, forcer, 5)
-        self.assertAlmostEqual(1e-3, wlow, 5)
-        self.assertAlmostEqual(1.0, whig, 5)
-
-        (ibrspls,) = input.IBRSPL.get()
-        self.assertEqual(2, len(ibrspls))
-
-        kb, factor = ibrspls[0]
-        self.assertEqual(1, kb)
-        self.assertAlmostEqual(2.0, factor, 5)
-
-        kb, factor = ibrspls[1]
-        self.assertEqual(2, kb)
-        self.assertAlmostEqual(2.0, factor, 5)
-
-        (ixrspls,) = input.IXRSPL.get()
-        self.assertEqual(2, len(ixrspls))
-
-        kb, factor = ixrspls[0]
-        self.assertEqual(1, kb)
-        self.assertAlmostEqual(2.0, factor, 5)
-
-        kb, factor = ixrspls[1]
-        self.assertEqual(2, kb)
-        self.assertAlmostEqual(2.0, factor, 5)
-
-        el, eu, nbe = input.NBE.get()
-        self.assertAlmostEqual(0.0, el, 5)
-        self.assertAlmostEqual(0.0, eu, 5)
-        self.assertEqual(300, nbe)
-
-        nbth, nbph = input.NBANGL.get()
-        self.assertEqual(45, nbth)
-        self.assertEqual(30, nbph)
-
-        (photon_detectors,) = input.photon_detectors.get()
-        self.assertEqual(9, len(photon_detectors))
-
-        (
-            theta1,
-            theta2,
-            phi1,
-            phi2,
-            ipsf,
-            edel,
-            edeu,
-            nche,
-            emission_filename,
-        ) = photon_detectors[0]
-        self.assertAlmostEqual(0.0, theta1, 5)
-        self.assertAlmostEqual(90.0, theta2, 5)
-        self.assertAlmostEqual(0.0, phi1, 5)
-        self.assertAlmostEqual(360.0, phi2, 5)
-        self.assertEqual(0, ipsf)
-        self.assertAlmostEqual(0.0, edel, 5)
-        self.assertAlmostEqual(0.0, edeu, 5)
-        self.assertEqual(1000, nche)
-        self.assertIsNone(emission_filename)
-
-        (
-            theta1,
-            theta2,
-            phi1,
-            phi2,
-            ipsf,
-            edel,
-            edeu,
-            nche,
-            emission_filename,
-        ) = photon_detectors[1]
-        self.assertAlmostEqual(5.0, theta1, 5)
-        self.assertAlmostEqual(15.0, theta2, 5)
-        self.assertAlmostEqual(0.0, phi1, 5)
-        self.assertAlmostEqual(360.0, phi2, 5)
-        self.assertEqual(0, ipsf)
-        self.assertAlmostEqual(0.0, edel, 5)
-        self.assertAlmostEqual(0.0, edeu, 5)
-        self.assertEqual(1000, nche)
-        self.assertIsNone(emission_filename)
-
-        (
-            theta1,
-            theta2,
-            phi1,
-            phi2,
-            ipsf,
-            edel,
-            edeu,
-            nche,
-            emission_filename,
-        ) = photon_detectors[2]
-        self.assertAlmostEqual(15.0, theta1, 5)
-        self.assertAlmostEqual(25.0, theta2, 5)
-        self.assertAlmostEqual(0.0, phi1, 5)
-        self.assertAlmostEqual(360.0, phi2, 5)
-        self.assertEqual(0, ipsf)
-        self.assertAlmostEqual(0.0, edel, 5)
-        self.assertAlmostEqual(0.0, edeu, 5)
-        self.assertEqual(1000, nche)
-        self.assertIsNone(emission_filename)
-
-        (
-            theta1,
-            theta2,
-            phi1,
-            phi2,
-            ipsf,
-            edel,
-            edeu,
-            nche,
-            emission_filename,
-        ) = photon_detectors[3]
-        self.assertAlmostEqual(25.0, theta1, 5)
-        self.assertAlmostEqual(35.0, theta2, 5)
-        self.assertAlmostEqual(0.0, phi1, 5)
-        self.assertAlmostEqual(360.0, phi2, 5)
-        self.assertEqual(0, ipsf)
-        self.assertAlmostEqual(0.0, edel, 5)
-        self.assertAlmostEqual(0.0, edeu, 5)
-        self.assertEqual(1000, nche)
-        self.assertIsNone(emission_filename)
-
-        (
-            theta1,
-            theta2,
-            phi1,
-            phi2,
-            ipsf,
-            edel,
-            edeu,
-            nche,
-            emission_filename,
-        ) = photon_detectors[4]
-        self.assertAlmostEqual(35.0, theta1, 5)
-        self.assertAlmostEqual(45.0, theta2, 5)
-        self.assertAlmostEqual(0.0, phi1, 5)
-        self.assertAlmostEqual(360.0, phi2, 5)
-        self.assertEqual(0, ipsf)
-        self.assertAlmostEqual(0.0, edel, 5)
-        self.assertAlmostEqual(0.0, edeu, 5)
-        self.assertEqual(1000, nche)
-        self.assertIsNone(emission_filename)
-
-        (
-            theta1,
-            theta2,
-            phi1,
-            phi2,
-            ipsf,
-            edel,
-            edeu,
-            nche,
-            emission_filename,
-        ) = photon_detectors[5]
-        self.assertAlmostEqual(45.0, theta1, 5)
-        self.assertAlmostEqual(55.0, theta2, 5)
-        self.assertAlmostEqual(0.0, phi1, 5)
-        self.assertAlmostEqual(360.0, phi2, 5)
-        self.assertEqual(0, ipsf)
-        self.assertAlmostEqual(0.0, edel, 5)
-        self.assertAlmostEqual(0.0, edeu, 5)
-        self.assertEqual(1000, nche)
-        self.assertIsNone(emission_filename)
-
-        (
-            theta1,
-            theta2,
-            phi1,
-            phi2,
-            ipsf,
-            edel,
-            edeu,
-            nche,
-            emission_filename,
-        ) = photon_detectors[6]
-        self.assertAlmostEqual(55.0, theta1, 5)
-        self.assertAlmostEqual(65.0, theta2, 5)
-        self.assertAlmostEqual(0.0, phi1, 5)
-        self.assertAlmostEqual(360.0, phi2, 5)
-        self.assertEqual(0, ipsf)
-        self.assertAlmostEqual(0.0, edel, 5)
-        self.assertAlmostEqual(0.0, edeu, 5)
-        self.assertEqual(1000, nche)
-        self.assertIsNone(emission_filename)
-
-        (
-            theta1,
-            theta2,
-            phi1,
-            phi2,
-            ipsf,
-            edel,
-            edeu,
-            nche,
-            emission_filename,
-        ) = photon_detectors[7]
-        self.assertAlmostEqual(65.0, theta1, 5)
-        self.assertAlmostEqual(75.0, theta2, 5)
-        self.assertAlmostEqual(0.0, phi1, 5)
-        self.assertAlmostEqual(360.0, phi2, 5)
-        self.assertEqual(0, ipsf)
-        self.assertAlmostEqual(0.0, edel, 5)
-        self.assertAlmostEqual(0.0, edeu, 5)
-        self.assertEqual(1000, nche)
-        self.assertIsNone(emission_filename)
-
-        (
-            theta1,
-            theta2,
-            phi1,
-            phi2,
-            ipsf,
-            edel,
-            edeu,
-            nche,
-            emission_filename,
-        ) = photon_detectors[8]
-        self.assertAlmostEqual(75.0, theta1, 5)
-        self.assertAlmostEqual(85.0, theta2, 5)
-        self.assertAlmostEqual(0.0, phi1, 5)
-        self.assertAlmostEqual(360.0, phi2, 5)
-        self.assertEqual(0, ipsf)
-        self.assertAlmostEqual(0.0, edel, 5)
-        self.assertAlmostEqual(0.0, edeu, 5)
-        self.assertEqual(1000, nche)
-        self.assertIsNone(emission_filename)
-
-        xl, xu, ndbx = input.GRIDX.get()
-        self.assertAlmostEqual(-1e-5, xl, 5)
-        self.assertAlmostEqual(5e-5, xu, 5)
-        self.assertEqual(60, ndbx)
-
-        yl, yu, ndby = input.GRIDY.get()
-        self.assertAlmostEqual(-3e-5, yl, 5)
-        self.assertAlmostEqual(3e-5, yu, 5)
-        self.assertEqual(60, ndby)
-
-        zl, zu, ndbz = input.GRIDZ.get()
-        self.assertAlmostEqual(-6e-5, zl, 5)
-        self.assertAlmostEqual(0.0, zu, 5)
-        self.assertEqual(60, ndbz)
-
-        (xrlines,) = input.XRLINE.get()
-        self.assertEqual(2, len(xrlines))
-
-        (izs1s200,) = xrlines[0]
-        self.assertEqual(26010300, izs1s200)
-
-        (izs1s200,) = xrlines[1]
-        self.assertEqual(29010300, izs1s200)
-
-        (filename,) = input.RESUME.get()
-        self.assertEqual("dump2.dat", filename)
-
-        (filename,) = input.DUMPTO.get()
-        self.assertEqual("dump2.dat", filename)
-
-        (dumpp,) = input.DUMPP.get()
-        self.assertAlmostEqual(60.0, dumpp, 5)
-
-        seed1, seed2 = input.RSEED.get()
-        self.assertEqual(-10, seed1)
-        self.assertEqual(1, seed2)
-
-        izs1s200, idet, tol = input.REFLIN.get()
-        self.assertEqual(26010300, izs1s200)
-        self.assertEqual(1, idet)
-        self.assertAlmostEqual(1.5e-3, tol, 5)
-
-        (dshn,) = input.NSIMSH.get()
-        self.assertAlmostEqual(2e9, dshn, 5)
-
-        (timea,) = input.TIME.get()
-        self.assertAlmostEqual(2e9, timea, 5)
-
-    def test_epma2_skeleton(self):
-        input = create_epma2()
-        self._test_epma2(input)
-
-    def test_epma2_write(self):
-        input = create_epma2()
-        input = self._write_read_input(input)
-        self._test_epma2(input)
-
-    def test_epma2_read(self):
-        filepath = os.path.join(self.testdatadir, "epma2.in")
-        input = PenepmaInput()
-        with open(filepath, "r") as fp:
-            input.read(fp)
-        self._test_epma2(input)
-
-
-if __name__ == "__main__":  # pragma: no cover
-    logging.basicConfig()
-    logging.getLogger().setLevel(logging.DEBUG)
-    unittest.main()
+def _write_read_input(input):
+    fileobj = io.StringIO()
+
+    try:
+        input.write(fileobj)
+
+        fileobj.seek(0)
+        outinput = PenepmaInput()
+        outinput.read(fileobj)
+    finally:
+        fileobj.close()
+
+    return outinput
+
+
+def _test_epma1(input):
+    (se0,) = input.SENERG.get()
+    assert se0 == pytest.approx(15e3, abs=1e-5)
+
+    sx0, sy0, sz0 = input.SPOSIT.get()
+    assert sx0 == pytest.approx(0.0, abs=1e-5)
+    assert sy0 == pytest.approx(0.0, abs=1e-5)
+    assert sz0 == pytest.approx(1.0, abs=1e-5)
+
+    theta, phi = input.SDIREC.get()
+    assert theta == pytest.approx(180.0, abs=1e-5)
+    assert phi == pytest.approx(0.0, abs=1e-5)
+
+    (alpha,) = input.SAPERT.get()
+    assert alpha == pytest.approx(0.0, abs=1e-5)
+
+    (materials,) = input.materials.get()
+    assert len(materials) == 1
+
+    filename, eabs1, eabs2, eabs3, c1, c2, wcc, wcr = materials[0]
+    assert filename == "Cu.mat"
+    assert eabs1 == pytest.approx(1e3, abs=1e-5)
+    assert eabs2 == pytest.approx(1e3, abs=1e-5)
+    assert eabs3 == pytest.approx(1e3, abs=1e-5)
+    assert c1 == pytest.approx(0.2, abs=1e-5)
+    assert c2 == pytest.approx(0.2, abs=1e-5)
+    assert wcc == pytest.approx(1e3, abs=1e-5)
+    assert wcr == pytest.approx(1e3, abs=1e-5)
+
+    assert input.GEOMFN.get()[0] == "epma1.geo"
+
+    (dsmaxs,) = input.DSMAX.get()
+    assert len(dsmaxs) == 1
+
+    kb, dsmax = dsmaxs[0]
+    assert kb == 1
+    assert dsmax == pytest.approx(1e-4, abs=1e-5)
+
+    (iforces,) = input.IFORCE.get()
+    assert len(iforces) == 4
+
+    kb, kpar, icol, forcer, wlow, whig = iforces[0]
+    assert kb == 1
+    assert kpar == 1
+    assert icol == 4
+    assert forcer == pytest.approx(-5, abs=1e-5)
+    assert wlow == pytest.approx(0.9, abs=1e-5)
+    assert whig == pytest.approx(1.0, abs=1e-5)
+
+    kb, kpar, icol, forcer, wlow, whig = iforces[1]
+    assert kb == 1
+    assert kpar == 1
+    assert icol == 5
+    assert forcer == pytest.approx(-250, abs=1e-5)
+    assert wlow == pytest.approx(0.9, abs=1e-5)
+    assert whig == pytest.approx(1.0, abs=1e-5)
+
+    kb, kpar, icol, forcer, wlow, whig = iforces[2]
+    assert kb == 1
+    assert kpar == 2
+    assert icol == 2
+    assert forcer == pytest.approx(10, abs=1e-5)
+    assert wlow == pytest.approx(1e-3, abs=1e-5)
+    assert whig == pytest.approx(1.0, abs=1e-5)
+
+    kb, kpar, icol, forcer, wlow, whig = iforces[3]
+    assert kb == 1
+    assert kpar == 2
+    assert icol == 3
+    assert forcer == pytest.approx(10, abs=1e-5)
+    assert wlow == pytest.approx(1e-3, abs=1e-5)
+    assert whig == pytest.approx(1.0, abs=1e-5)
+
+    (ibrspls,) = input.IBRSPL.get()
+    assert len(ibrspls) == 1
+
+    kb, factor = ibrspls[0]
+    assert kb == 1
+    assert factor == pytest.approx(2.0, abs=1e-5)
+
+    (ixrspls,) = input.IXRSPL.get()
+    assert len(ixrspls) == 1
+
+    kb, factor = ixrspls[0]
+    assert kb == 1
+    assert factor == pytest.approx(2.0, abs=1e-5)
+
+    el, eu, nbe = input.NBE.get()
+    assert el == pytest.approx(0.0, abs=1e-5)
+    assert eu == pytest.approx(0.0, abs=1e-5)
+    assert nbe == 300
+
+    nbth, nbph = input.NBANGL.get()
+    assert nbth == 45
+    assert nbph == 30
+
+    (photon_detectors,) = input.photon_detectors.get()
+    assert len(photon_detectors) == 9
+
+    (
+        theta1,
+        theta2,
+        phi1,
+        phi2,
+        ipsf,
+        edel,
+        edeu,
+        nche,
+        emission_filename,
+    ) = photon_detectors[0]
+    assert theta1 == pytest.approx(0.0, abs=1e-5)
+    assert theta2 == pytest.approx(90.0, abs=1e-5)
+    assert phi1 == pytest.approx(0.0, abs=1e-5)
+    assert phi2 == pytest.approx(360.0, abs=1e-5)
+    assert ipsf == 0
+    assert edel == pytest.approx(0.0, abs=1e-5)
+    assert edeu == pytest.approx(0.0, abs=1e-5)
+    assert nche == 1000
+    assert emission_filename is None
+
+    (
+        theta1,
+        theta2,
+        phi1,
+        phi2,
+        ipsf,
+        edel,
+        edeu,
+        nche,
+        emission_filename,
+    ) = photon_detectors[1]
+    assert theta1 == pytest.approx(5.0, abs=1e-5)
+    assert theta2 == pytest.approx(15.0, abs=1e-5)
+    assert phi1 == pytest.approx(0.0, abs=1e-5)
+    assert phi2 == pytest.approx(360.0, abs=1e-5)
+    assert ipsf == 0
+    assert edel == pytest.approx(0.0, abs=1e-5)
+    assert edeu == pytest.approx(0.0, abs=1e-5)
+    assert nche == 1000
+    assert emission_filename is None
+
+    (
+        theta1,
+        theta2,
+        phi1,
+        phi2,
+        ipsf,
+        edel,
+        edeu,
+        nche,
+        emission_filename,
+    ) = photon_detectors[2]
+    assert theta1 == pytest.approx(15.0, abs=1e-5)
+    assert theta2 == pytest.approx(25.0, abs=1e-5)
+    assert phi1 == pytest.approx(0.0, abs=1e-5)
+    assert phi2 == pytest.approx(360.0, abs=1e-5)
+    assert ipsf == 0
+    assert edel == pytest.approx(0.0, abs=1e-5)
+    assert edeu == pytest.approx(0.0, abs=1e-5)
+    assert nche == 1000
+    assert emission_filename is None
+
+    (
+        theta1,
+        theta2,
+        phi1,
+        phi2,
+        ipsf,
+        edel,
+        edeu,
+        nche,
+        emission_filename,
+    ) = photon_detectors[3]
+    assert theta1 == pytest.approx(25.0, abs=1e-5)
+    assert theta2 == pytest.approx(35.0, abs=1e-5)
+    assert phi1 == pytest.approx(0.0, abs=1e-5)
+    assert phi2 == pytest.approx(360.0, abs=1e-5)
+    assert ipsf == 0
+    assert edel == pytest.approx(0.0, abs=1e-5)
+    assert edeu == pytest.approx(0.0, abs=1e-5)
+    assert nche == 1000
+    assert emission_filename is None
+
+    (
+        theta1,
+        theta2,
+        phi1,
+        phi2,
+        ipsf,
+        edel,
+        edeu,
+        nche,
+        emission_filename,
+    ) = photon_detectors[4]
+    assert theta1 == pytest.approx(35.0, abs=1e-5)
+    assert theta2 == pytest.approx(45.0, abs=1e-5)
+    assert phi1 == pytest.approx(0.0, abs=1e-5)
+    assert phi2 == pytest.approx(360.0, abs=1e-5)
+    assert ipsf == 0
+    assert edel == pytest.approx(0.0, abs=1e-5)
+    assert edeu == pytest.approx(0.0, abs=1e-5)
+    assert nche == 1000
+    assert emission_filename is None
+
+    (
+        theta1,
+        theta2,
+        phi1,
+        phi2,
+        ipsf,
+        edel,
+        edeu,
+        nche,
+        emission_filename,
+    ) = photon_detectors[5]
+    assert theta1 == pytest.approx(45.0, abs=1e-5)
+    assert theta2 == pytest.approx(55.0, abs=1e-5)
+    assert phi1 == pytest.approx(0.0, abs=1e-5)
+    assert phi2 == pytest.approx(360.0, abs=1e-5)
+    assert ipsf == 0
+    assert edel == pytest.approx(0.0, abs=1e-5)
+    assert edeu == pytest.approx(0.0, abs=1e-5)
+    assert nche == 1000
+    assert emission_filename is None
+
+    (
+        theta1,
+        theta2,
+        phi1,
+        phi2,
+        ipsf,
+        edel,
+        edeu,
+        nche,
+        emission_filename,
+    ) = photon_detectors[6]
+    assert theta1 == pytest.approx(55.0, abs=1e-5)
+    assert theta2 == pytest.approx(65.0, abs=1e-5)
+    assert phi1 == pytest.approx(0.0, abs=1e-5)
+    assert phi2 == pytest.approx(360.0, abs=1e-5)
+    assert ipsf == 0
+    assert edel == pytest.approx(0.0, abs=1e-5)
+    assert edeu == pytest.approx(0.0, abs=1e-5)
+    assert nche == 1000
+    assert emission_filename is None
+
+    (
+        theta1,
+        theta2,
+        phi1,
+        phi2,
+        ipsf,
+        edel,
+        edeu,
+        nche,
+        emission_filename,
+    ) = photon_detectors[7]
+    assert theta1 == pytest.approx(65.0, abs=1e-5)
+    assert theta2 == pytest.approx(75.0, abs=1e-5)
+    assert phi1 == pytest.approx(0.0, abs=1e-5)
+    assert phi2 == pytest.approx(360.0, abs=1e-5)
+    assert ipsf == 0
+    assert edel == pytest.approx(0.0, abs=1e-5)
+    assert edeu == pytest.approx(0.0, abs=1e-5)
+    assert nche == 1000
+    assert emission_filename is None
+
+    (
+        theta1,
+        theta2,
+        phi1,
+        phi2,
+        ipsf,
+        edel,
+        edeu,
+        nche,
+        emission_filename,
+    ) = photon_detectors[8]
+    assert theta1 == pytest.approx(75.0, abs=1e-5)
+    assert theta2 == pytest.approx(85.0, abs=1e-5)
+    assert phi1 == pytest.approx(0.0, abs=1e-5)
+    assert phi2 == pytest.approx(360.0, abs=1e-5)
+    assert ipsf == 0
+    assert edel == pytest.approx(0.0, abs=1e-5)
+    assert edeu == pytest.approx(0.0, abs=1e-5)
+    assert nche == 1000
+    assert emission_filename is None
+
+    xl, xu, ndbx = input.GRIDX.get()
+    assert xl == pytest.approx(-4e-5, abs=1e-5)
+    assert xu == pytest.approx(4e-5, abs=1e-5)
+    assert ndbx == 60
+
+    yl, yu, ndby = input.GRIDY.get()
+    assert yl == pytest.approx(-4e-5, abs=1e-5)
+    assert yu == pytest.approx(4e-5, abs=1e-5)
+    assert ndby == 60
+
+    zl, zu, ndbz = input.GRIDZ.get()
+    assert zl == pytest.approx(-6e-5, abs=1e-5)
+    assert zu == pytest.approx(0.0, abs=1e-5)
+    assert ndbz == 60
+
+    (xrlines,) = input.XRLINE.get()
+    assert len(xrlines) == 1
+
+    (izs1s200,) = xrlines[0]
+    assert izs1s200 == 29010300
+
+    (filename,) = input.RESUME.get()
+    assert filename == "dump1.dat"
+
+    (filename,) = input.DUMPTO.get()
+    assert filename == "dump1.dat"
+
+    (dumpp,) = input.DUMPP.get()
+    assert dumpp == pytest.approx(60.0, abs=1e-5)
+
+    seed1, seed2 = input.RSEED.get()
+    assert seed1 == -10
+    assert seed2 == 1
+
+    izs1s200, idet, tol = input.REFLIN.get()
+    assert izs1s200 == 29010300
+    assert idet == 1
+    assert tol == pytest.approx(1.25e-3, abs=1e-5)
+
+    (dshn,) = input.NSIMSH.get()
+    assert dshn == pytest.approx(2e9, abs=1e-5)
+
+    (timea,) = input.TIME.get()
+    assert timea == pytest.approx(2e9, abs=1e-5)
+
+
+def _test_epma2(input):
+    (se0,) = input.SENERG.get()
+    assert se0 == pytest.approx(15e3, abs=1e-5)
+
+    sx0, sy0, sz0 = input.SPOSIT.get()
+    assert sx0 == pytest.approx(2e-5, abs=1e-8)
+    assert sy0 == pytest.approx(0.0, abs=1e-5)
+    assert sz0 == pytest.approx(1.0, abs=1e-5)
+
+    theta, phi = input.SDIREC.get()
+    assert theta == pytest.approx(180.0, abs=1e-5)
+    assert phi == pytest.approx(0.0, abs=1e-5)
+
+    (alpha,) = input.SAPERT.get()
+    assert alpha == pytest.approx(0.0, abs=1e-5)
+
+    (materials,) = input.materials.get()
+    assert len(materials) == 2
+
+    filename, eabs1, eabs2, eabs3, c1, c2, wcc, wcr = materials[0]
+    assert filename == "Cu.mat"
+    assert eabs1 == pytest.approx(1e3, abs=1e-5)
+    assert eabs2 == pytest.approx(1e3, abs=1e-5)
+    assert eabs3 == pytest.approx(1e3, abs=1e-5)
+    assert c1 == pytest.approx(0.2, abs=1e-5)
+    assert c2 == pytest.approx(0.2, abs=1e-5)
+    assert wcc == pytest.approx(1e3, abs=1e-5)
+    assert wcr == pytest.approx(1e3, abs=1e-5)
+
+    filename, eabs1, eabs2, eabs3, c1, c2, wcc, wcr = materials[1]
+    assert filename == "Fe.mat"
+    assert eabs1 == pytest.approx(1e3, abs=1e-5)
+    assert eabs2 == pytest.approx(1e3, abs=1e-5)
+    assert eabs3 == pytest.approx(1e3, abs=1e-5)
+    assert c1 == pytest.approx(0.2, abs=1e-5)
+    assert c2 == pytest.approx(0.2, abs=1e-5)
+    assert wcc == pytest.approx(1e3, abs=1e-5)
+    assert wcr == pytest.approx(1e3, abs=1e-5)
+
+    assert input.GEOMFN.get()[0] == "epma2.geo"
+
+    (dsmaxs,) = input.DSMAX.get()
+    assert len(dsmaxs) == 2
+
+    kb, dsmax = dsmaxs[0]
+    assert kb == 1
+    assert dsmax == pytest.approx(1e-4, abs=1e-5)
+
+    kb, dsmax = dsmaxs[1]
+    assert kb == 2
+    assert dsmax == pytest.approx(1e-4, abs=1e-5)
+
+    (iforces,) = input.IFORCE.get()
+    assert len(iforces) == 8
+
+    kb, kpar, icol, forcer, wlow, whig = iforces[0]
+    assert kb == 1
+    assert kpar == 1
+    assert icol == 4
+    assert forcer == pytest.approx(-5, abs=1e-5)
+    assert wlow == pytest.approx(0.9, abs=1e-5)
+    assert whig == pytest.approx(1.0, abs=1e-5)
+
+    kb, kpar, icol, forcer, wlow, whig = iforces[1]
+    assert kb == 1
+    assert kpar == 1
+    assert icol == 5
+    assert forcer == pytest.approx(-250, abs=1e-5)
+    assert wlow == pytest.approx(0.9, abs=1e-5)
+    assert whig == pytest.approx(1.0, abs=1e-5)
+
+    kb, kpar, icol, forcer, wlow, whig = iforces[2]
+    assert kb == 1
+    assert kpar == 2
+    assert icol == 2
+    assert forcer == pytest.approx(10, abs=1e-5)
+    assert wlow == pytest.approx(1e-3, abs=1e-5)
+    assert whig == pytest.approx(1.0, abs=1e-5)
+
+    kb, kpar, icol, forcer, wlow, whig = iforces[3]
+    assert kb == 1
+    assert kpar == 2
+    assert icol == 3
+    assert forcer == pytest.approx(10, abs=1e-5)
+    assert wlow == pytest.approx(1e-3, abs=1e-5)
+    assert whig == pytest.approx(1.0, abs=1e-5)
+
+    kb, kpar, icol, forcer, wlow, whig = iforces[4]
+    assert kb == 2
+    assert kpar == 1
+    assert icol == 4
+    assert forcer == pytest.approx(-5, abs=1e-5)
+    assert wlow == pytest.approx(0.9, abs=1e-5)
+    assert whig == pytest.approx(1.0, abs=1e-5)
+
+    kb, kpar, icol, forcer, wlow, whig = iforces[5]
+    assert kb == 2
+    assert kpar == 1
+    assert icol == 5
+    assert forcer == pytest.approx(-7, abs=1e-5)
+    assert wlow == pytest.approx(0.9, abs=1e-5)
+    assert whig == pytest.approx(1.0, abs=1e-5)
+
+    kb, kpar, icol, forcer, wlow, whig = iforces[6]
+    assert kb == 2
+    assert kpar == 2
+    assert icol == 2
+    assert forcer == pytest.approx(10, abs=1e-5)
+    assert wlow == pytest.approx(1e-3, abs=1e-5)
+    assert whig == pytest.approx(1.0, abs=1e-5)
+
+    kb, kpar, icol, forcer, wlow, whig = iforces[7]
+    assert kb == 2
+    assert kpar == 2
+    assert icol == 3
+    assert forcer == pytest.approx(10, abs=1e-5)
+    assert wlow == pytest.approx(1e-3, abs=1e-5)
+    assert whig == pytest.approx(1.0, abs=1e-5)
+
+    (ibrspls,) = input.IBRSPL.get()
+    assert len(ibrspls) == 2
+
+    kb, factor = ibrspls[0]
+    assert kb == 1
+    assert factor == pytest.approx(2.0, abs=1e-5)
+
+    kb, factor = ibrspls[1]
+    assert kb == 2
+    assert factor == pytest.approx(2.0, abs=1e-5)
+
+    (ixrspls,) = input.IXRSPL.get()
+    assert len(ixrspls) == 2
+
+    kb, factor = ixrspls[0]
+    assert kb == 1
+    assert factor == pytest.approx(2.0, abs=1e-5)
+
+    kb, factor = ixrspls[1]
+    assert kb == 2
+    assert factor == pytest.approx(2.0, abs=1e-5)
+
+    el, eu, nbe = input.NBE.get()
+    assert el == pytest.approx(0.0, abs=1e-5)
+    assert eu == pytest.approx(0.0, abs=1e-5)
+    assert nbe == 300
+
+    nbth, nbph = input.NBANGL.get()
+    assert nbth == 45
+    assert nbph == 30
+
+    (photon_detectors,) = input.photon_detectors.get()
+    assert len(photon_detectors) == 9
+
+    (
+        theta1,
+        theta2,
+        phi1,
+        phi2,
+        ipsf,
+        edel,
+        edeu,
+        nche,
+        emission_filename,
+    ) = photon_detectors[0]
+    assert theta1 == pytest.approx(0.0, abs=1e-5)
+    assert theta2 == pytest.approx(90.0, abs=1e-5)
+    assert phi1 == pytest.approx(0.0, abs=1e-5)
+    assert phi2 == pytest.approx(360.0, abs=1e-5)
+    assert ipsf == 0
+    assert edel == pytest.approx(0.0, abs=1e-5)
+    assert edeu == pytest.approx(0.0, abs=1e-5)
+    assert nche == 1000
+    assert emission_filename is None
+
+    (
+        theta1,
+        theta2,
+        phi1,
+        phi2,
+        ipsf,
+        edel,
+        edeu,
+        nche,
+        emission_filename,
+    ) = photon_detectors[1]
+    assert theta1 == pytest.approx(5.0, abs=1e-5)
+    assert theta2 == pytest.approx(15.0, abs=1e-5)
+    assert phi1 == pytest.approx(0.0, abs=1e-5)
+    assert phi2 == pytest.approx(360.0, abs=1e-5)
+    assert ipsf == 0
+    assert edel == pytest.approx(0.0, abs=1e-5)
+    assert edeu == pytest.approx(0.0, abs=1e-5)
+    assert nche == 1000
+    assert emission_filename is None
+
+    (
+        theta1,
+        theta2,
+        phi1,
+        phi2,
+        ipsf,
+        edel,
+        edeu,
+        nche,
+        emission_filename,
+    ) = photon_detectors[2]
+    assert theta1 == pytest.approx(15.0, abs=1e-5)
+    assert theta2 == pytest.approx(25.0, abs=1e-5)
+    assert phi1 == pytest.approx(0.0, abs=1e-5)
+    assert phi2 == pytest.approx(360.0, abs=1e-5)
+    assert ipsf == 0
+    assert edel == pytest.approx(0.0, abs=1e-5)
+    assert edeu == pytest.approx(0.0, abs=1e-5)
+    assert nche == 1000
+    assert emission_filename is None
+
+    (
+        theta1,
+        theta2,
+        phi1,
+        phi2,
+        ipsf,
+        edel,
+        edeu,
+        nche,
+        emission_filename,
+    ) = photon_detectors[3]
+    assert theta1 == pytest.approx(25.0, abs=1e-5)
+    assert theta2 == pytest.approx(35.0, abs=1e-5)
+    assert phi1 == pytest.approx(0.0, abs=1e-5)
+    assert phi2 == pytest.approx(360.0, abs=1e-5)
+    assert ipsf == 0
+    assert edel == pytest.approx(0.0, abs=1e-5)
+    assert edeu == pytest.approx(0.0, abs=1e-5)
+    assert nche == 1000
+    assert emission_filename is None
+
+    (
+        theta1,
+        theta2,
+        phi1,
+        phi2,
+        ipsf,
+        edel,
+        edeu,
+        nche,
+        emission_filename,
+    ) = photon_detectors[4]
+    assert theta1 == pytest.approx(35.0, abs=1e-5)
+    assert theta2 == pytest.approx(45.0, abs=1e-5)
+    assert phi1 == pytest.approx(0.0, abs=1e-5)
+    assert phi2 == pytest.approx(360.0, abs=1e-5)
+    assert ipsf == 0
+    assert edel == pytest.approx(0.0, abs=1e-5)
+    assert edeu == pytest.approx(0.0, abs=1e-5)
+    assert nche == 1000
+    assert emission_filename is None
+
+    (
+        theta1,
+        theta2,
+        phi1,
+        phi2,
+        ipsf,
+        edel,
+        edeu,
+        nche,
+        emission_filename,
+    ) = photon_detectors[5]
+    assert theta1 == pytest.approx(45.0, abs=1e-5)
+    assert theta2 == pytest.approx(55.0, abs=1e-5)
+    assert phi1 == pytest.approx(0.0, abs=1e-5)
+    assert phi2 == pytest.approx(360.0, abs=1e-5)
+    assert ipsf == 0
+    assert edel == pytest.approx(0.0, abs=1e-5)
+    assert edeu == pytest.approx(0.0, abs=1e-5)
+    assert nche == 1000
+    assert emission_filename is None
+
+    (
+        theta1,
+        theta2,
+        phi1,
+        phi2,
+        ipsf,
+        edel,
+        edeu,
+        nche,
+        emission_filename,
+    ) = photon_detectors[6]
+    assert theta1 == pytest.approx(55.0, abs=1e-5)
+    assert theta2 == pytest.approx(65.0, abs=1e-5)
+    assert phi1 == pytest.approx(0.0, abs=1e-5)
+    assert phi2 == pytest.approx(360.0, abs=1e-5)
+    assert ipsf == 0
+    assert edel == pytest.approx(0.0, abs=1e-5)
+    assert edeu == pytest.approx(0.0, abs=1e-5)
+    assert nche == 1000
+    assert emission_filename is None
+
+    (
+        theta1,
+        theta2,
+        phi1,
+        phi2,
+        ipsf,
+        edel,
+        edeu,
+        nche,
+        emission_filename,
+    ) = photon_detectors[7]
+    assert theta1 == pytest.approx(65.0, abs=1e-5)
+    assert theta2 == pytest.approx(75.0, abs=1e-5)
+    assert phi1 == pytest.approx(0.0, abs=1e-5)
+    assert phi2 == pytest.approx(360.0, abs=1e-5)
+    assert ipsf == 0
+    assert edel == pytest.approx(0.0, abs=1e-5)
+    assert edeu == pytest.approx(0.0, abs=1e-5)
+    assert nche == 1000
+    assert emission_filename is None
+
+    (
+        theta1,
+        theta2,
+        phi1,
+        phi2,
+        ipsf,
+        edel,
+        edeu,
+        nche,
+        emission_filename,
+    ) = photon_detectors[8]
+    assert theta1 == pytest.approx(75.0, abs=1e-5)
+    assert theta2 == pytest.approx(85.0, abs=1e-5)
+    assert phi1 == pytest.approx(0.0, abs=1e-5)
+    assert phi2 == pytest.approx(360.0, abs=1e-5)
+    assert ipsf == 0
+    assert edel == pytest.approx(0.0, abs=1e-5)
+    assert edeu == pytest.approx(0.0, abs=1e-5)
+    assert nche == 1000
+    assert emission_filename is None
+
+    xl, xu, ndbx = input.GRIDX.get()
+    assert xl == pytest.approx(-1e-5, abs=1e-5)
+    assert xu == pytest.approx(5e-5, abs=1e-5)
+    assert ndbx == 60
+
+    yl, yu, ndby = input.GRIDY.get()
+    assert yl == pytest.approx(-3e-5, abs=1e-5)
+    assert yu == pytest.approx(3e-5, abs=1e-5)
+    assert ndby == 60
+
+    zl, zu, ndbz = input.GRIDZ.get()
+    assert zl == pytest.approx(-6e-5, abs=1e-5)
+    assert zu == pytest.approx(0.0, abs=1e-5)
+    assert ndbz == 60
+
+    (xrlines,) = input.XRLINE.get()
+    assert len(xrlines) == 2
+
+    (izs1s200,) = xrlines[0]
+    assert izs1s200 == 26010300
+
+    (izs1s200,) = xrlines[1]
+    assert izs1s200 == 29010300
+
+    (filename,) = input.RESUME.get()
+    assert filename == "dump2.dat"
+
+    (filename,) = input.DUMPTO.get()
+    assert filename == "dump2.dat"
+
+    (dumpp,) = input.DUMPP.get()
+    assert dumpp == pytest.approx(60.0, abs=1e-5)
+
+    seed1, seed2 = input.RSEED.get()
+    assert seed1 == -10
+    assert seed2 == 1
+
+    izs1s200, idet, tol = input.REFLIN.get()
+    assert izs1s200 == 26010300
+    assert idet == 1
+    assert tol == pytest.approx(1.5e-3, abs=1e-5)
+
+    (dshn,) = input.NSIMSH.get()
+    assert dshn == pytest.approx(2e9, abs=1e-5)
+
+    (timea,) = input.TIME.get()
+    assert timea == pytest.approx(2e9, abs=1e-5)
+
+
+def test_epma1_skeleton():
+    input = create_epma1()
+    _test_epma1(input)
+
+
+def test_epma1_write():
+    input = create_epma1()
+    input = _write_read_input(input)
+    _test_epma1(input)
+
+
+def test_epma1_read(testdatadir):
+    filepath = testdatadir.joinpath("penepma", "epma1.in")
+    input = PenepmaInput()
+    with open(filepath, "r") as fp:
+        input.read(fp)
+    _test_epma1(input)
+
+
+def test_epma2_skeleton():
+    input = create_epma2()
+    _test_epma2(input)
+
+
+def test_epma2_write():
+    input = create_epma2()
+    input = _write_read_input(input)
+    _test_epma2(input)
+
+
+def test_epma2_read(testdatadir):
+    filepath = testdatadir.joinpath("penepma", "epma2.in")
+    input = PenepmaInput()
+    with open(filepath, "r") as fp:
+        input.read(fp)
+    _test_epma2(input)

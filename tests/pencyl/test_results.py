@@ -1,13 +1,9 @@
-#!/usr/bin/env python
 """ """
 
 # Standard library modules.
-import unittest
-import logging
-import os
 
 # Third party modules.
-import pyxray
+import pytest
 
 # Local modules.
 from pypenelopetools.penelope.enums import KPAR
@@ -16,146 +12,91 @@ from pypenelopetools.pencyl.results import PencylResult
 # Globals and constants variables.
 
 
-class TestPencylResult(unittest.TestCase):
-    def setUp(self):
-        super().setUp()
+def _test_result(result):
+    assert result.simulation_time_s.n == pytest.approx(1.048234e3, abs=1e-8)
+    assert result.simulation_time_s.s * 3 == pytest.approx(0.0, abs=1e-8)
 
-        self.testdatadir = os.path.join(os.path.dirname(__file__), "..", "testdata")
-        self.result = PencylResult()
+    assert result.simulation_speed_1_per_s.n == pytest.approx(2.285416e3, abs=1e-8)
+    assert result.simulation_speed_1_per_s.s * 3 == pytest.approx(0.0, abs=1e-8)
 
-    def _test_result(self, result):
-        self.assertAlmostEqual(1.048234e3, result.simulation_time_s.n, 8)
-        self.assertAlmostEqual(0.0, result.simulation_time_s.s * 3, 8)
+    assert result.simulated_primary_showers.n == pytest.approx(2.395652e6, abs=1e-8)
+    assert result.simulated_primary_showers.s * 3 == pytest.approx(0.0, abs=1e-8)
 
-        self.assertAlmostEqual(2.285416e3, result.simulation_speed_1_per_s.n, 8)
-        self.assertAlmostEqual(0.0, result.simulation_speed_1_per_s.s * 3, 8)
+    assert result.primary_particle == KPAR.ELECTRON
 
-        self.assertAlmostEqual(2.395652e6, result.simulated_primary_showers.n, 8)
-        self.assertAlmostEqual(0.0, result.simulated_primary_showers.s * 3, 8)
+    assert result.upbound_primary_particles.n == pytest.approx(0.0, abs=1e-8)
+    assert result.upbound_primary_particles.s * 3 == pytest.approx(0.0, abs=1e-8)
 
-        self.assertEqual(KPAR.ELECTRON, result.primary_particle)
+    assert result.downbound_primary_particles.n == pytest.approx(7.273540e5, abs=1e-8)
+    assert result.downbound_primary_particles.s * 3 == pytest.approx(0.0, abs=1e-8)
 
-        self.assertAlmostEqual(0.0, result.upbound_primary_particles.n, 8)
-        self.assertAlmostEqual(0.0, result.upbound_primary_particles.s * 3, 8)
+    assert result.absorbed_primary_particles.n == pytest.approx(1.668298e6, abs=1e-8)
+    assert result.absorbed_primary_particles.s * 3 == pytest.approx(0.0, abs=1e-8)
 
-        self.assertAlmostEqual(7.273540e5, result.downbound_primary_particles.n, 8)
-        self.assertAlmostEqual(0.0, result.downbound_primary_particles.s * 3, 8)
+    assert result.upbound_fraction.n == pytest.approx(0.0, abs=1e-8)
+    assert result.upbound_fraction.s * 3 == pytest.approx(0.0, abs=1e-8)
 
-        self.assertAlmostEqual(1.668298e6, result.absorbed_primary_particles.n, 8)
-        self.assertAlmostEqual(0.0, result.absorbed_primary_particles.s * 3, 8)
+    assert result.downbound_fraction.n == pytest.approx(3.130722e-1, abs=1e-8)
+    assert result.downbound_fraction.s * 3 == pytest.approx(1.1e-3, abs=1e-8)
 
-        self.assertAlmostEqual(0.0, result.upbound_fraction.n, 8)
-        self.assertAlmostEqual(0.0, result.upbound_fraction.s * 3, 8)
+    assert result.absorbed_fraction.n == pytest.approx(6.963858e-1, abs=1e-8)
+    assert result.absorbed_fraction.s * 3 == pytest.approx(8.9e-4, abs=1e-8)
 
-        self.assertAlmostEqual(3.130722e-1, result.downbound_fraction.n, 8)
-        self.assertAlmostEqual(1.1e-3, result.downbound_fraction.s * 3, 8)
+    assert result.upbound_secondary_electron_generation_probabilities.n == pytest.approx(0.0, abs=1e-8)
+    assert result.upbound_secondary_electron_generation_probabilities.s * 3 == pytest.approx(0.0, abs=1e-8)
 
-        self.assertAlmostEqual(6.963858e-1, result.absorbed_fraction.n, 8)
-        self.assertAlmostEqual(8.9e-4, result.absorbed_fraction.s * 3, 8)
+    assert result.downbound_secondary_electron_generation_probabilities.n == pytest.approx(9.457968e-3, abs=1e-8)
+    assert result.downbound_secondary_electron_generation_probabilities.s * 3 == pytest.approx(1.9e-4, abs=1e-8)
 
-        self.assertAlmostEqual(
-            0.0, result.upbound_secondary_electron_generation_probabilities.n, 8
-        )
-        self.assertAlmostEqual(
-            0.0, result.upbound_secondary_electron_generation_probabilities.s * 3, 8
-        )
+    assert result.absorbed_secondary_electron_generation_probabilities.n == pytest.approx(3.509834, abs=1e-8)
+    assert result.absorbed_secondary_electron_generation_probabilities.s * 3 == pytest.approx(4.1e-3, abs=1e-8)
 
-        self.assertAlmostEqual(
-            9.457968e-3,
-            result.downbound_secondary_electron_generation_probabilities.n,
-            8,
-        )
-        self.assertAlmostEqual(
-            1.9e-4,
-            result.downbound_secondary_electron_generation_probabilities.s * 3,
-            8,
-        )
+    assert result.upbound_secondary_photon_generation_probabilities.n == pytest.approx(2.629764e-4, abs=1e-8)
+    assert result.upbound_secondary_photon_generation_probabilities.s * 3 == pytest.approx(3.1e-5, abs=1e-8)
 
-        self.assertAlmostEqual(
-            3.509834, result.absorbed_secondary_electron_generation_probabilities.n, 8
-        )
-        self.assertAlmostEqual(
-            4.1e-3, result.absorbed_secondary_electron_generation_probabilities.s * 3, 8
-        )
+    assert result.downbound_secondary_photon_generation_probabilities.n == pytest.approx(4.481035e-3, abs=1e-8)
+    assert result.downbound_secondary_photon_generation_probabilities.s * 3 == pytest.approx(1.3e-4, abs=1e-8)
 
-        self.assertAlmostEqual(
-            2.629764e-4, result.upbound_secondary_photon_generation_probabilities.n, 8
-        )
-        self.assertAlmostEqual(
-            3.1e-5, result.upbound_secondary_photon_generation_probabilities.s * 3, 8
-        )
+    assert result.absorbed_secondary_photon_generation_probabilities.n == pytest.approx(1.109468e-2, abs=1e-8)
+    assert result.absorbed_secondary_photon_generation_probabilities.s * 3 == pytest.approx(2.1e-4, abs=1e-8)
 
-        self.assertAlmostEqual(
-            4.481035e-3, result.downbound_secondary_photon_generation_probabilities.n, 8
-        )
-        self.assertAlmostEqual(
-            1.3e-4, result.downbound_secondary_photon_generation_probabilities.s * 3, 8
-        )
+    assert result.upbound_secondary_positron_generation_probabilities.n == pytest.approx(0.0, abs=1e-8)
+    assert result.upbound_secondary_positron_generation_probabilities.s * 3 == pytest.approx(0.0, abs=1e-8)
 
-        self.assertAlmostEqual(
-            1.109468e-2, result.absorbed_secondary_photon_generation_probabilities.n, 8
-        )
-        self.assertAlmostEqual(
-            2.1e-4, result.absorbed_secondary_photon_generation_probabilities.s * 3, 8
-        )
+    assert result.downbound_secondary_positron_generation_probabilities.n == pytest.approx(0.0, abs=1e-8)
+    assert result.downbound_secondary_positron_generation_probabilities.s * 3 == pytest.approx(0.0, abs=1e-8)
 
-        self.assertAlmostEqual(
-            0.0, result.upbound_secondary_positron_generation_probabilities.n, 8
-        )
-        self.assertAlmostEqual(
-            0.0, result.upbound_secondary_positron_generation_probabilities.s * 3, 8
-        )
+    assert result.absorbed_secondary_positron_generation_probabilities.n == pytest.approx(0.0, abs=1e-8)
+    assert result.absorbed_secondary_positron_generation_probabilities.s * 3 == pytest.approx(0.0, abs=1e-8)
 
-        self.assertAlmostEqual(
-            0.0, result.downbound_secondary_positron_generation_probabilities.n, 8
-        )
-        self.assertAlmostEqual(
-            0.0, result.downbound_secondary_positron_generation_probabilities.s * 3, 8
-        )
+    assert len(result.average_body_deposited_energy_eV) == 1
+    assert 1 in result.average_body_deposited_energy_eV
+    assert result.average_body_deposited_energy_eV[1].n == pytest.approx(3.135554e4, abs=1e-8)
+    assert result.average_body_deposited_energy_eV[1].s * 3 == pytest.approx(2.7e1, abs=1e-8)
 
-        self.assertAlmostEqual(
-            0.0, result.absorbed_secondary_positron_generation_probabilities.n, 8
-        )
-        self.assertAlmostEqual(
-            0.0, result.absorbed_secondary_positron_generation_probabilities.s * 3, 8
-        )
+    assert len(result.average_detector_deposited_energy_eV) == 1
+    assert 1 in result.average_detector_deposited_energy_eV
+    assert result.average_detector_deposited_energy_eV[1].n == pytest.approx(3.135554e4, abs=1e-8)
+    assert result.average_detector_deposited_energy_eV[1].s * 3 == pytest.approx(2.7e1, abs=1e-8)
 
-        self.assertEqual(1, len(result.average_body_deposited_energy_eV))
-        self.assertIn(1, result.average_body_deposited_energy_eV)
-        self.assertAlmostEqual(
-            3.135554e4, result.average_body_deposited_energy_eV[1].n, 8
-        )
-        self.assertAlmostEqual(
-            2.7e1, result.average_body_deposited_energy_eV[1].s * 3, 8
-        )
+    assert result.last_random_seed1.n == pytest.approx(539670842, abs=1e-8)
+    assert result.last_random_seed1.s * 3 == pytest.approx(0.0, abs=1e-8)
 
-        self.assertEqual(1, len(result.average_detector_deposited_energy_eV))
-        self.assertIn(1, result.average_detector_deposited_energy_eV)
-        self.assertAlmostEqual(
-            3.135554e4, result.average_detector_deposited_energy_eV[1].n, 8
-        )
-        self.assertAlmostEqual(
-            2.7e1, result.average_detector_deposited_energy_eV[1].s * 3, 8
-        )
-
-        self.assertAlmostEqual(539670842, result.last_random_seed1.n, 8)
-        self.assertAlmostEqual(0.0, result.last_random_seed1.s * 3, 8)
-
-        self.assertAlmostEqual(1065652462, result.last_random_seed2.n, 8)
-        self.assertAlmostEqual(0.0, result.last_random_seed2.s * 3, 8)
-
-    def testread(self):
-        filepath = os.path.join(self.testdatadir, "pencyl", "1-disc", "pencyl-res.dat")
-        with open(filepath, "r") as fp:
-            self.result.read(fp)
-        self._test_result(self.result)
-
-    def testread_directory(self):
-        dirpath = os.path.join(self.testdatadir, "pencyl", "1-disc")
-        self.result.read_directory(dirpath)
-        self._test_result(self.result)
+    assert result.last_random_seed2.n == pytest.approx(1065652462, abs=1e-8)
+    assert result.last_random_seed2.s * 3 == pytest.approx(0.0, abs=1e-8)
 
 
-if __name__ == "__main__":  # pragma: no cover
-    logging.getLogger().setLevel(logging.DEBUG)
-    unittest.main()
+def testread(testdatadir):
+    filepath = testdatadir.joinpath("pencyl", "1-disc", "pencyl-res.dat")
+    result = PencylResult()
+
+    with open(filepath, "r") as fp:
+        result.read(fp)
+    _test_result(result)
+
+
+def testread_directory(testdatadir):
+    dirpath = testdatadir.joinpath("pencyl", "1-disc")
+    result = PencylResult()
+    result.read_directory(dirpath)
+    _test_result(result)

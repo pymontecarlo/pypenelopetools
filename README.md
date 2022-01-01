@@ -1,19 +1,17 @@
-pyPENELOPEtools
-===============
+# pyPENELOPEtools
 
-.. image:: https://img.shields.io/pypi/v/pypenelopetools.svg
-.. image:: https://img.shields.io/travis/pymontecarlo/pypenelopetools.svg
-.. image:: https://img.shields.io/codecov/c/github/pymontecarlo/pypenelopetools.svg
+[![CI](https://github.com/pymontecarlo/pypenelopetools/actions/workflows/ci.yml/badge.svg)](https://github.com/pymontecarlo/pypenelopetools/actions/workflows/ci.yml)
+[![Codecov](https://img.shields.io/codecov/c/github/pymontecarlo/pypenelopetools)](https://codecov.io/gh/pymontecarlo/pypenelopetools)
+[![PyPI](https://img.shields.io/pypi/v/pypenelopetools)](https://pypi.org/project/pypenelopetools)
 
 **pyPENELOPEtools** is an open-source software to facilitate the use of the
 Monte Carlo code PENELOPE and its main programs such as PENEPMA.
 It is a programming interface to setup, run and analyze Monte Carlo simulations.
-Most of the code was adapted from `pyPENELOPE <http://pypenelope.sourceforge.net>`_, but
+Most of the code was adapted from [pyPENELOPE](http://pypenelope.sourceforge.net), but
 with the goal to facilitate the integration with
-`pyMonteCarlo <https://github.com/pymontecarlo/pymontecarlo>`_.
+[pyMonteCarlo](https://github.com/pymontecarlo/pymontecarlo).
 
-What is PENELOPE?
------------------
+## What is PENELOPE?
 
 PENELOPE (*Penetration and ENErgy LOss of Positrons and Electrons*) is a
 a general-purpose Monte Carlo code system for the simulation of coupled
@@ -33,44 +31,38 @@ PENELOPE incorporates a flexible geometry package called PENGEOM that permits
 automatic tracking of particles in complex geometries consisting of homogeneous
 bodies limited by quadratic surfaces.
 The PENELOPE code system is distributed by the
-`OECD/NEA Data Bank <http://www.nea.fr>`_.
+[OECD/NEA Data Bank](http://www.nea.fr).
 
-PENELOPE is coded as a set of `FORTRAN <http://en.wikipedia.org/wiki/Fortran>`_
+PENELOPE is coded as a set of [FORTRAN](http://en.wikipedia.org/wiki/Fortran)
 subroutines, which perform the random sampling of interactions and the tracking
 of particles (either electrons, positrons or photons).
 In principle, the user should provide a main steering program to follow the
 particle histories through the material structure and to keep score of
 quantities of interest.
 
-Documentation
--------------
+## Documentation
 
-The `documentation <http://pypenelopetools.readthedocs.io>`_ contains the
+The [documentation](http://pypenelopetools.readthedocs.io) contains the
 installation instructions, tutorials and API.
 
-Release notes
--------------
+## Release notes
 
-1.1.1
-^^^^^
+### 1.1.1
 
 * Add enums for KPAR and ICOL
 * Add result from generated photon intensity
 
-1.0.0
-^^^^^
+### 1.0.0
 
 * First release
 
-Authors
--------
+## Authors
 
-- `Philippe T. Pinard <https://github.com/ppinard>`_
-- `Hendrix Demers <https://github.com/drix00>`_
+* [Philippe T. Pinard](https://github.com/ppinard)
+* [Hendrix Demers](https://github.com/drix00)
 
-License
--------
+## License
 
 License under Apache Software License 2.0.
 
-Copyright (c) 2017-2018 Philippe Pinard
+Copyright (c) 2017- , Philippe Pinard

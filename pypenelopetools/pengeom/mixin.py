@@ -10,6 +10,7 @@ Mixins used to create geometry objects.
 
 # Globals and constants variables.
 
+
 class DescriptionMixin(object):
     """
     Mixin that adds a description property.
@@ -24,6 +25,7 @@ class DescriptionMixin(object):
     def description(self, desc):
         self._description = desc
 
+
 class ModuleMixin(object):
     """
     Mixin that adds methods to add, pop and clear modules.
@@ -32,7 +34,7 @@ class ModuleMixin(object):
     def add_module(self, module):
         """
         Adds a module.
-        
+
         Args:
             module (:obj:`Module <pypenelopetools.pengeom.module.Module>`):
                 Module to add.
@@ -44,7 +46,7 @@ class ModuleMixin(object):
     def pop_module(self, module):
         """
         Removes a module.
-        
+
         Args:
             module (:obj:`Module <pypenelopetools.pengeom.module.Module>`):
                 Module to remove.

@@ -15,12 +15,13 @@ import pypenelopetools.penepma.separators as penepma_separators
 
 # Globals and constants variables.
 
+
 class PenepmaInput(PenelopeInputBase):
     """
     Creates an object representing a PENEPMA input file.
-    
+
     Attributes:
-        TITLE (:class:`TITLE <pypenelopetools.penelope.keywords.TITLE>`): 
+        TITLE (:class:`TITLE <pypenelopetools.penelope.keywords.TITLE>`):
             Title of the job (up to 65 characters).
         SKPAR (:class:`SKPAR <pypenelopetools.penelope.keywords.SKPAR>`):
             Type of primary particle KPARP (1=electrons, 2=photons or 3=positrons).
@@ -129,47 +130,54 @@ class PenepmaInput(PenelopeInputBase):
         self.TIME = penelope_keywords.TIME()
 
     def get_keywords(self):
-        return [self.TITLE,
-
-                penelope_separators.DOT,
-                penelope_separators.SOURCE_DEFINITION,
-                self.SKPAR, self.SENERG, self.SPOSIT, self.SRADI, self.SDIREC, self.SAPERT,
-
-                penelope_separators.DOT,
-                penelope_separators.MATERIAL,
-                self.materials,
-
-                penelope_separators.DOT,
-                penepma_separators.GEOMETRY,
-                self.GEOMFN, self.DSMAX,
-
-                penelope_separators.DOT,
-                penelope_separators.INTERACTION_FORCING,
-                self.IFORCE,
-
-                penelope_separators.DOT,
-                penelope_separators.BREMSSTRAHLUNG_SPLITTING,
-                self.IBRSPL,
-
-                penelope_separators.DOT,
-                penelope_separators.XRAY_SPLITTING,
-                self.IXRSPL,
-
-                penelope_separators.DOT,
-                penelope_separators.EMERGING_PARTICLES,
-                self.NBE, self.NBANGL,
-
-                penelope_separators.DOT,
-                penepma_separators.PHOTON_DETECTORS,
-                self.photon_detectors,
-
-                penelope_separators.DOT,
-                penepma_separators.SPATIAL_DISTRIBUTION,
-                self.GRIDX, self.GRIDY, self.GRIDZ, self.XRAYE, self.XRLINE,
-
-                penelope_separators.DOT,
-                penelope_separators.JOB_PROPERTIES,
-                self.RESUME, self.DUMPTO, self.DUMPP,
-
-                penelope_separators.DOT,
-                self.RSEED, self.REFLIN, self.NSIMSH, self.TIME]
+        return [
+            self.TITLE,
+            penelope_separators.DOT,
+            penelope_separators.SOURCE_DEFINITION,
+            self.SKPAR,
+            self.SENERG,
+            self.SPOSIT,
+            self.SRADI,
+            self.SDIREC,
+            self.SAPERT,
+            penelope_separators.DOT,
+            penelope_separators.MATERIAL,
+            self.materials,
+            penelope_separators.DOT,
+            penepma_separators.GEOMETRY,
+            self.GEOMFN,
+            self.DSMAX,
+            penelope_separators.DOT,
+            penelope_separators.INTERACTION_FORCING,
+            self.IFORCE,
+            penelope_separators.DOT,
+            penelope_separators.BREMSSTRAHLUNG_SPLITTING,
+            self.IBRSPL,
+            penelope_separators.DOT,
+            penelope_separators.XRAY_SPLITTING,
+            self.IXRSPL,
+            penelope_separators.DOT,
+            penelope_separators.EMERGING_PARTICLES,
+            self.NBE,
+            self.NBANGL,
+            penelope_separators.DOT,
+            penepma_separators.PHOTON_DETECTORS,
+            self.photon_detectors,
+            penelope_separators.DOT,
+            penepma_separators.SPATIAL_DISTRIBUTION,
+            self.GRIDX,
+            self.GRIDY,
+            self.GRIDZ,
+            self.XRAYE,
+            self.XRLINE,
+            penelope_separators.DOT,
+            penelope_separators.JOB_PROPERTIES,
+            self.RESUME,
+            self.DUMPTO,
+            self.DUMPP,
+            penelope_separators.DOT,
+            self.RSEED,
+            self.REFLIN,
+            self.NSIMSH,
+            self.TIME,
+        ]

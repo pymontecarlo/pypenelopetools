@@ -9,6 +9,7 @@ import enum
 
 # Globals and constants variables.
 
+
 class KPAR(enum.IntEnum):
     USER_DEFINED = 0
     ELECTRON = 1
@@ -16,13 +17,14 @@ class KPAR(enum.IntEnum):
     POSITRON = 3
 
     def __str__(self):
-        return self.name.replace('_', ' ').lower()
+        return self.name.replace("_", " ").lower()
+
 
 class ICOL(enum.IntEnum):
-    ARTIFICIAL_SOFT_EVENT = 1 # random hinge
-    COHERENT_SCATTERING = 1 # Rayleigh
+    ARTIFICIAL_SOFT_EVENT = 1  # random hinge
+    COHERENT_SCATTERING = 1  # Rayleigh
     HARD_ELASTIC = 2
-    INCOHERENT_SCATTERING = 2 # Compton
+    INCOHERENT_SCATTERING = 2  # Compton
     HARD_INELASTIC = 3
     PHOTOELECTRIC_ABSORPTION = 3
     HARD_BREMSSTRAHLUNG_EMISSION = 4
@@ -32,4 +34,4 @@ class ICOL(enum.IntEnum):
     AUXILIARY_INTERACTION = 8
 
     def __str__(self):
-        return self.name.replace('_', ' ').lower()
+        return self.name.replace("_", " ").lower()

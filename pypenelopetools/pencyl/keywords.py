@@ -7,11 +7,15 @@ import os
 
 # Local modules.
 from pypenelopetools.penelope.enums import KPAR, ICOL
-from pypenelopetools.penelope.keyword import \
-    TypeKeyword, KeywordGroupBase, KeywordSequence
+from pypenelopetools.penelope.keyword import (
+    TypeKeyword,
+    KeywordGroupBase,
+    KeywordSequence,
+)
 import pypenelopetools.penelope.keywords as penelope_keywords
 
 # Globals and constants variables.
+
 
 class GeometryDefinitionGroup(KeywordGroupBase):
     """
@@ -38,13 +42,16 @@ class GeometryDefinitionGroup(KeywordGroupBase):
     """
 
     def __init__(self):
-        self.LAYER = TypeKeyword('LAYER', (float, float),
-                                 comment='Z_lower and Z_higher')
-        self.CENTER = TypeKeyword('CENTER', (float, float),
-                                  comment='X_centre and Y_centre')
+        self.LAYER = TypeKeyword(
+            "LAYER", (float, float), comment="Z_lower and Z_higher"
+        )
+        self.CENTER = TypeKeyword(
+            "CENTER", (float, float), comment="X_centre and Y_centre"
+        )
 
-        keyword = TypeKeyword('CYLIND', (int, float, float),
-                              comment='Material, R_inner and R_outer')
+        keyword = TypeKeyword(
+            "CYLIND", (int, float, float), comment="Material, R_inner and R_outer"
+        )
         self.CYLIND = KeywordSequence(keyword, maxlength=50)
 
     def get_keywords(self):
@@ -55,14 +62,15 @@ class GeometryDefinitionGroup(KeywordGroupBase):
         self.CENTER.set(xcen, ycen)
         self._set_keyword_sequence(self.CYLIND, cylinders)
 
-class GeometryDefinitions(KeywordSequence):
 
+class GeometryDefinitions(KeywordSequence):
     def __init__(self, maxlength=100):
         keyword = GeometryDefinitionGroup()
         super().__init__(keyword, maxlength)
 
     def add(self, zlow, zhigh, xcen=None, ycen=None, cylinders=None):
         return super().add(zlow, zhigh, xcen, ycen, cylinders)
+
 
 class SEXTND(KeywordSequence):
     """
@@ -77,12 +85,16 @@ class SEXTND(KeywordSequence):
     """
 
     def __init__(self, maxlength=5000):
-        keyword = TypeKeyword('SEXTND', (int, int, float),
-                              comment='Extended source in KL,KC, rel. activity dens.')
+        keyword = TypeKeyword(
+            "SEXTND",
+            (int, int, float),
+            comment="Extended source in KL,KC, rel. activity dens.",
+        )
         super().__init__(keyword, maxlength)
 
     def add(self, kl, kc, relac):
         super().add(kl, kc, relac)
+
 
 class STHICK(TypeKeyword):
     """
@@ -92,7 +104,8 @@ class STHICK(TypeKeyword):
     """
 
     def __init__(self):
-        super().__init__('STHICK', (float,), comment='Source height')
+        super().__init__("STHICK", (float,), comment="Source height")
+
 
 class SRADII(TypeKeyword):
     """
@@ -102,8 +115,10 @@ class SRADII(TypeKeyword):
     """
 
     def __init__(self):
-        super().__init__('SRADII', (float, float),
-                         comment='Source inner and outer radii')
+        super().__init__(
+            "SRADII", (float, float), comment="Source inner and outer radii"
+        )
+
 
 class DSMAX(KeywordSequence):
     """
@@ -115,12 +130,14 @@ class DSMAX(KeywordSequence):
     """
 
     def __init__(self, maxlength=5000):
-        keyword = TypeKeyword("DSMAX", (int, int, float),
-                              comment="Maximum step length in body KL,KC")
+        keyword = TypeKeyword(
+            "DSMAX", (int, int, float), comment="Maximum step length in body KL,KC"
+        )
         super().__init__(keyword, maxlength)
 
     def add(self, kl, kc, dsmax):
         return super().add(kl, kc, dsmax)
+
 
 class EABSB(KeywordSequence):
     """
@@ -137,12 +154,16 @@ class EABSB(KeywordSequence):
     """
 
     def __init__(self, maxlength=5000):
-        keyword = TypeKeyword("EABSB", (int, int, float, float, float),
-                              comment="Local EABSB(1:3) in body KL,KC")
+        keyword = TypeKeyword(
+            "EABSB",
+            (int, int, float, float, float),
+            comment="Local EABSB(1:3) in body KL,KC",
+        )
         super().__init__(keyword, maxlength)
 
     def add(self, kl, kc, eabs1, eabs2, eabs3):
         return super().add(kl, kc, eabs1, eabs2, eabs3)
+
 
 class IFORCE(KeywordSequence):
     """
@@ -170,12 +191,16 @@ class IFORCE(KeywordSequence):
     """
 
     def __init__(self, maxlength=120000):
-        keyword = TypeKeyword("IFORCE", (int, int, KPAR, ICOL, float, float, float),
-                              comment="KL,KC,KPAR,ICOL,FORCER,WLOW,WHIG")
+        keyword = TypeKeyword(
+            "IFORCE",
+            (int, int, KPAR, ICOL, float, float, float),
+            comment="KL,KC,KPAR,ICOL,FORCER,WLOW,WHIG",
+        )
         super().__init__(keyword, maxlength)
 
     def add(self, kl, kc, kpar, icol, forcer, wlow, whig):
         return super().add(kl, kc, kpar, icol, forcer, wlow, whig)
+
 
 class IBRSPL(KeywordSequence):
     """
@@ -191,12 +216,14 @@ class IBRSPL(KeywordSequence):
     """
 
     def __init__(self, maxlength=5000):
-        keyword = TypeKeyword("IBRSPL", (int, int, float),
-                              comment="KL,KC,splitting factor")
+        keyword = TypeKeyword(
+            "IBRSPL", (int, int, float), comment="KL,KC,splitting factor"
+        )
         super().__init__(keyword, maxlength)
 
     def add(self, kl, kc, ibrspl):
         return super().add(kl, kc, ibrspl)
+
 
 class IXRSPL(KeywordSequence):
     """
@@ -210,12 +237,14 @@ class IXRSPL(KeywordSequence):
     """
 
     def __init__(self, maxlength=5000):
-        keyword = TypeKeyword("IXRSPL", (int, int, float),
-                              comment="KL,KC,splitting factor")
+        keyword = TypeKeyword(
+            "IXRSPL", (int, int, float), comment="KL,KC,splitting factor"
+        )
         super().__init__(keyword, maxlength)
 
     def add(self, kl, kc, ixrspl):
         return super().add(kl, kc, ixrspl)
+
 
 class IWOODC(TypeKeyword):
     """
@@ -232,8 +261,7 @@ class IWOODC(TypeKeyword):
     """
 
     def __init__(self):
-        super().__init__('IWOODC', (bool,),
-                         comment='Delta scattering is turned on')
+        super().__init__("IWOODC", (bool,), comment="Delta scattering is turned on")
 
     def set(self, on):
         super().set(on)
@@ -244,7 +272,8 @@ class IWOODC(TypeKeyword):
             return
 
         line = self._create_line(self.name, [], self.comment)
-        fileobj.write(line + '\n')
+        fileobj.write(line + "\n")
+
 
 class NBZ(TypeKeyword):
     """
@@ -253,11 +282,11 @@ class NBZ(TypeKeyword):
     """
 
     def __init__(self):
-        super().__init__('NBZ', (int,),
-                         comment='No. of bins for the Z-coordinate')
+        super().__init__("NBZ", (int,), comment="No. of bins for the Z-coordinate")
 
     def set(self, nbz):
         super().set(nbz)
+
 
 class NBR(TypeKeyword):
     """
@@ -266,10 +295,11 @@ class NBR(TypeKeyword):
     """
 
     def __init__(self):
-        super().__init__('NBR', (int,), comment='No. of radial bins')
+        super().__init__("NBR", (int,), comment="No. of radial bins")
 
     def set(self, nbr):
         super().set(nbr)
+
 
 class NBTL(TypeKeyword):
     """
@@ -280,11 +310,15 @@ class NBTL(TypeKeyword):
     """
 
     def __init__(self):
-        super().__init__('NBTL', (float, float, int),
-                         comment='Track-length interval and no. of TL-bins')
+        super().__init__(
+            "NBTL",
+            (float, float, int),
+            comment="Track-length interval and no. of TL-bins",
+        )
 
     def set(self, tlmin, tlmax, nbtl):
         super().set(tlmin, tlmax, nbtl)
+
 
 class EMERGP(TypeKeyword):
     """
@@ -304,11 +338,13 @@ class EMERGP(TypeKeyword):
     """
 
     def __init__(self):
-        super().__init__('EMERGP', (float, int),
-                         comment='Radius of the scoring region, no. of bins')
+        super().__init__(
+            "EMERGP", (float, int), comment="Radius of the scoring region, no. of bins"
+        )
 
     def set(self, radm, nbre):
         super().set(radm, nbre)
+
 
 class EnergyDepositionDetectorGroup(KeywordGroupBase):
     """
@@ -326,7 +362,7 @@ class EnergyDepositionDetectorGroup(KeywordGroupBase):
         self.ENDETC = penelope_keywords.ENDETC()
         self.EDSPC = penelope_keywords.EDSPC()
 
-        keyword = TypeKeyword('EDBODY', (int, int), comment='Active cylinder')
+        keyword = TypeKeyword("EDBODY", (int, int), comment="Active cylinder")
         self.EDBODY = KeywordSequence(keyword, maxlength=5000)
 
     def get_keywords(self):
@@ -337,14 +373,15 @@ class EnergyDepositionDetectorGroup(KeywordGroupBase):
         self.EDSPC.set(spectrum_filename)
         self._set_keyword_sequence(self.EDBODY, cylinders)
 
-class EnergyDepositionDetectors(KeywordSequence):
 
+class EnergyDepositionDetectors(KeywordSequence):
     def __init__(self, maxlength=25):
         keyword = EnergyDepositionDetectorGroup()
         super().__init__(keyword, maxlength)
 
     def add(self, el, eu, nbe, spectrum_filename=None, cylinders=None):
         return super().add(el, eu, nbe, spectrum_filename, cylinders)
+
 
 class DOSE2D(KeywordSequence):
     """
@@ -358,11 +395,12 @@ class DOSE2D(KeywordSequence):
     """
 
     def __init__(self, maxlength=10):
-        keyword = TypeKeyword('DOSE2D', (int, int, int, int),
-                              comment='Tally distributions in KL,KC with NZ,NR bins')
+        keyword = TypeKeyword(
+            "DOSE2D",
+            (int, int, int, int),
+            comment="Tally distributions in KL,KC with NZ,NR bins",
+        )
         super().__init__(keyword, maxlength)
 
     def add(self, kl, kc, nz, nr):
         super().add(kl, kc, nz, nr)
-
-

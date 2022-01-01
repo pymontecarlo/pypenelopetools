@@ -1,4 +1,4 @@
-setuptools
-nose
+numpy
 pyxray
+setuptools
 uncertainties

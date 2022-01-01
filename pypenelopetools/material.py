@@ -26,6 +26,7 @@ import pyxray
 # Globals and constants variables.
 FILENAME_MAXLENGTH = 20
 
+
 class Material(object):
     """
     Creates a new material.
@@ -61,15 +62,20 @@ class Material(object):
             If ``None``, it will be estimated by PENELOPE.
     """
 
-    def __init__(self, name, composition, density_g_per_cm3,
-                 mean_excitation_energy_eV=None,
-                 oscillator_strength_fcb=None,
-                 plasmon_energy_wcb_eV=None,
-                 filename=None):
+    def __init__(
+        self,
+        name,
+        composition,
+        density_g_per_cm3,
+        mean_excitation_energy_eV=None,
+        oscillator_strength_fcb=None,
+        plasmon_energy_wcb_eV=None,
+        filename=None,
+    ):
         self.name = name
 
         if filename is None:
-            filename = name[:16] + '.mat'
+            filename = name[:16] + ".mat"
         self.filename = filename
 
         self.composition = composition.copy()
@@ -79,7 +85,7 @@ class Material(object):
         self.plasmon_energy_wcb_eV = plasmon_energy_wcb_eV
 
     def __repr__(self):
-        return '<{0}({1})>'.format(self.__class__.__name__, self.name)
+        return "<{0}({1})>".format(self.__class__.__name__, self.name)
 
     @classmethod
     def read_input(cls, fileobj):
@@ -121,16 +127,22 @@ class Material(object):
 
         oscillator_option = fileobj.readline().strip()
         if oscillator_option == "1":
-            oscillator_strength_fcb, plasmon_energy_wcb_eV = map(float, fileobj.readline().split())
+            oscillator_strength_fcb, plasmon_energy_wcb_eV = map(
+                float, fileobj.readline().split()
+            )
         else:
             oscillator_strength_fcb = plasmon_energy_wcb_eV = None
 
         filename = fileobj.readline()
 
-        material = cls(name, composition, density_g_per_cm3,
-                       mean_excitation_energy_eV,
-                       oscillator_strength_fcb,
-                       plasmon_energy_wcb_eV)
+        material = cls(
+            name,
+            composition,
+            density_g_per_cm3,
+            mean_excitation_energy_eV,
+            oscillator_strength_fcb,
+            plasmon_energy_wcb_eV,
+        )
         material.filename = filename
 
         return material
@@ -147,31 +159,31 @@ class Material(object):
             Material: new material.
         """
         first_line = fileobj.readline().strip()
-        assert first_line[:8] == 'PENELOPE'
+        assert first_line[:8] == "PENELOPE"
 
         line = fileobj.readline()
         _label, value = line.split()
         name = value.strip()
 
         line = fileobj.readline()
-        _label, value = line.split('=')
+        _label, value = line.split("=")
         value, _unit = value.split()
         density_g_per_cm3 = float(value)
 
         line = fileobj.readline()
-        _label, value = line.split('=')
+        _label, value = line.split("=")
         element_count = int(value)
 
         composition = {}
         totalatomicmass = 0.0
         for _ in range(element_count):
             line = fileobj.readline()
-            part_z, part_af = line.split(',')
+            part_z, part_af = line.split(",")
 
-            _label, value = part_z.split('=')
+            _label, value = part_z.split("=")
             z = int(value)
 
-            _label, value = part_af.split('=')
+            _label, value = part_af.split("=")
             atomicfraction = float(value)
             atomicmass = atomicfraction * pyxray.element_atomic_weight(z)
 
@@ -182,23 +194,27 @@ class Material(object):
             composition[z] = atomicmass / totalatomicmass
 
         line = fileobj.readline()
-        _label, value = line.split('=')
+        _label, value = line.split("=")
         value, _unit = value.split()
         mean_excitation_energy_eV = float(value)
 
         line = fileobj.readline()
-        label, _value = line.split('=')
-        assert label.strip() == 'Number of oscillators'
+        label, _value = line.split("=")
+        assert label.strip() == "Number of oscillators"
 
         line = fileobj.readline()
         _, value1, _, value2, _, _ = line.split()
         oscillator_strength_fcb = float(value1)
         plasmon_energy_wcb_eV = float(value2)
 
-        return cls(name, composition, density_g_per_cm3,
-                   mean_excitation_energy_eV,
-                   oscillator_strength_fcb,
-                   plasmon_energy_wcb_eV)
+        return cls(
+            name,
+            composition,
+            density_g_per_cm3,
+            mean_excitation_energy_eV,
+            oscillator_strength_fcb,
+            plasmon_energy_wcb_eV,
+        )
 
     def _create_lines(self):
         """
@@ -219,14 +235,14 @@ class Material(object):
 
         # Case more than one element.
         if elements_count > 1:
-            lines.append("2") # Select weight fraction option.
+            lines.append("2")  # Select weight fraction option.
 
             for z, wf in self.composition.items():
-                lines.append('{0:d} {1:.4f}'.format(z, wf))
+                lines.append("{0:d} {1:.4f}".format(z, wf))
 
         elif elements_count == 1:
             z = list(self.composition.keys())[0]
-            lines.append('{0:d}'.format(z))
+            lines.append("{0:d}".format(z))
 
         else:
             raise ValueError("No elements are defined in the material.")
@@ -242,11 +258,16 @@ class Material(object):
         lines.append("{0:f}".format(density))
 
         # Fcb and Wcb values.
-        if self.oscillator_strength_fcb is not None and \
-                self.plasmon_energy_wcb_eV is not None:
+        if (
+            self.oscillator_strength_fcb is not None
+            and self.plasmon_energy_wcb_eV is not None
+        ):
             lines.append("1")
-            lines.append("{0:f} {1:f}".format(self.oscillator_strength_fcb,
-                                              self.plasmon_energy_wcb_eV))
+            lines.append(
+                "{0:f} {1:f}".format(
+                    self.oscillator_strength_fcb, self.plasmon_energy_wcb_eV
+                )
+            )
         else:
             lines.append("2")
 
@@ -266,7 +287,7 @@ class Material(object):
             fileobj (file object): file object opened with write access.
         """
         lines = self._create_lines()
-        fileobj.write('\n'.join(lines))
+        fileobj.write("\n".join(lines))
 
     @property
     def filename(self):
@@ -275,11 +296,15 @@ class Material(object):
     @filename.setter
     def filename(self, filename):
         if len(filename) > FILENAME_MAXLENGTH:
-            raise ValueError("Filename is too long. Maximum {0} characters"
-                             .format(FILENAME_MAXLENGTH))
+            raise ValueError(
+                "Filename is too long. Maximum {0} characters".format(
+                    FILENAME_MAXLENGTH
+                )
+            )
         self._filename = filename
 
-VACUUM = Material('Vacuum', {}, 0.0)
+
+VACUUM = Material("Vacuum", {}, 0.0)
 """
 Material representing vacuum.
 """

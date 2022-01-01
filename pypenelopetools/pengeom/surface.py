@@ -2,8 +2,15 @@
 Definition of surfaces.
 """
 
-__all__ = ['SurfaceImplicit', 'SurfaceReduced',
-           'xplane', 'yplane', 'zplane', 'cylinder', 'sphere']
+__all__ = [
+    "SurfaceImplicit",
+    "SurfaceReduced",
+    "xplane",
+    "yplane",
+    "zplane",
+    "cylinder",
+    "sphere",
+]
 
 # Standard library modules.
 import os
@@ -17,6 +24,7 @@ from pypenelopetools.pengeom.mixin import DescriptionMixin
 
 # Globals and constants variables.
 
+
 class SurfaceBase(DescriptionMixin, GeometryBase):
     """
     Base class for surface definition.
@@ -25,7 +33,7 @@ class SurfaceBase(DescriptionMixin, GeometryBase):
         description (str): Description of the surface
     """
 
-    def __init__(self, description=''):
+    def __init__(self, description=""):
         self.description = description
 
         self._rotation = Rotation()
@@ -36,7 +44,7 @@ class SurfaceBase(DescriptionMixin, GeometryBase):
         text = "{:4d}".format(index)
         comment = " " + self.description
         line = self._create_line("SURFACE", text, comment)
-        fileobj.write(line + '\n')
+        fileobj.write(line + "\n")
 
     @property
     def rotation(self):
@@ -47,6 +55,7 @@ class SurfaceBase(DescriptionMixin, GeometryBase):
     def shift(self):
         """:obj:`Shift <pypenelopetools.pengeom.transformation.Shift>`: Shift/translation of the surface."""
         return self._shift
+
 
 class SurfaceImplicit(SurfaceBase):
     """
@@ -62,7 +71,7 @@ class SurfaceImplicit(SurfaceBase):
         description (str): Description of the surface
     """
 
-    def __init__(self, coefficients=None, description=''):
+    def __init__(self, coefficients=None, description=""):
         super().__init__(description)
 
         if coefficients is None:
@@ -70,19 +79,22 @@ class SurfaceImplicit(SurfaceBase):
         self.coefficients = coefficients
 
     def __repr__(self):
-        coeffs = ['{0}={1}'.format(key, value)
-                  for key, value in self.coefficients.items()]
-        return '<Surface(description={0}, {1}, rotation={2}, shift={3})>' \
-            .format(self.description, ', '.join(coeffs), str(self.rotation), str(self.shift))
+        coeffs = [
+            "{0}={1}".format(key, value) for key, value in self.coefficients.items()
+        ]
+        return "<Surface(description={0}, {1}, rotation={2}, shift={3})>".format(
+            self.description, ", ".join(coeffs), str(self.rotation), str(self.shift)
+        )
 
     def _read(self, fileobj, material_lookup, surface_lookup, module_lookup):
         line = self._read_next_line(fileobj)
         _, _, self.description = self._parse_line(line)
 
         line = self._read_next_line(fileobj)
-        if line != 'INDICES=( 0, 0, 0, 0, 0)':
-            raise IOError('Expected line "INDICES=( 0, 0, 0, 0, 0)" instead of "{0}"'
-                          .format(line))
+        if line != "INDICES=( 0, 0, 0, 0, 0)":
+            raise IOError(
+                'Expected line "INDICES=( 0, 0, 0, 0, 0)" instead of "{0}"'.format(line)
+            )
 
         line = self._read_next_line(fileobj)
         while line != LINE_EXTRA and line != LINE_SEPARATOR:
@@ -100,33 +112,35 @@ class SurfaceImplicit(SurfaceBase):
 
     def _create_coefficient_line(self, key):
         value = self.coefficients[key]
-        return self._create_expline('A{}='.format(key.upper()), value, '              (DEFAULT=0.0)')
+        return self._create_expline(
+            "A{}=".format(key.upper()), value, "              (DEFAULT=0.0)"
+        )
 
     def _write(self, fileobj, index_lookup):
         super()._write(fileobj, index_lookup)
 
         # Indices
         text = "{0:2d},{1:2d},{2:2d},{3:2d},{4:2d}".format(0, 0, 0, 0, 0)
-        line = self._create_line('INDICES=', text)
-        fileobj.write(line + '\n')
+        line = self._create_line("INDICES=", text)
+        fileobj.write(line + "\n")
 
         # Coefficients
-        fileobj.write(self._create_coefficient_line('xx') + '\n')
-        fileobj.write(self._create_coefficient_line('xy') + '\n')
-        fileobj.write(self._create_coefficient_line('xz') + '\n')
-        fileobj.write(self._create_coefficient_line('yy') + '\n')
-        fileobj.write(self._create_coefficient_line('yz') + '\n')
-        fileobj.write(self._create_coefficient_line('zz') + '\n')
-        fileobj.write(self._create_coefficient_line('x') + '\n')
-        fileobj.write(self._create_coefficient_line('y') + '\n')
-        fileobj.write(self._create_coefficient_line('z') + '\n')
-        fileobj.write(self._create_coefficient_line('0') + '\n')
-        fileobj.write(LINE_EXTRA + '\n')
+        fileobj.write(self._create_coefficient_line("xx") + "\n")
+        fileobj.write(self._create_coefficient_line("xy") + "\n")
+        fileobj.write(self._create_coefficient_line("xz") + "\n")
+        fileobj.write(self._create_coefficient_line("yy") + "\n")
+        fileobj.write(self._create_coefficient_line("yz") + "\n")
+        fileobj.write(self._create_coefficient_line("zz") + "\n")
+        fileobj.write(self._create_coefficient_line("x") + "\n")
+        fileobj.write(self._create_coefficient_line("y") + "\n")
+        fileobj.write(self._create_coefficient_line("z") + "\n")
+        fileobj.write(self._create_coefficient_line("0") + "\n")
+        fileobj.write(LINE_EXTRA + "\n")
 
         self.rotation._write(fileobj, index_lookup)
         self.shift._write(fileobj, index_lookup)
 
-        fileobj.write(LINE_SEPARATOR + '\n')
+        fileobj.write(LINE_SEPARATOR + "\n")
 
     @property
     def coefficients(self):
@@ -148,10 +162,18 @@ class SurfaceImplicit(SurfaceBase):
     @coefficients.setter
     def coefficients(self, coefficients):
         if isinstance(coefficients, dict):
-            self._coefficients = {'xx': 0.0, 'xy': 0.0, 'xz': 0.0,
-                                  'yy': 0.0, 'yz': 0.0,
-                                  'zz': 0.0,
-                                  'x': 0.0, 'y': 0.0, 'z': 0.0, '0': 0.0}
+            self._coefficients = {
+                "xx": 0.0,
+                "xy": 0.0,
+                "xz": 0.0,
+                "yy": 0.0,
+                "yz": 0.0,
+                "zz": 0.0,
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0,
+                "0": 0.0,
+            }
 
             for key in coefficients:
                 key = key.lower()
@@ -160,12 +182,19 @@ class SurfaceImplicit(SurfaceBase):
         else:
             assert len(coefficients) == 10
 
-            self._coefficients = \
-                {'xx': coefficients[0], 'xy': coefficients[1], 'xz': coefficients[2],
-                 'yy': coefficients[3], 'yz': coefficients[4],
-                 'zz': coefficients[5],
-                 'x': coefficients[6], 'y': coefficients[7], 'z': coefficients[8],
-                 '0': coefficients[9]}
+            self._coefficients = {
+                "xx": coefficients[0],
+                "xy": coefficients[1],
+                "xz": coefficients[2],
+                "yy": coefficients[3],
+                "yz": coefficients[4],
+                "zz": coefficients[5],
+                "x": coefficients[6],
+                "y": coefficients[7],
+                "z": coefficients[8],
+                "0": coefficients[9],
+            }
+
 
 class SurfaceReduced(SurfaceBase):
     """
@@ -178,7 +207,7 @@ class SurfaceReduced(SurfaceBase):
         description (str): Description of the surface
     """
 
-    def __init__(self, indices=None, description=''):
+    def __init__(self, indices=None, description=""):
         super().__init__(description)
 
         if indices is None:
@@ -187,9 +216,13 @@ class SurfaceReduced(SurfaceBase):
         self._scale = Scale()
 
     def __repr__(self):
-        return '<Surface(description={0}, indices={1}, scale={2}, rotation={3}, shift={4})>' \
-            .format(self.description, str(self.indices), str(self.scale),
-                    str(self.rotation), str(self.shift))
+        return "<Surface(description={0}, indices={1}, scale={2}, rotation={3}, shift={4})>".format(
+            self.description,
+            str(self.indices),
+            str(self.scale),
+            str(self.rotation),
+            str(self.shift),
+        )
 
     def _read(self, fileobj, material_lookup, surface_lookup, module_lookup):
         line = self._read_next_line(fileobj)
@@ -197,9 +230,11 @@ class SurfaceReduced(SurfaceBase):
 
         line = self._read_next_line(fileobj)
         keyword, text, _termination = self._parse_line(line)
-        if keyword != 'INDICES=':
-            raise IOError('Expected keyword "INDICES=" instead of "{0}"'.format(keyword))
-        self.indices = tuple(map(int, text.split(',')))
+        if keyword != "INDICES=":
+            raise IOError(
+                'Expected keyword "INDICES=" instead of "{0}"'.format(keyword)
+            )
+        self.indices = tuple(map(int, text.split(",")))
 
         extra_offset = fileobj.tell()
         self.rotation._read(fileobj, material_lookup, surface_lookup, module_lookup)
@@ -215,14 +250,14 @@ class SurfaceReduced(SurfaceBase):
 
         # Indices
         text = "{0:2d},{1:2d},{2:2d},{3:2d},{4:2d}".format(*self.indices)
-        line = self._create_line('INDICES=', text)
-        fileobj.write(line + '\n')
+        line = self._create_line("INDICES=", text)
+        fileobj.write(line + "\n")
 
         self.scale._write(fileobj, index_lookup)
         self.rotation._write(fileobj, index_lookup)
         self.shift._write(fileobj, index_lookup)
 
-        fileobj.write(LINE_SEPARATOR + '\n')
+        fileobj.write(LINE_SEPARATOR + "\n")
 
     @property
     def indices(self):
@@ -238,7 +273,9 @@ class SurfaceReduced(SurfaceBase):
 
         for indice in indices:
             if not indice in [-1, 0, 1]:
-                raise ValueError("Index ({:d}) must be either -1, 0 or 1.".format(indice))
+                raise ValueError(
+                    "Index ({:d}) must be either -1, 0 or 1.".format(indice)
+                )
 
         self._indices = tuple(indices)
 
@@ -246,6 +283,7 @@ class SurfaceReduced(SurfaceBase):
     def scale(self):
         """:obj:`Scale <pypenelopetools.pengeom.transformation.Scale>`: Scaling of the surface."""
         return self._scale
+
 
 def xplane(x_cm):
     """
@@ -257,10 +295,11 @@ def xplane(x_cm):
     Returns:
         :obj:`SurfaceReduced`
     """
-    s = SurfaceReduced((0, 0, 0, 1, 0), 'Plane X={:4.2f} cm'.format(x_cm))
+    s = SurfaceReduced((0, 0, 0, 1, 0), "Plane X={:4.2f} cm".format(x_cm))
     s.shift.x_cm = x_cm
     s.rotation.theta_deg = 90.0
     return s
+
 
 def yplane(y_cm):
     """
@@ -272,11 +311,12 @@ def yplane(y_cm):
     Returns:
         :obj:`SurfaceReduced`
     """
-    s = SurfaceReduced((0, 0, 0, 1, 0), 'Plane Y={:4.2f} cm'.format(y_cm))
+    s = SurfaceReduced((0, 0, 0, 1, 0), "Plane Y={:4.2f} cm".format(y_cm))
     s.shift.y_cm = y_cm
     s.rotation.theta_deg = 90.0
     s.rotation.phi_deg = 90.0
     return s
+
 
 def zplane(z_cm):
     """
@@ -288,11 +328,12 @@ def zplane(z_cm):
     Returns:
         :obj:`SurfaceReduced`
     """
-    s = SurfaceReduced((0, 0, 0, 1, 0), 'Plane Z={:4.2f} cm'.format(z_cm))
+    s = SurfaceReduced((0, 0, 0, 1, 0), "Plane Z={:4.2f} cm".format(z_cm))
     s.shift.z_cm = z_cm
     return s
 
-def cylinder(radius_cm, axis='x'):
+
+def cylinder(radius_cm, axis="x"):
     """
     Returns a surface for a cylinder along *axis* with *radius*.
 
@@ -304,21 +345,24 @@ def cylinder(radius_cm, axis='x'):
         :obj:`SurfaceReduced`
     """
     axis = axis.lower()
-    description = 'Cylinder of radius {0:4.2f} cm along {1}-axis'.format(radius_cm, axis)
+    description = "Cylinder of radius {0:4.2f} cm along {1}-axis".format(
+        radius_cm, axis
+    )
     s = SurfaceReduced((1, 1, 0, 0, -1), description)
 
     s.scale.x = radius_cm
     s.scale.y = radius_cm
 
-    if axis == 'z':
+    if axis == "z":
         pass
-    elif axis == 'x':
+    elif axis == "x":
         s.rotation.theta_deg = 90.0
-    elif axis == 'y':
+    elif axis == "y":
         s.rotation.theta_deg = 90.0
         s.rotation.phi_deg = 90.0
 
     return s
+
 
 def sphere(radius_cm):
     """
@@ -330,7 +374,7 @@ def sphere(radius_cm):
     Returns:
         :obj:`SurfaceReduced`
     """
-    description = 'Sphere of radius {:4.2f} cm'.format(radius_cm)
+    description = "Sphere of radius {:4.2f} cm".format(radius_cm)
     s = SurfaceReduced((1, 1, 1, 0, -1), description)
 
     s.scale.x = radius_cm

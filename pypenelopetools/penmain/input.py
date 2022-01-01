@@ -13,8 +13,8 @@ import pypenelopetools.penmain.separators as penmain_separators
 
 # Globals and constants variables.
 
-class PenmainInput(PenelopeInputBase):
 
+class PenmainInput(PenelopeInputBase):
     def __init__(self):
         self.TITLE = penelope_keywords.TITLE()
 
@@ -78,58 +78,67 @@ class PenmainInput(PenelopeInputBase):
         self.TIME = penelope_keywords.TIME()
 
     def get_keywords(self):
-        return [self.TITLE,
-
-                penelope_separators.DOT,
-                penelope_separators.SOURCE_DEFINITION,
-                self.SKPAR, self.SENERG, self.SPECTR, self.SGPOL,
-                self.SPOSIT, self.SBOX, self.SBODY, self.SCONE, self.SRECTA,
-
-                penelope_separators.DOT,
-                penmain_separators.INPUT_PHASE_SPACE_FILE,
-                self.IPSFN, self.IPSPLI, self.WGTWIN, self.EPMAX,
-
-                penelope_separators.DOT,
-                penelope_separators.MATERIAL,
-                self.materials,
-
-                penelope_separators.DOT,
-                penmain_separators.GEOMETRY,
-                self.GEOMFN, self.PARINP, self.DSMAX, self.EABSB,
-
-                penelope_separators.DOT,
-                penelope_separators.INTERACTION_FORCING,
-                self.IFORCE,
-
-                penelope_separators.DOT,
-                penelope_separators.BREMSSTRAHLUNG_SPLITTING,
-                self.IBRSPL,
-
-                penelope_separators.DOT,
-                penelope_separators.XRAY_SPLITTING,
-                self.IXRSPL,
-
-                penelope_separators.DOT,
-                penelope_separators.EMERGING_PARTICLES,
-                self.NBE, self.NBANGL,
-
-                penelope_separators.DOT,
-                penmain_separators.IMPACT_DETECTORS,
-                self.impact_detectors,
-
-                penelope_separators.DOT,
-                penelope_separators.ENERGY_DEPOSITON_DETECTORS,
-                self.energy_deposition_detectors,
-
-                penelope_separators.DOT,
-                penmain_separators.ABSORBED_DOSE_DISTRIBUTION,
-                self.GRIDX, self.GRIDY, self.GRIDZ, self.GRIDR,
-
-                penelope_separators.DOT,
-                penelope_separators.JOB_PROPERTIES,
-                self.RESUME, self.DUMPTO, self.DUMPP,
-
-                penelope_separators.DOT,
-                self.RSEED, self.NSIMSH, self.TIME,
-
-                penelope_separators.END]
+        return [
+            self.TITLE,
+            penelope_separators.DOT,
+            penelope_separators.SOURCE_DEFINITION,
+            self.SKPAR,
+            self.SENERG,
+            self.SPECTR,
+            self.SGPOL,
+            self.SPOSIT,
+            self.SBOX,
+            self.SBODY,
+            self.SCONE,
+            self.SRECTA,
+            penelope_separators.DOT,
+            penmain_separators.INPUT_PHASE_SPACE_FILE,
+            self.IPSFN,
+            self.IPSPLI,
+            self.WGTWIN,
+            self.EPMAX,
+            penelope_separators.DOT,
+            penelope_separators.MATERIAL,
+            self.materials,
+            penelope_separators.DOT,
+            penmain_separators.GEOMETRY,
+            self.GEOMFN,
+            self.PARINP,
+            self.DSMAX,
+            self.EABSB,
+            penelope_separators.DOT,
+            penelope_separators.INTERACTION_FORCING,
+            self.IFORCE,
+            penelope_separators.DOT,
+            penelope_separators.BREMSSTRAHLUNG_SPLITTING,
+            self.IBRSPL,
+            penelope_separators.DOT,
+            penelope_separators.XRAY_SPLITTING,
+            self.IXRSPL,
+            penelope_separators.DOT,
+            penelope_separators.EMERGING_PARTICLES,
+            self.NBE,
+            self.NBANGL,
+            penelope_separators.DOT,
+            penmain_separators.IMPACT_DETECTORS,
+            self.impact_detectors,
+            penelope_separators.DOT,
+            penelope_separators.ENERGY_DEPOSITON_DETECTORS,
+            self.energy_deposition_detectors,
+            penelope_separators.DOT,
+            penmain_separators.ABSORBED_DOSE_DISTRIBUTION,
+            self.GRIDX,
+            self.GRIDY,
+            self.GRIDZ,
+            self.GRIDR,
+            penelope_separators.DOT,
+            penelope_separators.JOB_PROPERTIES,
+            self.RESUME,
+            self.DUMPTO,
+            self.DUMPP,
+            penelope_separators.DOT,
+            self.RSEED,
+            self.NSIMSH,
+            self.TIME,
+            penelope_separators.END,
+        ]

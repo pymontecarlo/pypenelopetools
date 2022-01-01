@@ -12,7 +12,8 @@ import re
 
 # Globals and constants variables.
 
-PATTERN_NUMBER = re.compile(r'\d\.\d*E[\+\-]\d\d')
+PATTERN_NUMBER = re.compile(r"\d\.\d*E[\+\-]\d\d")
+
 
 class PenelopeResultBase(metaclass=abc.ABCMeta):
     """
@@ -23,17 +24,17 @@ class PenelopeResultBase(metaclass=abc.ABCMeta):
         """
         Reads until a line that starts with *prefix* is found.
         White spaces are ignored at the beginning of each line.
-        
+
         Args:
             fileobj (file object): File object opened with read access.
             prefix (str): Prefix of the line to find.
-            
+
         Returns:
             str: Found line, stripped of all leading and trailing white spaces.
         """
         line = fileobj.readline()
         if not line:
-            raise EOFError('Read until EOF, no line with prefix {0}'.format(prefix))
+            raise EOFError("Read until EOF, no line with prefix {0}".format(prefix))
 
         line = line.strip()
         if line.startswith(prefix):
@@ -43,19 +44,19 @@ class PenelopeResultBase(metaclass=abc.ABCMeta):
 
     def _read_until_end_of_comments(self, fileobj):
         """
-        Read until the end of the comments. 
+        Read until the end of the comments.
         The next line returns by the file-object will be a non-comment line.
-        
+
         Args:
             fileobj (file object): File object opened with read access.
         """
         offset = fileobj.tell()
         line = fileobj.readline()
         if not line:
-            raise EOFError('Read until EOF')
+            raise EOFError("Read until EOF")
 
         line = line.strip()
-        if line.startswith('#'):
+        if line.startswith("#"):
             return self._read_until_end_of_comments(fileobj)
 
         fileobj.seek(offset)
@@ -63,7 +64,7 @@ class PenelopeResultBase(metaclass=abc.ABCMeta):
     def _read_all_values(self, line):
         """
         Parses all numbers from *line*.
-        
+
         Returns:
             list(float): List of numbers.
         """
@@ -73,7 +74,7 @@ class PenelopeResultBase(metaclass=abc.ABCMeta):
     def read(self, fileobj):
         """
         Reads a result file.
-        
+
         Args:
             fileobj (file object): File object opened with read access.
         """
@@ -83,7 +84,7 @@ class PenelopeResultBase(metaclass=abc.ABCMeta):
     def read_directory(self, dirpath):
         """
         Read a result file from a directory.
-        
+
         Args:
             dirpath (str): Path of a directory.
         """

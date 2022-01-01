@@ -16,6 +16,7 @@ from pypenelopetools.penelope.enums import KPAR
 
 # Globals and constants variables.
 
+
 class PenepmaResult(PenelopeResultBase):
     """
     Results from ``penepma-res.dat``.
@@ -123,101 +124,124 @@ class PenepmaResult(PenelopeResultBase):
         self.reference_line_uncertainty = ufloat(0.0, 0.0)
 
     def read(self, fileobj):
-        line = self._read_until_line_startswith(fileobj, 'Simulation time')
-        val, = self._read_all_values(line)
+        line = self._read_until_line_startswith(fileobj, "Simulation time")
+        (val,) = self._read_all_values(line)
         self.simulation_time_s = ufloat(val, 0.0)
 
-        line = self._read_until_line_startswith(fileobj, 'Simulation speed')
-        val, = self._read_all_values(line)
+        line = self._read_until_line_startswith(fileobj, "Simulation speed")
+        (val,) = self._read_all_values(line)
         self.simulation_speed_1_per_s = ufloat(val, 0.0)
 
-        line = self._read_until_line_startswith(fileobj, 'Simulated primary showers')
-        val, = self._read_all_values(line)
+        line = self._read_until_line_startswith(fileobj, "Simulated primary showers")
+        (val,) = self._read_all_values(line)
         self.simulated_primary_showers = ufloat(val, 0.0)
 
-        line = self._read_until_line_startswith(fileobj, 'Upbound primary particles')
-        val, = self._read_all_values(line)
+        line = self._read_until_line_startswith(fileobj, "Upbound primary particles")
+        (val,) = self._read_all_values(line)
         self.upbound_primary_particles = ufloat(val, 0.0)
 
-        line = self._read_until_line_startswith(fileobj, 'Downbound primary particles')
-        val, = self._read_all_values(line)
+        line = self._read_until_line_startswith(fileobj, "Downbound primary particles")
+        (val,) = self._read_all_values(line)
         self.downbound_primary_particles = ufloat(val, 0.0)
 
-        line = self._read_until_line_startswith(fileobj, 'Absorbed primary particles')
-        val, = self._read_all_values(line)
+        line = self._read_until_line_startswith(fileobj, "Absorbed primary particles")
+        (val,) = self._read_all_values(line)
         self.absorbed_primary_particles = ufloat(val, 0.0)
 
-        line = self._read_until_line_startswith(fileobj, 'Upbound fraction')
+        line = self._read_until_line_startswith(fileobj, "Upbound fraction")
         val, unc = self._read_all_values(line)
         self.upbound_fraction = ufloat(val, unc / 3)
 
-        line = self._read_until_line_startswith(fileobj, 'Downbound fraction')
+        line = self._read_until_line_startswith(fileobj, "Downbound fraction")
         val, unc = self._read_all_values(line)
         self.downbound_fraction = ufloat(val, unc / 3)
 
-        line = self._read_until_line_startswith(fileobj, 'Absorption fraction')
+        line = self._read_until_line_startswith(fileobj, "Absorption fraction")
         val, unc = self._read_all_values(line)
         self.absorbed_fraction = ufloat(val, unc / 3)
 
-        self._read_until_line_startswith(fileobj, 'Secondary-particle generation probabilities')
-        fileobj.readline() # skip header
-        fileobj.readline() # skip header
+        self._read_until_line_startswith(
+            fileobj, "Secondary-particle generation probabilities"
+        )
+        fileobj.readline()  # skip header
+        fileobj.readline()  # skip header
 
-        fileobj.readline() # skip header
+        fileobj.readline()  # skip header
         val_el, val_ph, val_po = self._read_all_values(fileobj.readline())
         unc_el, unc_ph, unc_po = self._read_all_values(fileobj.readline())
-        self.upbound_secondary_electron_generation_probabilities = ufloat(val_el, unc_el / 3)
-        self.upbound_secondary_photon_generation_probabilities = ufloat(val_ph, unc_ph / 3)
-        self.upbound_secondary_positron_generation_probabilities = ufloat(val_po, unc_po / 3)
+        self.upbound_secondary_electron_generation_probabilities = ufloat(
+            val_el, unc_el / 3
+        )
+        self.upbound_secondary_photon_generation_probabilities = ufloat(
+            val_ph, unc_ph / 3
+        )
+        self.upbound_secondary_positron_generation_probabilities = ufloat(
+            val_po, unc_po / 3
+        )
 
-        fileobj.readline() # skip header
+        fileobj.readline()  # skip header
         val_el, val_ph, val_po = self._read_all_values(fileobj.readline())
         unc_el, unc_ph, unc_po = self._read_all_values(fileobj.readline())
-        self.downbound_secondary_electron_generation_probabilities = ufloat(val_el, unc_el / 3)
-        self.downbound_secondary_photon_generation_probabilities = ufloat(val_ph, unc_ph / 3)
-        self.downbound_secondary_positron_generation_probabilities = ufloat(val_po, unc_po / 3)
+        self.downbound_secondary_electron_generation_probabilities = ufloat(
+            val_el, unc_el / 3
+        )
+        self.downbound_secondary_photon_generation_probabilities = ufloat(
+            val_ph, unc_ph / 3
+        )
+        self.downbound_secondary_positron_generation_probabilities = ufloat(
+            val_po, unc_po / 3
+        )
 
-        fileobj.readline() # skip header
+        fileobj.readline()  # skip header
         val_el, val_ph, val_po = self._read_all_values(fileobj.readline())
         unc_el, unc_ph, unc_po = self._read_all_values(fileobj.readline())
-        self.absorbed_secondary_electron_generation_probabilities = ufloat(val_el, unc_el / 3)
-        self.absorbed_secondary_photon_generation_probabilities = ufloat(val_ph, unc_ph / 3)
-        self.absorbed_secondary_positron_generation_probabilities = ufloat(val_po, unc_po / 3)
+        self.absorbed_secondary_electron_generation_probabilities = ufloat(
+            val_el, unc_el / 3
+        )
+        self.absorbed_secondary_photon_generation_probabilities = ufloat(
+            val_ph, unc_ph / 3
+        )
+        self.absorbed_secondary_positron_generation_probabilities = ufloat(
+            val_po, unc_po / 3
+        )
 
         self.average_deposited_energy_eV.clear()
-        self._read_until_line_startswith(fileobj, 'Average deposited energies (bodies)')
+        self._read_until_line_startswith(fileobj, "Average deposited energies (bodies)")
         line = fileobj.readline().strip()
-        while line.startswith('Body'):
+        while line.startswith("Body"):
             body = int(line[5:9])
             val, unc, _effic = self._read_all_values(line)
             self.average_deposited_energy_eV[body] = ufloat(val, unc / 3)
             line = fileobj.readline().strip()
 
         self.average_photon_energy_eV.clear()
-        self._read_until_line_startswith(fileobj, 'Average photon energy at the detectors')
+        self._read_until_line_startswith(
+            fileobj, "Average photon energy at the detectors"
+        )
         line = fileobj.readline().strip()
-        while line.startswith('Detector'):
+        while line.startswith("Detector"):
             detector = int(line[10:12])
             val, unc, _effic = self._read_all_values(line)
             self.average_photon_energy_eV[detector] = ufloat(val, unc / 3)
             line = fileobj.readline().strip()
 
-        line = self._read_until_line_startswith(fileobj, 'Last random seeds')
-        seed1, seed2 = map(int, line.split('=')[1].split(','))
+        line = self._read_until_line_startswith(fileobj, "Last random seeds")
+        seed1, seed2 = map(int, line.split("=")[1].split(","))
         self.last_random_seed1 = ufloat(seed1, 0.0)
         self.last_random_seed2 = ufloat(seed2, 0.0)
 
         try:
-            self._read_until_line_startswith(fileobj, 'Reference line')
-            val, = self._read_all_values(fileobj.readline())
+            self._read_until_line_startswith(fileobj, "Reference line")
+            (val,) = self._read_all_values(fileobj.readline())
             self.reference_line_uncertainty = ufloat(val, 0.0)
         except IOError:
             self.reference_line_uncertainty = ufloat(0.0, 0.0)
 
     def read_directory(self, dirpath):
-        filepath = os.path.join(dirpath, 'penepma-res.dat')
-        with open(filepath, 'r') as fp:
+        filepath = os.path.join(dirpath, "penepma-res.dat")
+        with open(filepath, "r") as fp:
             self.read(fp)
+
 
 class PenepmaPhotonDetectorResultBase(PenelopeResultBase):
     """
@@ -248,14 +272,19 @@ class PenepmaPhotonDetectorResultBase(PenelopeResultBase):
         self.phi2_deg = ufloat(0.0, 0.0)
 
     def read(self, fileobj):
-        line = self._read_until_line_startswith(fileobj, '#  Results from PENEPMA. Output from photon detector')
-        _, detector_index = line.rsplit('#', 1)
+        line = self._read_until_line_startswith(
+            fileobj, "#  Results from PENEPMA. Output from photon detector"
+        )
+        _, detector_index = line.rsplit("#", 1)
         detector_index = int(detector_index)
         if detector_index != self.detector_index:
-            raise IOError('Mismatch of detector index (expected {}, found {})'
-                          .format(self.detector_index, detector_index))
+            raise IOError(
+                "Mismatch of detector index (expected {}, found {})".format(
+                    self.detector_index, detector_index
+                )
+            )
 
-        line = self._read_until_line_startswith(fileobj, '#  Angular intervals :')
+        line = self._read_until_line_startswith(fileobj, "#  Angular intervals :")
         theta1_deg, theta2_deg = self._read_all_values(line)
         self.theta1_deg = ufloat(theta1_deg, 0.0)
         self.theta2_deg = ufloat(theta2_deg, 0.0)
@@ -264,6 +293,7 @@ class PenepmaPhotonDetectorResultBase(PenelopeResultBase):
         phi1_deg, phi2_deg = self._read_all_values(line)
         self.phi1_deg = ufloat(phi1_deg, 0.0)
         self.phi2_deg = ufloat(phi2_deg, 0.0)
+
 
 class PenepmaIntensityResultMixin:
     """
@@ -279,7 +309,7 @@ class PenepmaIntensityResultMixin:
         self.total_intensities_1_per_sr_electron.clear()
 
         # Read intensities
-        self._read_until_line_startswith(fileobj, '# IZ S0 S1  E (eV)')
+        self._read_until_line_startswith(fileobj, "# IZ S0 S1  E (eV)")
 
         for line in fileobj:
             z = int(line[3:5])
@@ -287,15 +317,39 @@ class PenepmaIntensityResultMixin:
             src = pyxray.atomic_subshell(line[9:11].strip())
             xrayline = pyxray.xray_line(z, (src, dst))
 
-            _e, val_p, unc_p, val_c, unc_c, val_b, unc_b, val_tf, unc_tf, val_t, unc_t = self._read_all_values(line)
-            self.primary_intensities_1_per_sr_electron[xrayline] = ufloat(val_p, unc_p / 3)
-            self.characteristic_fluorescence_intensities_1_per_sr_electron[xrayline] = ufloat(val_c, unc_c / 3)
-            self.bremsstrahlung_fluorescence_intensities_1_per_sr_electron[xrayline] = ufloat(val_b, unc_b / 3)
-            self.total_fluorescence_intensities_1_per_sr_electron[xrayline] = ufloat(val_tf, unc_tf / 3)
-            self.total_intensities_1_per_sr_electron[xrayline] = ufloat(val_t, unc_t / 3)
+            (
+                _e,
+                val_p,
+                unc_p,
+                val_c,
+                unc_c,
+                val_b,
+                unc_b,
+                val_tf,
+                unc_tf,
+                val_t,
+                unc_t,
+            ) = self._read_all_values(line)
+            self.primary_intensities_1_per_sr_electron[xrayline] = ufloat(
+                val_p, unc_p / 3
+            )
+            self.characteristic_fluorescence_intensities_1_per_sr_electron[
+                xrayline
+            ] = ufloat(val_c, unc_c / 3)
+            self.bremsstrahlung_fluorescence_intensities_1_per_sr_electron[
+                xrayline
+            ] = ufloat(val_b, unc_b / 3)
+            self.total_fluorescence_intensities_1_per_sr_electron[xrayline] = ufloat(
+                val_tf, unc_tf / 3
+            )
+            self.total_intensities_1_per_sr_electron[xrayline] = ufloat(
+                val_t, unc_t / 3
+            )
 
-class PenepmaEmittedIntensityResult(PenepmaIntensityResultMixin,
-                                    PenepmaPhotonDetectorResultBase):
+
+class PenepmaEmittedIntensityResult(
+    PenepmaIntensityResultMixin, PenepmaPhotonDetectorResultBase
+):
     """
     Results from ``pe-intens-XX.dat``, where ``XX`` is the index of the detector.
     The intensities are given for each characteristic x-ray detected by
@@ -375,9 +429,12 @@ class PenepmaEmittedIntensityResult(PenepmaIntensityResultMixin,
         super()._read_intensity_table(fileobj)
 
     def read_directory(self, dirpath):
-        filepath = os.path.join(dirpath, 'pe-intens-{:02d}.dat'.format(self.detector_index))
-        with open(filepath, 'r') as fp:
+        filepath = os.path.join(
+            dirpath, "pe-intens-{:02d}.dat".format(self.detector_index)
+        )
+        with open(filepath, "r") as fp:
             self.read(fp)
+
 
 class PenepmaSpectrumResult(PenepmaPhotonDetectorResultBase):
     """
@@ -439,13 +496,13 @@ class PenepmaSpectrumResult(PenepmaPhotonDetectorResultBase):
     def read(self, fileobj):
         super().read(fileobj)
 
-        line = self._read_until_line_startswith(fileobj, '#  Energy window =')
+        line = self._read_until_line_startswith(fileobj, "#  Energy window =")
         start_eV, end_eV = self._read_all_values(line)
         self.energy_window_start_eV = ufloat(start_eV, 0.0)
         self.energy_window_end_eV = ufloat(end_eV, 0.0)
 
-        line = self._read_until_line_startswith(fileobj, '#  Channel width =')
-        channel_width_eV, = self._read_all_values(line)
+        line = self._read_until_line_startswith(fileobj, "#  Channel width =")
+        (channel_width_eV,) = self._read_all_values(line)
         self.channel_width_eV = ufloat(channel_width_eV, 0.0)
 
         spectrum = []
@@ -459,8 +516,10 @@ class PenepmaSpectrumResult(PenepmaPhotonDetectorResultBase):
         self.spectrum = unumpy.uarray(spectrum, spectrum_unc)
 
     def read_directory(self, dirpath):
-        filepath = os.path.join(dirpath, 'pe-spect-{:02d}.dat'.format(self.detector_index))
-        with open(filepath, 'r') as fp:
+        filepath = os.path.join(
+            dirpath, "pe-spect-{:02d}.dat".format(self.detector_index)
+        )
+        with open(filepath, "r") as fp:
             self.read(fp)
 
     @property
@@ -473,9 +532,8 @@ class PenepmaSpectrumResult(PenepmaPhotonDetectorResultBase):
         """numpy array: Nominal values of the intensity axis in 1/(sr.electron)."""
         return unumpy.nominal_values(self.spectrum[:, 1])
 
-class PenepmaGeneratedIntensityResult(PenepmaIntensityResultMixin,
-                                      PenelopeResultBase):
 
+class PenepmaGeneratedIntensityResult(PenepmaIntensityResultMixin, PenelopeResultBase):
     def __init__(self):
         super().__init__()
 
@@ -489,12 +547,12 @@ class PenepmaGeneratedIntensityResult(PenepmaIntensityResultMixin,
         super()._read_intensity_table(fileobj)
 
     def read_directory(self, dirpath):
-        filepath = os.path.join(dirpath, 'pe-gen-ph.dat')
-        with open(filepath, 'r') as fp:
+        filepath = os.path.join(dirpath, "pe-gen-ph.dat")
+        with open(filepath, "r") as fp:
             self.read(fp)
 
-class PenepmaAngularResult(PenelopeResultBase):
 
+class PenepmaAngularResult(PenelopeResultBase):
     def __init__(self, kpar=KPAR.ELECTRON):
         super().__init__()
         self.kpar = kpar
@@ -504,7 +562,7 @@ class PenepmaAngularResult(PenelopeResultBase):
         distribution = []
         distribution_unc = []
         self._read_until_end_of_comments(fileobj)
-        next(fileobj) # Skip empty line
+        next(fileobj)  # Skip empty line
         for line in fileobj:
             angle_deg, val, unc = self._read_all_values(line)
             distribution.append([np.radians(angle_deg), val])
@@ -514,14 +572,14 @@ class PenepmaAngularResult(PenelopeResultBase):
 
     def read_directory(self, dirpath):
         if self.kpar == KPAR.ELECTRON:
-            filename = 'pe-anel.dat'
+            filename = "pe-anel.dat"
         elif self.kpar == KPAR.PHOTON:
-            filename = 'pe-anga.dat'
+            filename = "pe-anga.dat"
         else:
-            raise ValueError(f'No distribution for particle {self.kpar}')
+            raise ValueError(f"No distribution for particle {self.kpar}")
 
         filepath = os.path.join(dirpath, filename)
-        with open(filepath, 'r') as fp:
+        with open(filepath, "r") as fp:
             self.read(fp)
 
     @property
@@ -534,9 +592,9 @@ class PenepmaAngularResult(PenelopeResultBase):
         """numpy array: Nominal values of the probability density axis in 1/sr."""
         return unumpy.nominal_values(self.distribution[:, 1])
 
-class PenepmaEnergyResult(PenelopeResultBase):
 
-    def __init__(self, kpar=KPAR.ELECTRON, direction='up'):
+class PenepmaEnergyResult(PenelopeResultBase):
+    def __init__(self, kpar=KPAR.ELECTRON, direction="up"):
         super().__init__()
         self.kpar = kpar
         self.direction = direction
@@ -546,7 +604,7 @@ class PenepmaEnergyResult(PenelopeResultBase):
         distribution = []
         distribution_unc = []
         self._read_until_end_of_comments(fileobj)
-        next(fileobj) # Skip empty line
+        next(fileobj)  # Skip empty line
         for line in fileobj:
             energy_eV, val, unc = self._read_all_values(line)
             distribution.append([energy_eV, val])
@@ -556,14 +614,16 @@ class PenepmaEnergyResult(PenelopeResultBase):
 
     def read_directory(self, dirpath):
         if self.kpar == KPAR.ELECTRON:
-            kpar_suffix = 'el'
+            kpar_suffix = "el"
         elif self.kpar == KPAR.PHOTON:
-            kpar_suffix = 'ph'
+            kpar_suffix = "ph"
         else:
-            raise ValueError(f'No distribution for particle {self.kpar}')
+            raise ValueError(f"No distribution for particle {self.kpar}")
 
-        filepath = os.path.join(dirpath, f'pe-energy-{kpar_suffix}-{self.direction}.dat')
-        with open(filepath, 'r') as fp:
+        filepath = os.path.join(
+            dirpath, f"pe-energy-{kpar_suffix}-{self.direction}.dat"
+        )
+        with open(filepath, "r") as fp:
             self.read(fp)
 
     @property

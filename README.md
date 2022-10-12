@@ -11,6 +11,8 @@ Most of the code was adapted from [pyPENELOPE](http://pypenelope.sourceforge.net
 with the goal to facilitate the integration with
 [pyMonteCarlo](https://github.com/pymontecarlo/pymontecarlo).
 
+> **Warning**: pyPENELOPEtools does not contain executables of PENELOPE, any of its main programs or data files. It also does not provide any code to execute these programs. It provides tools to create the input file(s) (e.g. .in) for the main programs and to parse the output file(s) from the simulations (e.g. .dat).
+
 ## What is PENELOPE?
 
 PENELOPE (*Penetration and ENErgy LOss of Positrons and Electrons*) is a
